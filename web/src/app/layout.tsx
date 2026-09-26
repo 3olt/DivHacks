@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NYC Money Map",
+  title: "GlassLedger",
   description: "NYC community resources and the city money behind them",
 };
 

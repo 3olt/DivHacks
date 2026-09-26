@@ -2,7 +2,6 @@ import Link from "next/link";
 import { RISK_COLORS } from "@/lib/risk";
 
 // Landing page: project overview with a launch button to the live map (/map).
-// "NYC Money Map" is a working name until the team picks one.
 
 const COMPTROLLER_REPORT = "https://comptroller.nyc.gov/reports/nonprofit-nonpayment";
 
@@ -44,7 +43,7 @@ export default function Landing() {
       <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
         <span className="flex items-center gap-2 font-semibold">
           <PinDots />
-          NYC Money Map
+          GlassLedger
         </span>
         <LaunchButton small />
       </header>

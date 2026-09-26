@@ -2,7 +2,7 @@
 
 > **MAIN SELLING POINT: TRANSPARENCY.** Every step of the money is visible to anyone: which agency funds a service, how late its contract and payments are, and every payment the AI agent attempted (paid, blocked, or waiting), with the reason, who signed, and a link to the XRP Ledger. Lead with this in the pitch, the UI, the landing page, and the Devpost write-up.
 
-Project name: TBD. This file is the project context and pitch. **The technical source of truth is the backend spec:** [`docs/API.md`](docs/API.md) (API contract) and [`shared/contracts.ts`](shared/contracts.ts) (data types). Where this file and the spec disagree, the spec wins; [`docs/CONFLICTS.md`](docs/CONFLICTS.md) lists the known differences.
+Project name: **GlassLedger**. This file is the project context and pitch. **The technical source of truth is the backend spec:** [`docs/API.md`](docs/API.md) (API contract) and [`shared/contracts.ts`](shared/contracts.ts) (data types). Where this file and the spec disagree, the spec wins; [`docs/CONFLICTS.md`](docs/CONFLICTS.md) lists the known differences.
 
 ## Deadline & submission
 
@@ -43,7 +43,7 @@ Judging weights: Concept 30%, Functionality 30%, Wow Factor 20%, UX/Design 10%, 
 ## Product: two separate features
 
 ### 0. Landing page (`/`)
-Product overview (`web/src/app/page.tsx`): transparency pitch, the problem (Comptroller figures with source links), how it works, the agent's guardrails, a demo-data disclaimer, and **"Launch the map"** buttons to `/map`. "NYC Money Map" is a working name.
+Product overview (`web/src/app/page.tsx`): transparency pitch, the problem (Comptroller figures with source links), how it works, the agent's guardrails, a demo-data disclaimer, and **"Launch the map"** buttons to `/map`.
 
 ### 1. Money map (`/map`, shows delays)
 1. **Map:** NYC with pins for food pantries, grocery giveaways, shelters, youth programs, and events.

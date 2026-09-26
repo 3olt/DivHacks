@@ -45,7 +45,7 @@ export async function POST(req: Request) {
   const name = profile.first_name ? `, ${profile.first_name}` : "";
   const imessage = await sendIMessage(
     phone,
-    `Hi${name}! You're signed up for NYC community resource alerts. We'll text you about free food and events near you, and when their funding is running late.`,
+    `Hi${name}! You're signed up for GlassLedger alerts. We'll text you about free food and events near you, and when their funding is running late.`,
   );
   return Response.json({ phone, imessage }, { status: existing ? 200 : 201 });
 }
