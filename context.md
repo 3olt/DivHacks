@@ -1,5 +1,7 @@
 # Project Context — DivHacks 2026
 
+> **MAIN SELLING POINT: TRANSPARENCY.** Every step of the money is visible to anyone: which agency funds a service, how late its contract and payments are, and every payment the AI agent attempted (paid, blocked, or waiting), with the reason, who signed, and a link to the XRP Ledger. Lead with this in the pitch, the UI, the landing page, and the Devpost write-up.
+
 Project name: TBD. This file is the project context and pitch. **The technical source of truth is the backend spec:** [`docs/API.md`](docs/API.md) (API contract) and [`shared/contracts.ts`](shared/contracts.ts) (data types). Where this file and the spec disagree, the spec wins; [`docs/CONFLICTS.md`](docs/CONFLICTS.md) lists the known differences.
 
 ## Deadline & submission
@@ -9,13 +11,9 @@ Project name: TBD. This file is the project context and pitch. **The technical s
 - Target: backup demo video and Devpost draft by ~8:30 AM EDT.
 - Expo judging: ~3 min pitch + ~2 min Q&A per judge. Prepare a short slide deck.
 
-## Main selling point: transparency
-
-Every step of the money is visible to anyone: which agency funds a service, how late its contract and payments are, and every payment the AI agent attempted (paid, blocked, or waiting), with the reason, who signed, and a link to the XRP Ledger. Lead with this in the pitch, the UI, and the Devpost write-up.
-
 ## One-liner
 
-A live map of NYC community services (food pantries, shelters, youth programs) colored by how stuck the city money behind each one is. An AI agent pays nonprofits' verified invoices in **RLUSD on the XRP Ledger**, where the ledger itself enforces the guardrails. Residents can sign up for iMessage alerts (via **Photon**) about events they qualify for.
+Full transparency for NYC's community services: a live map of food pantries, shelters, and youth programs, colored by how stuck the city money behind each one is. An AI agent pays nonprofits' verified invoices in **RLUSD on the XRP Ledger**, where the ledger itself enforces the guardrails. Residents can sign up for iMessage alerts (via **Photon**) about events they qualify for.
 
 ## The problem
 
