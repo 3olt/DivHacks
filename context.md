@@ -117,7 +117,8 @@ Without keys the service runs in **dry-run** mode: it logs messages instead of s
 | GET | `/health` | `{ mode: "live" \| "dry-run" }` |
 
 **Placeholders to fill in later:**
-- Inbound replies (e.g. "why?") get a generic answer. The money-trail answer goes in `replyLoop()` in `imessage/src/index.ts` (backend: Grok grounded in `/sites/:id` + `/trail`).
+- Inbound replies: **built** in `imessage/src/replies.ts`. "STOP" unsubscribes (`DELETE /subscribers/:phone`). Anything else (e.g. "why?") is answered by **Grok** (`grok-4.3`, `reasoning_effort: none`, ~1 s) using only facts from the API for the sites the sender follows (`/subscribers`, `/sites/:id`, `/sites/:id/trail`). The prompt forbids wallet addresses and treats the user's text as untrusted (tested against a prompt injection). Needs `XAI_API_KEY` in `imessage/.env` (never commit it).
+- **Grok budget (~$5 of credit):** ~900 tokens per call (compact facts, max 150 output tokens, max 3 sites). Same question + unchanged data is cached for 30 min. Limits: 5 Grok answers per phone per hour, 150 per day overall (`GROK_PER_PHONE_PER_HOUR`, `GROK_DAILY_CAP`). Past a limit, or if Grok errors, the reply is the free risk summary from the API. Every call logs its token count (`[grok] call N/150 today, X tokens`).
 - "Funded ✅" alerts: **built** in `imessage/src/fundedAlerts.ts`. The service listens to WS `/live`; when a site changes to green it texts everyone from `GET /subscribers?site_id=` ("✅ <site> is funded. <risk summary>"). Numbers not on the Photon Users list are skipped and logged. Set `API_URL` in `imessage/.env` if the API isn't on :4000.
 - More intake questions (SNAP/WIC eligibility, dietary needs, accessibility): `SignupForm.tsx` and `SubscriberProfile` in `web/src/lib/types.ts`.
 - Site details (hours, what to bring, eligibility): "What to know before you go" in `SitePanel.tsx`.
@@ -208,7 +209,7 @@ The API currently serves **fixture data** (15 sites, all fictional, `is_demo_dat
 - [ ] Real data (Checkbook, Comptroller, 990) in Mongo (backend)
 - [x] Simulated escrow demo (placeholder in `api/`, marked for removal)
 - [ ] Real test-token escrow on Testnet (backend, replaces the placeholder)
-- [ ] "Why?" iMessage answers (backend: Grok)
+- [x] "Why?" iMessage answers with Grok + STOP to unsubscribe (`imessage/src/replies.ts`)
 - [ ] Profile field on the API's `Subscriber` (see sign-up section)
 
 **Nice to have:**

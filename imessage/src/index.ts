@@ -1,13 +1,14 @@
 // iMessage service built on Photon Spectrum (https://photon.codes/docs/spectrum-ts/introduction).
 // - POST /notify { phone, text }  -> sends an iMessage (called by the web app)
 // - GET  /health                  -> { mode: "live" | "dry-run" }
-// - Inbound iMessages get a placeholder reply (money-trail Q&A goes here later).
+// - Inbound iMessages: "STOP" unsubscribes; anything else is answered by Grok from the money trail (see replies.ts).
 // - "Funded ✅" alerts: texts a site's followers when it turns green (see fundedAlerts.ts).
 // Without SPECTRUM_PROJECT_ID / SPECTRUM_PROJECT_SECRET it runs in dry-run mode and only logs.
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { Spectrum } from "spectrum-ts";
 import { imessage } from "spectrum-ts/providers/imessage";
 import { startFundedAlerts } from "./fundedAlerts";
+import { replyTo } from "./replies";
 
 const PORT = Number(process.env.PORT ?? 4003);
 const projectId = process.env.SPECTRUM_PROJECT_ID;
@@ -32,9 +33,9 @@ async function replyLoop(): Promise<void> {
   for await (const [space, message] of imessage(app).messages) {
     if (message.content.type !== "text") continue;
     console.log(`[inbound] ${message.sender?.id ?? "unknown"}: ${message.content.text}`);
-    // TODO: answer "why?" with the money trail for the user's subscribed sites (GET web /api/sites/[id]).
     try {
-      await space.send("Thanks! Money-trail answers are coming soon. You'll get alerts for your saved locations here.");
+      const answer = await replyTo(message.sender?.id ?? "", message.content.text);
+      await space.send(answer);
     } catch (err) {
       // One failed reply must not stop the loop.
       console.error("reply failed", err);
