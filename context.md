@@ -44,8 +44,11 @@ Judging weights: Concept 30%, Functionality 30%, Wow Factor 20%, UX/Design 10%, 
 
 ## Product: two separate features
 
-### 1. Money map (shows delays)
-1. **Landing page:** a map of NYC with pins for food pantries, grocery giveaways, shelters, youth programs, and events.
+### 0. Landing page (`/`)
+Product overview (`web/src/app/page.tsx`): transparency pitch, the problem (Comptroller figures with source links), how it works, the agent's guardrails, a demo-data disclaimer, and **"Launch the map"** buttons to `/map`. "NYC Money Map" is a working name.
+
+### 1. Money map (`/map`, shows delays)
+1. **Map:** NYC with pins for food pantries, grocery giveaways, shelters, youth programs, and events.
 2. **Pin color = funding health** (from the API's risk score): 🟢 0–39 funded, on track · 🟡 40–69 payments running late · 🔴 70–100 at risk of delay.
 3. **Click a pin →** the map zooms to it, a small popup opens (`SitePopup.tsx`: name, next event, status, one-line risk summary), and the side panel shows that location. The panel's **✕** and the popup's **×** both close everything and zoom back out to the five boroughs (start view fits the boroughs to the screen; a site zooms to level 13). Clicking the map background doesn't close the popup.
 4. **Side panel** (`SitePanel.tsx`), from `GET /sites/:id/trail`:
@@ -81,7 +84,7 @@ Ports: api 4000 · xrpl service 4001 · co-signer 4002 · imessage 4003 · web 3
 
 **Run locally** (three terminals):
 - API: `npm install && npm run dev:api` (repo root) → http://localhost:4000 (fixture data, no keys needed)
-- Frontend: `cd web && npm install && npm run dev` → http://localhost:3000
+- Frontend: `cd web && npm install && npm run dev` → http://localhost:3000 (landing) and http://localhost:3000/map
 - iMessage: `cd imessage && npm install && npm run dev` → http://localhost:4003 (dry-run until Photon keys are set)
 
 ## Frontend ↔ API
@@ -157,7 +160,8 @@ RLUSD escrow fails on Testnet (`tecNO_PERMISSION`: the RLUSD issuer doesn't allo
 - Proven on Testnet (`docs/RISK_CHECKS.md` #3b): escrow of a **city-issued test token** with a PREIMAGE-SHA-256 condition + `CancelAfter`, released by `EscrowFinish`.
 - Flow: agent locks the milestone amount (`held_escrow`) → co-signer confirms the milestone and fulfills the condition → funds release (`released`); if not confirmed by `CancelAfter`, funds return to the city.
 - Always label it **"simulated escrow (test token, not RLUSD)"** in the UI, pitch, and Devpost. The frontend already shows `held_escrow` as "In escrow (simulated)".
-- Owner: backend (`xrpl/` + a `POST /demo/escrow` scenario in `api/`). Not built yet.
+- **Placeholder built (fixture only, nothing on the ledger):** `POST /demo/escrow` locks a 900.00 milestone (`held_escrow`), `POST /demo/escrow-release` releases it (`released`, golden pin turns green). Buttons are in Demo controls. Code: `api/src/demo/escrowPlaceholder.ts`, plus blocks marked `PLACEHOLDER — simulated escrow` in `api/src/routes/demo.ts`, `api/src/fixtures/decisionFactory.ts`, `web/src/lib/api.ts`, and `web/src/components/DemoControls.tsx`. Kept out of `SCENARIOS`, so the API smoke test is unchanged (110/110 pass). Known gap: amounts display as RLUSD because the fixture factory hard-codes it; the reasoning text says "test token, not RLUSD".
+- **To replace it:** backend implements real test-token escrow in `xrpl/`, then deletes the placeholder file and the marked blocks.
 - Note: escrow is **not** what qualifies us for Ripple. The requirement is an autonomous on-chain payment within guardrails, which the RLUSD multisig payment already meets. Escrow is an extra.
 
 **Other limits:** Exclusions are a seeded SAM.gov-style list, not a live SAM.gov integration. No destination tags (each nonprofit has its own credentialed wallet).
@@ -202,7 +206,8 @@ The API currently serves **fixture data** (15 sites, all fictional, `is_demo_dat
 **In progress / next:**
 - [ ] XRPL agent + co-signer on Testnet (backend)
 - [ ] Real data (Checkbook, Comptroller, 990) in Mongo (backend)
-- [ ] Simulated escrow scenario (backend) + escrow timeline in the UI
+- [x] Simulated escrow demo (placeholder in `api/`, marked for removal)
+- [ ] Real test-token escrow on Testnet (backend, replaces the placeholder)
 - [ ] "Why?" iMessage answers and "funded ✅" alerts
 - [ ] Profile field on the API's `Subscriber` (see sign-up section)
 
