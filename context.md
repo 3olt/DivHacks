@@ -53,6 +53,36 @@ Judging weights: Concept 30%, Functionality 30%, Wow Factor 20%, UX/Design 10%, 
    - The user can reply "why?" and the agent explains the money trail.
 5. **Demo moment (connects everything):** the agent releases a verified payment on XRPL → the pin turns 🟡→🟢 live → subscribers get "Saturday's pantry is funded ✅".
 
+## Repo layout
+
+```
+/context.md        this file
+/web               frontend: Next.js 16 + TypeScript + Tailwind + Leaflet (map, panel, API routes)
+/agent             XRPL payment agent (TypeScript). The XRPL teammate builds here.
+```
+
+Run the frontend: `cd web && npm install && npm run dev`, then open http://localhost:3000
+
+## Integration: agent → frontend
+
+**The XRPL agent lives in `/agent` and reports every payment decision to the frontend with `POST /api/payments`.** Full spec: `agent/README.md`.
+
+- Payload = the `Payment` type in `web/src/lib/types.ts` (same as "Shared data contracts" below).
+- Send one POST per decision: `released`, `held_escrow`, or `refused` (refusals show up in the UI as blocked fraud attempts).
+- A `released` payment turns every pin whose nonprofit has that `payee_ein` green within about 4 seconds (the frontend polls).
+- Until real data is loaded, use the demo EINs `00-0000001` to `00-0000006` from `web/src/lib/mockData.ts`.
+- Frontend data is in memory (`web/src/lib/store.ts`) and resets when the server restarts. It gets swapped for MongoDB later.
+
+### Frontend API
+
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/api/sites` | All map pins |
+| GET | `/api/sites/[id]` | Pin detail: site, nonprofit, contracts, payments |
+| GET | `/api/payments` | All payment decisions |
+| POST | `/api/payments` | **Agent reports a payment decision** |
+| POST | `/api/subscribe` | iMessage sign-up (placeholder until Photon is connected) |
+
 ## Architecture
 
 ```
