@@ -1,15 +1,23 @@
 "use client";
 
-import type { Contract, Payment, SiteDetail } from "@/lib/types";
+import { useState } from "react";
+import type { Contract, Decision, Payment, Site, Trail } from "@/lib/contracts";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/risk";
-import { formatEventTime } from "@/lib/format";
+import { OUTCOME_BADGES, enforcedByLabel, formatDate, formatEventTime, formatMoney, refusalLabel } from "@/lib/format";
 import FollowSiteButton from "./FollowSiteButton";
 
-const usd = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
-const XRPL_TESTNET_TX = "https://testnet.xrpl.org/transactions/";
-
-export default function SitePanel({ detail, onClose, onNeedSignup }: { detail: SiteDetail; onClose: () => void; onNeedSignup: () => void }) {
-  const { site, nonprofit, contracts, payments } = detail;
+export default function SitePanel({
+  site,
+  trail,
+  onClose,
+  onNeedSignup,
+}: {
+  site: Site;
+  trail: Trail | null;
+  onClose: () => void;
+  onNeedSignup: () => void;
+}) {
+  const next = site.events[0] ?? null;
 
   return (
     <div className="flex h-full flex-col overflow-y-auto">
@@ -17,16 +25,16 @@ export default function SitePanel({ detail, onClose, onNeedSignup }: { detail: S
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">{site.name}</h2>
-            <p className="text-sm text-gray-500">{site.address}</p>
+            <p className="text-sm text-gray-500">{site.address ?? `${site.borough} ${site.zip}`}</p>
           </div>
           <button onClick={onClose} className="text-sm text-gray-500 hover:text-gray-900" aria-label="Close">
             ✕
           </button>
         </div>
-        {site.next_event && (
+        {next && (
           <p className="mt-3 text-sm text-gray-700">
-            <span className="font-medium">{site.next_event.title}</span> ·{" "}
-            {formatEventTime(site.next_event.starts_at)}
+            <span className="font-medium">{next.title}</span> · {formatEventTime(next.starts_at)}
+            {next.is_demo_data && <DemoBadge />}
           </p>
         )}
       </div>
@@ -37,50 +45,41 @@ export default function SitePanel({ detail, onClose, onNeedSignup }: { detail: S
           <span className="font-medium text-gray-900">{RISK_LABELS[site.risk.level]}</span>
           <span className="ml-auto text-xs text-gray-500">risk {site.risk.score}/100</span>
         </div>
-        <ul className="mt-2 list-disc pl-5 text-sm text-gray-700">
+        <p className="mt-2 text-sm text-gray-700">{site.risk.summary}</p>
+        <ul className="mt-2 list-disc pl-5 text-xs text-gray-600">
           {site.risk.reasons.map((r) => (
             <li key={r}>{r}</li>
           ))}
         </ul>
       </Section>
 
-      <Section title="Money trail">
-        {contracts.length === 0 && <p className="text-sm text-gray-500">No contracts found.</p>}
-        {contracts.map((c) => (
-          <Trail key={c.contract_id} contract={c} nonprofitName={nonprofit?.name ?? site.name} />
-        ))}
-      </Section>
-
-      {nonprofit && (
-        <Section title="Nonprofit finances">
-          <dl className="grid grid-cols-3 gap-2 text-center">
-            <Stat label="Cash reserves" value={`${nonprofit.cash_reserve_months} mo`} />
-            <Stat label="To programs" value={`${nonprofit.program_expense_pct}%`} />
-            <Stat label="Revenue" value={usd(nonprofit.annual_revenue_usd)} />
-          </dl>
-          <p className="mt-3 text-xs text-gray-600">
-            XRPL wallet:{" "}
-            {nonprofit.xrpl_wallet ? (
-              <>
-                <span className="font-mono">{nonprofit.xrpl_wallet.slice(0, 10)}…</span>{" "}
-                <span className="text-green-700">✓ verified until {nonprofit.credential_valid_until}</span>
-              </>
-            ) : (
-              <span className="text-yellow-700">not verified</span>
-            )}
-          </p>
+      {!trail ? (
+        <Section title="Money trail">
+          <p className="text-sm text-gray-500">Loading…</p>
         </Section>
-      )}
+      ) : (
+        <>
+          <Section title="Money trail">
+            <MoneyTrail trail={trail} />
+          </Section>
 
-      <Section title="Payments (XRPL agent)">
-        {/* Filled by the XRPL agent via POST /api/payments. Placeholder until it is connected. */}
-        {payments.length === 0 && <Placeholder text="No payments yet. Verified XRPL payments from the agent will appear here." />}
-        <ul className="space-y-2">
-          {[...payments].reverse().map((p) => (
-            <PaymentRow key={p.invoice_id} payment={p} />
-          ))}
-        </ul>
-      </Section>
+          <Section title="Nonprofit">
+            <Nonprofit trail={trail} />
+          </Section>
+
+          <Section title="Payment agent (XRPL)">
+            {trail.decisions.length === 0 ? (
+              <Placeholder text="No agent payments for this location yet." />
+            ) : (
+              <ul className="space-y-2">
+                {trail.decisions.map((d) => (
+                  <DecisionRow key={d.decision_id} decision={d} />
+                ))}
+              </ul>
+            )}
+          </Section>
+        </>
+      )}
 
       <Section title="What to know before you go">
         {/* Placeholder: hours, what to bring, eligibility requirements, languages spoken. */}
@@ -88,9 +87,165 @@ export default function SitePanel({ detail, onClose, onNeedSignup }: { detail: S
       </Section>
 
       <Section title="iMessage alerts">
-        <FollowSiteButton siteId={site.id} onNeedSignup={onNeedSignup} />
+        <FollowSiteButton siteId={site.id} siteName={site.name} onNeedSignup={onNeedSignup} />
       </Section>
     </div>
+  );
+}
+
+function MoneyTrail({ trail }: { trail: Trail }) {
+  const { agency } = trail;
+  return (
+    <ol className="relative ml-2 border-l-2 border-gray-200">
+      <Step label="NYC agency">
+        <p className="text-sm font-medium text-gray-900">{agency.name}</p>
+        {agency.pct_contracts_registered_late != null && (
+          <p className="text-xs text-gray-600">
+            Registered {Math.round(agency.pct_contracts_registered_late * 100)}% of FY{agency.fiscal_year} contracts late
+            {agency.avg_days_registered_late != null && ` (avg ${agency.avg_days_registered_late} days)`}
+          </p>
+        )}
+        <SourceLink href={agency.source_url} label="Comptroller" />
+      </Step>
+      {trail.contracts.map((c) => (
+        <Step key={c.contract_id} label="Contract">
+          <ContractInfo contract={c} />
+        </Step>
+      ))}
+      <Step label="Payments">
+        {trail.payments.length === 0 ? (
+          <p className="text-xs text-gray-500">No payments recorded.</p>
+        ) : (
+          <ul className="space-y-1">
+            {trail.payments.map((p) => (
+              <PaymentRow key={p.payment_id} payment={p} />
+            ))}
+          </ul>
+        )}
+      </Step>
+      <Step label="Nonprofit">
+        <p className="text-sm font-medium text-gray-900">{trail.nonprofit.name}</p>
+      </Step>
+    </ol>
+  );
+}
+
+function ContractInfo({ contract: c }: { contract: Contract }) {
+  return (
+    <>
+      <p className="text-sm font-medium text-gray-900">{c.purpose ?? c.contract_id}</p>
+      <p className="font-mono text-[11px] text-gray-500">{c.contract_id}</p>
+      <p className="text-xs text-gray-600">
+        {formatMoney(c.spent_to_date)} of {formatMoney(c.amount)} spent · {c.start_date} to {c.end_date}
+      </p>
+      <p className="text-xs text-gray-600">{c.registered_date ? `Registered ${formatDate(c.registered_date)}` : "Not registered"}</p>
+      <SourceLink href={c.source_url} label="Checkbook NYC" />
+    </>
+  );
+}
+
+function PaymentRow({ payment: p }: { payment: Payment }) {
+  const isXrpl = p.source === "xrpl";
+  return (
+    <li className="flex items-baseline gap-2 text-xs">
+      <span className="w-20 shrink-0 text-gray-500">{formatDate(p.date)}</span>
+      <span className={p.status === "refused" ? "text-gray-400 line-through" : "text-gray-900"}>{formatMoney(p.amount, p.currency)}</span>
+      <span className="text-gray-500">{isXrpl ? "XRPL agent" : "City payment"}</span>
+      {p.status !== "released" && <span className="text-gray-500">({p.status.replace("_", " ")})</span>}
+      {p.explorer_url && (
+        <a href={p.explorer_url} target="_blank" rel="noreferrer" className="ml-auto text-blue-700 underline">
+          tx
+        </a>
+      )}
+    </li>
+  );
+}
+
+function Nonprofit({ trail }: { trail: Trail }) {
+  const np = trail.nonprofit;
+  const f = np.financials;
+  const w = np.wallet;
+  return (
+    <div className="space-y-3">
+      <p className="text-sm font-medium text-gray-900">{np.name}</p>
+      {f ? (
+        <>
+          <dl className="grid grid-cols-3 gap-2 text-center">
+            <Stat label="Cash on hand" value={`${f.cash_months} mo`} />
+            <Stat label="Revenue" value={formatMoney(f.revenue)} />
+            <Stat label="Net assets" value={formatMoney(f.net_assets)} />
+          </dl>
+          <SourceLink href={f.source_url} label={`IRS 990, FY${f.fiscal_year} (ProPublica)`} />
+        </>
+      ) : (
+        <p className="text-xs text-gray-500">No IRS 990 on file.</p>
+      )}
+      <div className="text-xs text-gray-600">
+        <span>XRPL wallet: </span>
+        {!w ? (
+          <span className="text-gray-500">none registered</span>
+        ) : (
+          <>
+            <span className="font-mono">{w.address.slice(0, 10)}…</span>{" "}
+            {w.credential_status === "valid" && (
+              <span className="text-green-700">✓ verified{w.credential_expires ? ` until ${formatDate(w.credential_expires)}` : ""}</span>
+            )}
+            {w.credential_status === "expired" && <span className="text-red-700">credential expired</span>}
+            {w.credential_status === "none" && <span className="text-yellow-700">not verified</span>}
+            <span className="text-gray-500"> · bank {w.bank_verified ? "verified" : "not verified"} (Nessie)</span>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DecisionRow({ decision: d }: { decision: Decision }) {
+  const [open, setOpen] = useState(false);
+  const badge = OUTCOME_BADGES[d.outcome];
+  const enforced = enforcedByLabel(d);
+  return (
+    <li className="rounded-md border border-gray-200 p-3 text-sm">
+      <div className="flex items-center gap-2">
+        <span className={`rounded px-1.5 py-0.5 text-xs font-medium ${badge.className}`}>{badge.label}</span>
+        <span className="font-mono text-xs text-gray-600">{d.invoice_id}</span>
+        <span className="ml-auto font-medium text-gray-900">{formatMoney(d.amount, d.currency)}</span>
+      </div>
+      {d.refusal_reasons.length > 0 && <p className="mt-1 text-xs font-medium text-red-700">{refusalLabel(d.refusal_reasons[0])}</p>}
+      {enforced && <p className="mt-0.5 text-xs text-gray-700">{enforced}</p>}
+      <p className="mt-1 text-xs text-gray-500">
+        {formatEventTime(d.created_at)} · signed by {d.signers.join(" + ")}
+      </p>
+      <button onClick={() => setOpen(!open)} className="mt-1 text-xs text-gray-600 underline">
+        {open ? "Hide audit" : "Show audit"}
+      </button>
+      {open && (
+        <div className="mt-2 space-y-2">
+          <ul className="space-y-1">
+            {d.checks.map((c) => (
+              <li key={c.name} className="text-xs">
+                <span className={c.passed ? "text-green-700" : "text-red-700"}>{c.passed ? "✓" : "✗"}</span>{" "}
+                <span className="font-mono text-gray-800">{c.name}</span>
+                <p className="ml-4 text-gray-500">{c.detail}</p>
+              </li>
+            ))}
+          </ul>
+          {/* Untrusted invoice text can appear here: render as plain text only. */}
+          <p className="text-xs text-gray-600">{d.agent_reasoning}</p>
+          <p className="break-all font-mono text-[10px] text-gray-400">decision hash {d.decision_hash}</p>
+        </div>
+      )}
+    </li>
+  );
+}
+
+function Step({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <li className="mb-3 ml-4 last:mb-0">
+      <span className="absolute -left-[7px] mt-1.5 h-3 w-3 rounded-full border-2 border-white bg-gray-400" />
+      <p className="text-xs text-gray-500">{label}</p>
+      {children}
+    </li>
   );
 }
 
@@ -103,10 +258,6 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function Placeholder({ text }: { text: string }) {
-  return <div className="rounded-md border border-dashed border-gray-300 p-3 text-xs text-gray-500">{text}</div>;
-}
-
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-md bg-gray-50 p-2">
@@ -116,46 +267,18 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Trail({ contract: c, nonprofitName }: { contract: Contract; nonprofitName: string }) {
-  const steps = [
-    { label: "NYC agency", value: c.agency, note: `avg ${c.agency_avg_days_late} days late` },
-    { label: "Contract", value: `${c.contract_id} · ${c.purpose}`, note: `${usd(c.paid_to_date_usd)} of ${usd(c.value_usd)} paid · ${c.registered ? "registered" : "not registered"}` },
-    { label: "Nonprofit", value: nonprofitName, note: c.days_payment_late > 0 ? `${c.days_payment_late} days behind` : "paid on time" },
-  ];
+function SourceLink({ href, label }: { href: string; label: string }) {
   return (
-    <ol className="relative ml-2 border-l-2 border-gray-200">
-      {steps.map((s) => (
-        <li key={s.label} className="mb-3 ml-4 last:mb-0">
-          <span className="absolute -left-[7px] mt-1.5 h-3 w-3 rounded-full border-2 border-white bg-gray-400" />
-          <p className="text-xs text-gray-500">{s.label}</p>
-          <p className="text-sm font-medium text-gray-900">{s.value}</p>
-          <p className="text-xs text-gray-600">{s.note}</p>
-        </li>
-      ))}
-    </ol>
+    <a href={href} target="_blank" rel="noreferrer" className="text-[11px] text-blue-700 underline">
+      Source: {label}
+    </a>
   );
 }
 
-function PaymentRow({ payment: p }: { payment: Payment }) {
-  const badge = {
-    released: "bg-green-100 text-green-800",
-    held_escrow: "bg-yellow-100 text-yellow-800",
-    refused: "bg-red-100 text-red-800",
-  }[p.status];
-  return (
-    <li className="rounded-md border border-gray-200 p-3 text-sm">
-      <div className="flex items-center gap-2">
-        <span className={`rounded px-1.5 py-0.5 text-xs font-medium ${badge}`}>{p.status.replace("_", " ")}</span>
-        <span className="font-mono text-xs text-gray-600">{p.invoice_id}</span>
-        <span className="ml-auto font-medium text-gray-900">{p.amount_xrp} XRP</span>
-      </div>
-      {p.refusal_reason && <p className="mt-1 text-xs text-red-700">{p.refusal_reason}</p>}
-      <p className="mt-1 text-xs text-gray-600">{p.agent_reasoning}</p>
-      {p.xrpl_tx_hash && (
-        <a href={XRPL_TESTNET_TX + p.xrpl_tx_hash} target="_blank" rel="noreferrer" className="mt-1 inline-block text-xs text-blue-700 underline">
-          View on XRPL testnet
-        </a>
-      )}
-    </li>
-  );
+function DemoBadge() {
+  return <span className="ml-1 rounded bg-gray-100 px-1 text-[10px] text-gray-500">demo</span>;
+}
+
+function Placeholder({ text }: { text: string }) {
+  return <div className="rounded-md border border-dashed border-gray-300 p-3 text-xs text-gray-500">{text}</div>;
 }

@@ -1,4 +1,4 @@
-import type { RiskLevel } from "./types";
+import type { RiskLevel } from "./contracts";
 
 export const RISK_COLORS: Record<RiskLevel, string> = {
   green: "#16a34a",

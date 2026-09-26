@@ -1,21 +1,19 @@
 import { sendIMessage, toE164 } from "@/lib/imessage";
-import { getSiteDetail, getSubscriber, upsertSubscriber } from "@/lib/store";
+import { upsertApiSubscriber } from "@/lib/subscribers";
 
-// Follow a map location: requires an existing sign-up.
+// Follow a map location: merges the site into the subscriber's site_ids on the API.
 export async function POST(req: Request) {
-  const { phone: rawPhone, site_id } = (await req.json()) as { phone?: string; site_id?: string };
+  const { phone: rawPhone, site_id, site_name } = (await req.json()) as { phone?: string; site_id?: string; site_name?: string };
   const phone = toE164(rawPhone ?? "");
-  const subscriber = phone ? getSubscriber(phone) : undefined;
-  if (!subscriber) return Response.json({ error: "Sign up first" }, { status: 404 });
-  const detail = site_id ? getSiteDetail(site_id) : null;
-  if (!detail) return Response.json({ error: "Site not found" }, { status: 404 });
+  if (!phone) return Response.json({ error: "Sign up first" }, { status: 400 });
+  if (!site_id) return Response.json({ error: "Missing site" }, { status: 400 });
 
-  if (!subscriber.site_ids.includes(detail.site.id)) {
-    upsertSubscriber({ ...subscriber, site_ids: [...subscriber.site_ids, detail.site.id] });
-  }
+  const api = await upsertApiSubscriber({ phone, site_ids: [site_id] });
+  if (!api.ok) return Response.json({ error: api.message }, { status: api.status });
+
   const imessage = await sendIMessage(
-    subscriber.phone,
-    `You're following ${detail.site.name}. We'll text you about upcoming events and funding updates.`,
+    phone,
+    `You're following ${site_name ?? "this location"}. We'll text you about upcoming events and funding updates.`,
   );
-  return Response.json({ site_id: detail.site.id, imessage });
+  return Response.json({ site_id, imessage });
 }

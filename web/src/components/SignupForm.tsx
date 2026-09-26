@@ -8,11 +8,13 @@ import TextLinePrompt from "./TextLinePrompt";
 
 const BOROUGHS = ["Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island"];
 const LANGUAGES = ["English", "Spanish", "Chinese", "Russian", "Bengali", "Haitian Creole", "Korean", "Arabic", "Other"];
+// Values are the API's SiteType.
 const INTERESTS = [
-  { value: "food", label: "Free food & groceries" },
-  { value: "youth", label: "Youth programs" },
-  { value: "seniors", label: "Senior services" },
-  { value: "events", label: "Community events" },
+  { value: "food_pantry", label: "Food pantries" },
+  { value: "grocery_giveaway", label: "Grocery giveaways" },
+  { value: "shelter", label: "Shelters" },
+  { value: "youth_program", label: "Youth programs" },
+  { value: "event", label: "Community events" },
 ];
 
 const input = "w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none";
@@ -84,8 +86,8 @@ export default function SignupForm() {
         <input name="street_address" autoComplete="street-address" className={input} />
       </Field>
       <div className="grid grid-cols-2 gap-3">
-        <Field label="ZIP code">
-          <input name="zip" inputMode="numeric" pattern="\d{5}" autoComplete="postal-code" className={input} />
+        <Field label="ZIP code" required>
+          <input name="zip" required inputMode="numeric" pattern="\d{5}" autoComplete="postal-code" className={input} />
         </Field>
         <Field label="Borough">
           <select name="borough" defaultValue="" className={input}>
@@ -113,7 +115,7 @@ export default function SignupForm() {
         <div className="grid grid-cols-2 gap-1">
           {INTERESTS.map((i) => (
             <label key={i.value} className="flex items-center gap-2 text-sm text-gray-800">
-              <input type="checkbox" name="interests" value={i.value} defaultChecked={i.value === "food"} />
+              <input type="checkbox" name="interests" value={i.value} defaultChecked={i.value === "food_pantry" || i.value === "grocery_giveaway"} />
               {i.label}
             </label>
           ))}

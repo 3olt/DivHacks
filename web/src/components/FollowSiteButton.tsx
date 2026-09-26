@@ -6,7 +6,7 @@ import { useSavedPhone } from "@/lib/savedPhone";
 import IMessageNotice from "./IMessageNotice";
 import TextLinePrompt from "./TextLinePrompt";
 
-export default function FollowSiteButton({ siteId, onNeedSignup }: { siteId: string; onNeedSignup: () => void }) {
+export default function FollowSiteButton({ siteId, siteName, onNeedSignup }: { siteId: string; siteName: string; onNeedSignup: () => void }) {
   const phone = useSavedPhone();
   const [status, setStatus] = useState<IMessageStatus | null>(null);
   const [error, setError] = useState("");
@@ -35,7 +35,7 @@ export default function FollowSiteButton({ siteId, onNeedSignup }: { siteId: str
     const res = await fetch("/api/subscribe/follow", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, site_id: siteId }),
+      body: JSON.stringify({ phone, site_id: siteId, site_name: siteName }),
     });
     const data = await res.json();
     if (res.ok) setStatus(data.imessage);

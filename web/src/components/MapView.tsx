@@ -2,7 +2,7 @@
 
 import "leaflet/dist/leaflet.css";
 import { CircleMarker, MapContainer, Popup, TileLayer, useMapEvents } from "react-leaflet";
-import type { Site } from "@/lib/types";
+import type { Site } from "@/lib/contracts";
 import { RISK_COLORS } from "@/lib/risk";
 import SitePopup from "./SitePopup";
 
