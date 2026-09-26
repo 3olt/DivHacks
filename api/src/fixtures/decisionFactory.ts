@@ -1,5 +1,6 @@
 // Builds fixture Decisions: all 8 co-signer checks (CHECK_NAMES order), refusal codes that agree with
-// the failed checks, and a real decision_hash (SHA-256 of canonical JSON without decision_hash).
+// the failed checks, and a real decision_hash (shared/hash.ts: SHA-256 of the canonical JSON of the
+// pre-signing fields in DECISION_HASH_FIELDS only).
 import { CHECK_NAMES, REFUSAL_CODES } from "../../../shared/contracts";
 import type { Check, CheckName, Decision, RefusalCode } from "../../../shared/contracts";
 import { computeDecisionHash } from "../lib/hash";

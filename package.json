@@ -11,6 +11,8 @@
     "start:api": "npm run start -w api",
     "smoke:api": "npm run smoke -w api",
     "typecheck": "npm run typecheck -w api && npm run typecheck -w xrpl",
+    "setup:xrpl": "npm run setup -w xrpl",
+    "cosigner": "npm run cosigner -w xrpl",
     "demo": "npm run demo -w xrpl --"
   },
   "engines": {

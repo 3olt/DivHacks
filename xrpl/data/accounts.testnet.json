@@ -1,0 +1,53 @@
+{
+  "network": "testnet",
+  "rlusd": {
+    "issuer": "rQhWct2fv4Vc4KRjRgMrxa8xPN9Zx9iLKV",
+    "currency": "524C555344000000000000000000000000000000"
+  },
+  "city_issuer": "rHEvmzksu87KDm8SuNt5iSWL9xSN9o9KEL",
+  "city_treasury": "rLfrnvDZ4WsFybU8yCbA16jEvsMCQc6mkJ",
+  "agent_account": "rE9y8ZrG9vVznrw7QyGMvWVr6TsfuSWKwN",
+  "signers": {
+    "agent": {
+      "address": "r3fwiSv8xiki1ibN4t3VVSXtsPLhpABKku",
+      "weight": 1
+    },
+    "cosigner": {
+      "address": "rLukzPuZHDStuW644LUKKLW6RQ2Caw9sBD",
+      "weight": 2
+    },
+    "officer": {
+      "address": "rENDLmUpBaRrXfrxTiBNcSTjeTNY9MBLZk",
+      "weight": 1
+    }
+  },
+  "quorum": 3,
+  "nonprofits": {
+    "np_1": {
+      "address": "rnJzKAteJoTtWssbPnqoLnFAfCHqqwtN9F",
+      "ein": "00-0000001",
+      "name": "Burnside Heights Food Collective (demo)",
+      "contract_id": "CT1-069-20261409087"
+    },
+    "np_2": {
+      "address": "r9sx8kBmQ9jZ5iP1zrw4kJkfnfyNx4Q8Wy",
+      "ein": "00-0000002",
+      "name": "South Bronx Table Fund (demo)",
+      "contract_id": "CT1-069-20271522304"
+    },
+    "np_3": {
+      "address": "rMAqFFvVEiKjZNyYVpssn5SUc5KweQYfAb",
+      "ein": "00-0000003",
+      "name": "Bronx Riverbend Youth Works (demo)",
+      "contract_id": "CT1-260-20241298815"
+    },
+    "np_4": {
+      "address": "rDH94utmTS5rK3HrysxsK97hBTx7ra11FN",
+      "ein": "00-0000004",
+      "name": "El Barrio Mesa Comunitaria (demo)",
+      "contract_id": "CT1-069-20261409311"
+    }
+  },
+  "attacker": "rK7duxM9smjdXH7nEUBJfKMjC3Sv9BTM6v",
+  "source_tag": 26092026
+}

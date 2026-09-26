@@ -41,6 +41,24 @@ cd web && npm install && npm run dev   # http://localhost:3000
 
 **Phase 0 risk checks** (XRPL Testnet, city data, Grok, Nessie): see [`docs/RISK_CHECKS.md`](docs/RISK_CHECKS.md).
 
+**Phase 1: autonomous RLUSD payment on XRPL Testnet** (details: [`xrpl/README.md`](xrpl/README.md)):
+
+```bash
+npm run setup:xrpl          # idempotent: accounts, RLUSD trust lines, treasury RLUSD via the Testnet AMM, agent top-up,
+                            # multisig {agent:1, cosigner:2, officer:1} quorum 3, master key disabled. A re-run submits 0 txs.
+npm run demo happy          # the agent pays a seeded 12.50 RLUSD invoice with the co-signer (no human); prints EXPLORER: <link>
+npm run verify -w xrpl      # read-only on-ledger check of the latest released payment
+```
+
+For the judged demo, run the compliance co-signer as its own process in a separate terminal, so the agent never starts it:
+
+```bash
+npm run cosigner            # terminal 1: co-signer on :4002 (COSIGNER_URL), holds only its own key
+npm run demo happy no-spawn # terminal 2: the agent
+```
+
+Without a running co-signer, `npm run demo happy` starts one as a child process and stops it afterwards (dev convenience).
+
 ## Secrets
 
 - Shared config and API keys: repo-root `.env` (gitignored). Template: `.env.example`.

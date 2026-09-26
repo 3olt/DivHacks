@@ -13,7 +13,7 @@ export function decisionShapeError(v: unknown): string | null {
   for (const k of ["decision_id", "invoice_id", "contract_id", "payee_ein", "amount", "agent_reasoning", "decision_hash", "rule_version", "created_at"]) {
     if (!str(k)) return `decision.${k} must be a non-empty string`;
   }
-  if (!/^\d+(\.\d+)?$/.test(v.amount as string)) return "decision.amount must be a decimal string like \"1250.00\"";
+  if (!/^\d+(\.\d+)?$/.test(v.amount as string)) return "decision.amount must be a decimal string like \"12.50\"";
   if (Number.isNaN(Date.parse(v.created_at as string))) return "decision.created_at must be an ISO 8601 timestamp";
   if (v.currency !== "RLUSD" && v.currency !== "XRP") return 'decision.currency must be "RLUSD" or "XRP"';
   if (!OUTCOMES.includes(v.outcome as string)) return `decision.outcome must be one of ${OUTCOMES.join(", ")}`;

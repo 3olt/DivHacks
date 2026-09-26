@@ -1,6 +1,6 @@
 // Assembles the fixture dataset. Everything here is DEMO data (is_demo_data: true where the type has it).
 import type { AgencyStats, Decision, Nonprofit, Payment, Site, Subscriber } from "../../../shared/contracts";
-import { memoJson, sha256Hex } from "../lib/hash";
+import { memoHash, memoJson } from "../lib/hash";
 import { computeRisk, RISK_FIXTURE_COMPUTED_AT, type ReleaseInfo, type Risk, type RiskInputs } from "../risk";
 import { AGENCIES } from "./agencies";
 import { CHECKBOOK_PAYMENTS, CONTRACTS, CONTRACTS_BY_ID } from "./contracts";
@@ -38,7 +38,7 @@ export function xrplPaymentFromDecision(d: Decision): Payment {
       ? {
           xrpl_tx_hash: d.xrpl_tx_hash,
           explorer_url: `${TESTNET_EXPLORER_TX}${d.xrpl_tx_hash}`,
-          memo_hash: sha256Hex(memoJson(d)),
+          memo_hash: memoHash(memoJson(d)),
         }
       : {}),
     is_demo_data: true,

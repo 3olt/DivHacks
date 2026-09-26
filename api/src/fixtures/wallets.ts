@@ -27,8 +27,13 @@ export const SWAP_REQUEST_WALLET = "rDQEBQwL1kPczdrAWDoy9dqPi5vQ7qKXfa";
 /** Public RLUSD Testnet issuer (docs.ripple.com, "RLUSD on the XRPL", Testnet). */
 export const RLUSD_ISSUER = "rQhWct2fv4Vc4KRjRgMrxa8xPN9Zx9iLKV";
 
-export const AUTO_LIMIT = 2500;
-export const DAILY_CAP = 10000;
+/**
+ * Testnet-scale guardrails in RLUSD, the same values as AUTO_LIMIT / DAILY_CAP in the root .env (Phase 1).
+ * Fixed here, not read from env, so fixture decisions and their hashes are reproducible; server.ts warns at
+ * boot if the env disagrees. Agent/XRPL amounts are testnet-scale; Checkbook USD amounts stay real dollars.
+ */
+export const AUTO_LIMIT = 25;
+export const DAILY_CAP = 100;
 export const SOURCE_TAG = 26092026;
-export const MEMO_TYPE = "divhacks/payment/v1";
+export { MEMO_TYPE } from "../lib/hash";
 export const FIXTURE_RULE_VERSION = "fixture-0";

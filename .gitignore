@@ -16,3 +16,6 @@ xrpl/.env.*
 data/.venv/
 __pycache__/
 *.pyc
+
+# runtime logs written by xrpl/ (testnet data, not secrets, but not source either)
+xrpl/data/*.local.*

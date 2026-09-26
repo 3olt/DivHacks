@@ -56,10 +56,13 @@ function canonical(v: unknown): string {
     .map((k) => `${JSON.stringify(k)}:${canonical(o[k])}`)
     .join(",")}}`;
 }
-const hashOf = (d: Decision) => {
-  const { decision_hash: _h, ...rest } = d;
-  return createHash("sha256").update(canonical(rest)).digest("hex");
-};
+// decision_hash covers ONLY the pre-signing fields (checks, outcome, signers, tx hash, ledger result are
+// excluded: the tx carries dh in its memo, and the ledger proves those). Kept independent of shared/hash.ts.
+const HASHED_FIELDS = ["decision_id", "invoice_id", "contract_id", "payee_ein", "amount", "currency", "agent_reasoning", "rule_version", "source_tag", "created_at"] as const;
+const sha256 = (s: string) => createHash("sha256").update(s, "utf8").digest("hex");
+const hashOf = (d: Decision) => sha256(canonical(Object.fromEntries(HASHED_FIELDS.map((k) => [k, d[k]]))));
+/** memo_hash = SHA-256 of the MemoData JSON string exactly as written on-ledger (key order inv, ctr, ein, dh, rv). */
+const memoHashOf = (d: Decision) => sha256(JSON.stringify({ inv: d.invoice_id, ctr: d.contract_id, ein: d.payee_ein, dh: d.decision_hash, rv: d.rule_version }));
 
 function haversine(a: [number, number], b: [number, number]): number {
   const r = (x: number) => (x * Math.PI) / 180;
@@ -259,6 +262,8 @@ async function main() {
     !!xrplReleased && /^00000000FA15E[0-9A-F]{51}$/.test(xrplReleased.xrpl_tx_hash ?? "") && xrplReleased.explorer_url === `https://testnet.xrpl.org/transactions/${xrplReleased.xrpl_tx_hash}` && /^[0-9a-f]{64}$/.test(xrplReleased.memo_hash ?? ""),
     xrplReleased,
   );
+  const memoDecision = gt.decisions.find((d) => `xrpl_${d.decision_id}` === xrplReleased?.payment_id);
+  check("xrpl payment memo_hash = sha256 of MemoData JSON {inv,ctr,ein,dh,rv} of its decision", !!memoDecision && xrplReleased?.memo_hash === memoHashOf(memoDecision), xrplReleased?.payment_id);
   const tr404 = await call("GET", "/sites/nope/trail");
   check("GET /sites/nope/trail -> 404", tr404.status === 404 && tr404.body?.error === "site_not_found");
 
@@ -277,7 +282,7 @@ async function main() {
   check("every decision has the 8 checks in CHECK_NAMES order", decs.every((d) => d.checks.map((c) => c.name).join() === CHECK_NAMES.join()));
   check("every refusal code is a REFUSAL_CODE", decs.every((d) => d.refusal_reasons.every((r) => (REFUSAL_CODES as readonly string[]).includes(r))));
   check("released decisions: no refusals, all checks passed, tesSUCCESS, placeholder hash", decs.filter((d) => d.outcome === "released").every((d) => d.refusal_reasons.length === 0 && d.checks.every((c) => c.passed) && d.ledger_result === "tesSUCCESS" && d.enforced_by === null && d.xrpl_tx_hash?.startsWith("00000000FA15E")));
-  check("decision_hash = sha256(canonical JSON without decision_hash)", decs.every((d) => hashOf(d) === d.decision_hash), decs.filter((d) => hashOf(d) !== d.decision_hash).map((d) => d.decision_id));
+  check("decision_hash = sha256(canonical JSON of the pre-signing fields only)",decs.every((d) => hashOf(d) === d.decision_hash), decs.filter((d) => hashOf(d) !== d.decision_hash).map((d) => d.decision_id));
   check("signers are role names", decs.every((d) => d.signers.every((s) => ["agent", "cosigner", "officer"].includes(s))));
   check("ledger-enforced attacker tx: tefBAD_QUORUM, agent only, no hash", decs.some((d) => d.enforced_by === "ledger" && d.ledger_result === "tefBAD_QUORUM" && d.xrpl_tx_hash === null && d.signers.join() === "agent"));
   check("over-limit release signed by agent+cosigner+officer", decs.some((d) => d.outcome === "released" && d.signers.join() === "agent,cosigner,officer"));
@@ -360,7 +365,7 @@ async function main() {
   const ev = await call("POST", "/events/payment", { decision_id: "fx_dec_001" });
   check(
     "POST /events/payment released -> 200 site_001 green, broadcast [site_updated, decision]",
-    ev.status === 200 && ev.body?.site_id === "site_001" && ev.body?.risk?.level === "green" && ev.body.risk.score < 40 && JSON.stringify(ev.body.broadcast) === JSON.stringify(["site_updated", "decision"]) && ev.body.risk.reasons[0].startsWith("RLUSD 1,250 released on XRPL"),
+    ev.status === 200 && ev.body?.site_id === "site_001" && ev.body?.risk?.level === "green" && ev.body.risk.score < 40 && JSON.stringify(ev.body.broadcast) === JSON.stringify(["site_updated", "decision"]) && ev.body.risk.reasons[0].startsWith("RLUSD 12.50 released on XRPL"),
     ev.body,
   );
   const suIdx = await live.waitFor((m) => m.type === "site_updated" && m.site_id === "site_001", from);
@@ -378,7 +383,7 @@ async function main() {
   const evYellow = await call("POST", "/events/payment", { decision_id: "fx_dec_007" });
   check(
     "POST /events/payment released but still yellow -> summary = payment + biggest remaining driver",
-    evYellow.status === 200 && evYellow.body?.site_id === "site_012" && evYellow.body.risk.level === "yellow" && evYellow.body.risk.summary.startsWith("Payments running late: RLUSD 3,200 released on XRPL") && !evYellow.body.risk.summary.includes("now current"),
+    evYellow.status === 200 && evYellow.body?.site_id === "site_012" && evYellow.body.risk.level === "yellow" && evYellow.body.risk.summary.startsWith("Payments running late: RLUSD 32 released on XRPL") && !evYellow.body.risk.summary.includes("now current"),
     evYellow.body?.risk,
   );
   const evMissing = await call("POST", "/events/payment", {});
@@ -429,7 +434,7 @@ async function main() {
   const [h1, h2] = await Promise.all([call("POST", "/demo/happy"), call("POST", "/demo/happy")]);
   const [early, late] = [h1.body.decision, h2.body.decision].sort((a: Decision, b: Decision) => a.decision_id.localeCompare(b.decision_id));
   const agentTotal = (d: Decision) => Number(/Agent 24h total ([\d,.]+)/.exec(d.checks.find((c) => c.name === "within_daily_caps")!.detail)?.[1].replace(/,/g, "") ?? NaN);
-  check("rapid happy x2: later decision's 24h total includes the earlier one", agentTotal(late) === agentTotal(early) + 1250, { early: agentTotal(early), late: agentTotal(late) });
+  check("rapid happy x2: later decision's 24h total includes the earlier one", agentTotal(late) === agentTotal(early) + 12.5, { early: agentTotal(early), late: agentTotal(late) });
   const newest = (await call<Decision[]>("GET", "/decisions?limit=2")).body.map((d) => d.decision_id);
   check("rapid happy x2: GET /decisions is newest first even within one second", newest.join() === [late.decision_id, early.decision_id].join(), newest);
 
