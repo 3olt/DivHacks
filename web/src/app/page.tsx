@@ -41,12 +41,12 @@ export default function Landing() {
   return (
     <div className="min-h-dvh bg-white text-gray-900">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-        <span className="flex items-center gap-2 font-semibold">
+        <span className="flex items-center gap-2 text-xl font-bold tracking-tight sm:gap-3 sm:text-3xl">
           <PinDots />
           GlassLedger
         </span>
         <nav className="flex items-center gap-4">
-          <Link href="/data" className="text-sm font-medium text-gray-700 hover:text-gray-900">
+          <Link href="/data" className="hidden text-sm font-medium text-gray-700 hover:text-gray-900 sm:inline">
             Open data
           </Link>
           <LaunchButton small />
@@ -154,7 +154,7 @@ function LaunchButton({ small = false }: { small?: boolean }) {
   return (
     <Link
       href="/map"
-      className={`rounded-lg bg-gray-900 font-medium text-white hover:bg-gray-700 ${small ? "px-4 py-2 text-sm" : "px-5 py-3"}`}
+      className={`whitespace-nowrap rounded-lg bg-gray-900 font-medium text-white hover:bg-gray-700 ${small ? "px-4 py-2 text-sm" : "px-5 py-3"}`}
     >
       Launch the map →
     </Link>
@@ -163,9 +163,9 @@ function LaunchButton({ small = false }: { small?: boolean }) {
 
 function PinDots() {
   return (
-    <span className="flex gap-0.5" aria-hidden>
+    <span className="flex gap-1" aria-hidden>
       {(["green", "yellow", "red"] as const).map((l) => (
-        <span key={l} className="h-2.5 w-2.5 rounded-full" style={{ background: RISK_COLORS[l] }} />
+        <span key={l} className="h-3.5 w-3.5 rounded-full sm:h-5 sm:w-5" style={{ background: RISK_COLORS[l] }} />
       ))}
     </span>
   );
