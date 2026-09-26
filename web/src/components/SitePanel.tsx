@@ -2,12 +2,12 @@
 
 import type { Contract, Payment, SiteDetail } from "@/lib/types";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/risk";
-import SubscribeForm from "./SubscribeForm";
+import FollowSiteButton from "./FollowSiteButton";
 
 const usd = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 const XRPL_TESTNET_TX = "https://testnet.xrpl.org/transactions/";
 
-export default function SitePanel({ detail, onClose }: { detail: SiteDetail; onClose: () => void }) {
+export default function SitePanel({ detail, onClose, onNeedSignup }: { detail: SiteDetail; onClose: () => void; onNeedSignup: () => void }) {
   const { site, nonprofit, contracts, payments } = detail;
 
   return (
@@ -72,7 +72,8 @@ export default function SitePanel({ detail, onClose }: { detail: SiteDetail; onC
       )}
 
       <Section title="Payments (XRPL agent)">
-        {payments.length === 0 && <p className="text-sm text-gray-500">No payments yet.</p>}
+        {/* Filled by the XRPL agent via POST /api/payments. Placeholder until it is connected. */}
+        {payments.length === 0 && <Placeholder text="No payments yet. Verified XRPL payments from the agent will appear here." />}
         <ul className="space-y-2">
           {[...payments].reverse().map((p) => (
             <PaymentRow key={p.invoice_id} payment={p} />
@@ -80,8 +81,13 @@ export default function SitePanel({ detail, onClose }: { detail: SiteDetail; onC
         </ul>
       </Section>
 
-      <Section title="Get alerts for this location">
-        <SubscribeForm siteId={site.id} />
+      <Section title="What to know before you go">
+        {/* Placeholder: hours, what to bring, eligibility requirements, languages spoken. */}
+        <Placeholder text="Hours, what to bring, and eligibility requirements coming soon." />
+      </Section>
+
+      <Section title="iMessage alerts">
+        <FollowSiteButton siteId={site.id} onNeedSignup={onNeedSignup} />
       </Section>
     </div>
   );
@@ -94,6 +100,10 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       {children}
     </section>
   );
+}
+
+function Placeholder({ text }: { text: string }) {
+  return <div className="rounded-md border border-dashed border-gray-300 p-3 text-xs text-gray-500">{text}</div>;
 }
 
 function Stat({ label, value }: { label: string; value: string }) {

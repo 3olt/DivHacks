@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import type { Site, SiteDetail } from "@/lib/types";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/risk";
 import SitePanel from "./SitePanel";
-import SubscribeForm from "./SubscribeForm";
+import SignupForm from "./SignupForm";
 
 const MapView = dynamic(() => import("./MapView"), { ssr: false });
 
@@ -35,6 +35,11 @@ export default function Dashboard() {
     };
   }, [selectedId]);
 
+  function closePanel() {
+    setSelectedId(null);
+    setDetail(null);
+  }
+
   const counts = sites.reduce<Record<string, number>>((acc, s) => ({ ...acc, [s.risk.level]: (acc[s.risk.level] ?? 0) + 1 }), {});
 
   return (
@@ -57,16 +62,17 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <aside className="min-h-0 flex-1 border-t border-gray-200 bg-white md:w-[400px] md:flex-none md:border-l md:border-t-0">
+      <aside className="min-h-0 flex-1 overflow-y-auto border-t border-gray-200 bg-white md:w-[400px] md:flex-none md:border-l md:border-t-0">
         {detail && detail.site.id === selectedId ? (
-          <SitePanel detail={detail} onClose={() => { setSelectedId(null); setDetail(null); }} />
+          <SitePanel detail={detail} onClose={closePanel} onNeedSignup={closePanel} />
         ) : (
           <div className="space-y-4 p-5">
             <h2 className="text-lg font-semibold text-gray-900">Select a location</h2>
             <p className="text-sm text-gray-600">Click a pin to see the money trail behind it: which city agency funds it, how late payments are, and verified payments on the XRP Ledger.</p>
             <div>
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">iMessage alerts</h3>
-              <SubscribeForm siteId={null} />
+              <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">Get iMessage alerts</h3>
+              <p className="mb-3 text-xs text-gray-600">Free food, events, and funding updates near you, texted through Photon.</p>
+              <SignupForm />
             </div>
           </div>
         )}

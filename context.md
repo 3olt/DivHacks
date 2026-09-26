@@ -59,9 +59,12 @@ Judging weights: Concept 30%, Functionality 30%, Wow Factor 20%, UX/Design 10%, 
 /context.md        this file
 /web               frontend: Next.js 16 + TypeScript + Tailwind + Leaflet (map, panel, API routes)
 /agent             XRPL payment agent (TypeScript). The XRPL teammate builds here.
+/imessage          iMessage service on Photon Spectrum (TypeScript, Node). Sends alerts, receives replies.
 ```
 
-Run the frontend: `cd web && npm install && npm run dev`, then open http://localhost:3000
+Run locally (two terminals):
+- Frontend: `cd web && npm install && npm run dev` → http://localhost:3000
+- iMessage: `cd imessage && npm install && npm run dev` → http://localhost:4000 (dry-run until Photon keys are set)
 
 ## Integration: agent → frontend
 
@@ -81,7 +84,44 @@ Run the frontend: `cd web && npm install && npm run dev`, then open http://local
 | GET | `/api/sites/[id]` | Pin detail: site, nonprofit, contracts, payments |
 | GET | `/api/payments` | All payment decisions |
 | POST | `/api/payments` | **Agent reports a payment decision** |
-| POST | `/api/subscribe` | iMessage sign-up (placeholder until Photon is connected) |
+| POST | `/api/subscribe` | Sign-up: saves the intake profile and sends a welcome iMessage |
+| POST | `/api/subscribe/follow` | Follow a map location (`{ phone, site_id }`) and send a confirmation iMessage |
+
+## iMessage via Photon (`/imessage`)
+
+Photon's Spectrum SDK (`spectrum-ts`) is how we send and receive iMessages. Docs: https://photon.codes/docs/spectrum-ts/introduction
+
+**Flow:** sign-up form in the sidebar → `POST /api/subscribe` (web) → `POST http://localhost:4000/notify` (imessage service) → Spectrum sends the iMessage.
+
+**Setup (needed for real texts):**
+1. Sign up at https://app.photon.codes with the hackathon promo code (Pro plan free for a month) and connect iMessage in the dashboard.
+2. Copy `imessage/.env.example` to `imessage/.env` and fill in `SPECTRUM_PROJECT_ID` and `SPECTRUM_PROJECT_SECRET` from the dashboard (Settings).
+3. Restart the service. `GET http://localhost:4000/health` should say `"mode": "live"`.
+
+**Free plan limits (tested):**
+1. The agent can only message numbers listed under **Spectrum → Users** in the dashboard (max 10). Anyone else fails with "Target not allowed for this project", and the UI says so.
+2. Each person must **text the line first** (shared line: **+1 628-789-6792**). Only after that can the agent message them.
+
+The sign-up confirmation shows a "Text 'hi' to (628) 789-6792" step (`TextLinePrompt.tsx`). The line number is `NEXT_PUBLIC_IMESSAGE_LINE` in `web` (defaults to +16287896792).
+
+Before the expo: add every demo phone (team + any judge who wants to try it) under Users, and have each one text the line once.
+
+Without keys the service runs in **dry-run** mode: it logs messages instead of sending them, and the UI says so.
+
+**imessage service API:**
+| Method | Path | Purpose |
+|---|---|---|
+| POST | `/notify` | `{ phone: "+12125551234", text }` → sends an iMessage |
+| GET | `/health` | `{ mode: "live" \| "dry-run" }` |
+
+**Sign-up fields** (`Subscriber` in `web/src/lib/types.ts`): phone (required, US), first name, age, street address, ZIP, borough, household size, preferred language, alert interests, SMS consent (required).
+
+**Placeholders to fill in later:**
+- Inbound replies (e.g. "why?") get a generic answer. The money-trail answer goes in `replyLoop()` in `imessage/src/index.ts`.
+- More intake questions (SNAP/WIC eligibility, dietary needs, accessibility): `SignupForm.tsx` and the `Subscriber` type.
+- Site details (hours, what to bring, eligibility): "What to know before you go" in `SitePanel.tsx`.
+- Subscribers are stored in memory in `web/src/lib/store.ts` → move to MongoDB. **This is personal data (address, age). Don't commit real data or log it in production.**
+- No alerts fire automatically yet (e.g. when a pin turns yellow/red, or a payment is released). The trigger goes in `recordPayment()` in `web/src/lib/store.ts`.
 
 ## Architecture
 

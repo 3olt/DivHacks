@@ -1,15 +1,17 @@
 // In-memory store backed by mock data. Swap for MongoDB when the data pipeline is ready.
 import { contracts, nonprofits, payments as seedPayments, sites as seedSites } from "./mockData";
-import type { Payment, Site, SiteDetail } from "./types";
+import type { Payment, Site, SiteDetail, Subscriber } from "./types";
 
-type Store = { sites: Site[]; payments: Payment[] };
+type Store = { sites: Site[]; payments: Payment[]; subscribers: Subscriber[] };
 
 // Keep state across dev hot reloads.
 const g = globalThis as unknown as { __store?: Store };
 const store: Store = (g.__store ??= {
   sites: structuredClone(seedSites),
   payments: structuredClone(seedPayments),
+  subscribers: [],
 });
+store.subscribers ??= [];
 
 export function getSites(): Site[] {
   return store.sites;
@@ -42,4 +44,15 @@ export function recordPayment(payment: Payment): void {
       reasons: [`Payment ${payment.invoice_id} released on XRPL`],
     };
   }
+}
+
+export function getSubscriber(phone: string): Subscriber | undefined {
+  return store.subscribers.find((s) => s.phone === phone);
+}
+
+export function upsertSubscriber(sub: Subscriber): Subscriber {
+  const i = store.subscribers.findIndex((s) => s.phone === sub.phone);
+  if (i === -1) store.subscribers.push(sub);
+  else store.subscribers[i] = sub;
+  return sub;
 }

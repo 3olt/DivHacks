@@ -61,3 +61,22 @@ export interface SiteDetail {
   contracts: Contract[];
   payments: Payment[];
 }
+
+export type AlertInterest = "food" | "youth" | "seniors" | "events";
+
+// Basic intake info food drives typically ask for. Extend as needed.
+export interface Subscriber {
+  phone: string; // E.164, e.g. +12125551234
+  first_name: string;
+  age: number | null;
+  street_address: string;
+  zip: string;
+  borough: string;
+  household_size: number | null;
+  language: string;
+  interests: AlertInterest[];
+  site_ids: string[]; // locations the user follows
+  consent_sms: boolean;
+  created_at: string;
+  // TODO: eligibility (SNAP/WIC), dietary needs, accessibility needs
+}
