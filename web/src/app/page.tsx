@@ -181,7 +181,7 @@ function PreviewCard() {
         ))}
       </ul>
       <div className="mt-4 rounded-lg bg-green-50 p-3 text-xs text-green-900">
-        <span className="font-semibold">Paid</span> · 1,250.00 RLUSD to Burnside Heights Food Collective · signed by agent + co-signer · audit hash 5d0a6879…
+        <span className="font-semibold">Paid</span> · 12.50 RLUSD to Burnside Heights Food Collective · signed by agent + co-signer
       </div>
     </div>
   );

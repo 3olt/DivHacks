@@ -24,7 +24,7 @@ export const isEscrowPlaceholderScenario = (s: string): s is EscrowPlaceholderSc
   (ESCROW_PLACEHOLDER_SCENARIOS as readonly string[]).includes(s);
 
 const GOLD_CONTRACT = "CT1-069-20261409087";
-const MILESTONE_AMOUNT = 900;
+const MILESTONE_AMOUNT = 9; // testnet-scale: under AUTO_LIMIT (25) and DAILY_CAP (100)
 
 export async function runEscrowPlaceholder(
   store: DataStore,
@@ -53,7 +53,7 @@ export async function runEscrowPlaceholder(
           {
             ...base,
             outcome: "held_escrow",
-            agent_reasoning: `SIMULATED ESCROW (placeholder, test token, not RLUSD): milestone invoice ${invoice_id} for October pantry deliveries under ${GOLD_CONTRACT}. EscrowCreate locks 900.00 until the co-signer confirms delivery (PREIMAGE-SHA-256 condition); returns to the city after CancelAfter (7 days).`,
+            agent_reasoning: `SIMULATED ESCROW (placeholder, test token, not RLUSD): milestone invoice ${invoice_id} for October pantry deliveries under ${GOLD_CONTRACT}. EscrowCreate locks 9.00 until the co-signer confirms delivery (PREIMAGE-SHA-256 condition); returns to the city after CancelAfter (7 days).`,
           },
           history,
         )
@@ -61,7 +61,7 @@ export async function runEscrowPlaceholder(
           {
             ...base,
             outcome: "released",
-            agent_reasoning: `SIMULATED ESCROW (placeholder, test token, not RLUSD): milestone confirmed; the co-signer fulfilled the condition and EscrowFinish released 900.00 for invoice ${invoice_id} under ${GOLD_CONTRACT}.`,
+            agent_reasoning: `SIMULATED ESCROW (placeholder, test token, not RLUSD): milestone confirmed; the co-signer fulfilled the condition and EscrowFinish released 9.00 for invoice ${invoice_id} under ${GOLD_CONTRACT}.`,
           },
           history,
         );
