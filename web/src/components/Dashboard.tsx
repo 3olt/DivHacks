@@ -109,7 +109,7 @@ export default function Dashboard() {
   return (
     <div className="flex h-dvh flex-col md:flex-row">
       <div className="relative h-[55dvh] md:h-full md:flex-1">
-        <MapView sites={sites} selectedId={selectedId} onSelect={setSelectedId} onPopupChange={setPopupOpen} />
+        <MapView sites={sites} selectedId={selectedId} onSelect={setSelectedId} onPopupChange={setPopupOpen} onDismiss={closePanel} />
         {/* Hidden while a pin popup is open so it doesn't cover it. */}
         <div className={`pointer-events-none absolute left-3 top-3 z-[1000] max-w-xs rounded-lg bg-white/95 p-4 shadow-md transition-opacity ${popupOpen ? "opacity-0" : "opacity-100"}`}>
           <h1 className="text-base font-semibold text-gray-900">NYC community resources</h1>

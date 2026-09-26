@@ -2,15 +2,18 @@
 
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import type { RiskLevel, Site } from "@/lib/contracts";
 import { RISK_COLORS } from "@/lib/risk";
 import SitePopup from "./SitePopup";
 
-const NYC_CENTER: [number, number] = [40.7128, -73.95];
-const NYC_ZOOM = 11;
-const SITE_ZOOM = 14;
+// The five boroughs; the start view fits these to the screen.
+const NYC_BOUNDS: L.LatLngBoundsExpression = [
+  [40.5, -74.26],
+  [40.92, -73.7],
+];
+const SITE_ZOOM = 13;
 // Hit area is the full 36px box; the visible dot is smaller (see .map-pin in globals.css).
 const PIN_SIZE = 36;
 
@@ -37,21 +40,23 @@ export default function MapView({
   selectedId,
   onSelect,
   onPopupChange,
+  onDismiss,
 }: {
   sites: Site[];
   selectedId: string | null;
   onSelect: (id: string) => void;
   onPopupChange: (open: boolean) => void;
+  onDismiss: () => void;
 }) {
   const selected = sites.find((s) => s.id === selectedId) ?? null;
 
   return (
-    <MapContainer center={NYC_CENTER} zoom={NYC_ZOOM} className="h-full w-full" zoomControl={false}>
+    <MapContainer bounds={NYC_BOUNDS} zoomSnap={0.25} closePopupOnClick={false} className="h-full w-full" zoomControl={false}>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <PopupWatcher onChange={onPopupChange} />
+      <PopupWatcher onChange={onPopupChange} onDismiss={onDismiss} />
       <FlyToSelection site={selected} />
       {sites.map((site) => {
         const [lng, lat] = site.location.coordinates;
@@ -80,7 +85,7 @@ function FlyToSelection({ site }: { site: Site | null }) {
   useEffect(() => {
     if (lat === undefined || lng === undefined) {
       map.closePopup();
-      map.flyTo(NYC_CENTER, NYC_ZOOM, { duration: 0.6 });
+      map.flyToBounds(NYC_BOUNDS, { duration: 0.6 });
       return;
     }
     const zoom = Math.max(map.getZoom(), SITE_ZOOM);
@@ -91,7 +96,23 @@ function FlyToSelection({ site }: { site: Site | null }) {
   return null;
 }
 
-function PopupWatcher({ onChange }: { onChange: (open: boolean) => void }) {
-  useMapEvents({ popupopen: () => onChange(true), popupclose: () => onChange(false) });
+// A popup closing counts as "dismiss" (same as the panel's ✕) unless another popup opened right after,
+// which is what happens when the user clicks a different pin.
+function PopupWatcher({ onChange, onDismiss }: { onChange: (open: boolean) => void; onDismiss: () => void }) {
+  const opens = useRef(0);
+  useMapEvents({
+    popupopen: () => {
+      opens.current++;
+      onChange(true);
+    },
+    popupclose: () => {
+      const seen = opens.current;
+      setTimeout(() => {
+        if (opens.current !== seen) return;
+        onChange(false);
+        onDismiss();
+      }, 0);
+    },
+  });
   return null;
 }

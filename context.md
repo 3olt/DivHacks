@@ -47,7 +47,7 @@ Judging weights: Concept 30%, Functionality 30%, Wow Factor 20%, UX/Design 10%, 
 ### 1. Money map (shows delays)
 1. **Landing page:** a map of NYC with pins for food pantries, grocery giveaways, shelters, youth programs, and events.
 2. **Pin color = funding health** (from the API's risk score): 🟢 0–39 funded, on track · 🟡 40–69 payments running late · 🔴 70–100 at risk of delay.
-3. **Click a pin →** the map zooms to it, a small popup opens (`SitePopup.tsx`: name, next event, status, one-line risk summary), and the side panel shows that location. The panel's **✕** closes both and zooms back out to all of NYC.
+3. **Click a pin →** the map zooms to it, a small popup opens (`SitePopup.tsx`: name, next event, status, one-line risk summary), and the side panel shows that location. The panel's **✕** and the popup's **×** both close everything and zoom back out to the five boroughs (start view fits the boroughs to the screen; a site zooms to level 13). Clicking the map background doesn't close the popup.
 4. **Side panel** (`SitePanel.tsx`), from `GET /sites/:id/trail`:
    - Funding status: score, summary, reasons (the numbers behind the score)
    - Money trail: **agency → contracts → payments → nonprofit**, with source links (Comptroller, Checkbook NYC, IRS 990)
