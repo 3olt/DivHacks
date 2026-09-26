@@ -11,6 +11,9 @@ const LABELS: Record<DemoScenario, string> = {
   "address-swap": "Wallet-change scam",
   "over-limit": "Over auto-pay limit",
   "kill-switch": "Revoke the agent's key",
+  // PLACEHOLDER — simulated escrow. Remove with the entries in lib/api.ts.
+  escrow: "Lock milestone in escrow (simulated)",
+  "escrow-release": "Release escrow (simulated)",
 };
 
 // Triggers the backend's demo scenarios (POST /demo/:scenario). Results arrive over the live WebSocket.

@@ -15,7 +15,18 @@ export const fetchTrail = (id: string) => get<Trail>(`/sites/${encodeURIComponen
 export const fetchDecisions = (limit = 50) => get<Decision[]>(`/decisions?limit=${limit}`);
 export const fetchAgencyStats = (code: string) => get<AgencyStats>(`/agencies/${encodeURIComponent(code)}/stats`);
 
-export const DEMO_SCENARIOS = ["happy", "injection", "duplicate", "over-contract", "address-swap", "over-limit", "kill-switch"] as const;
+export const DEMO_SCENARIOS = [
+  "happy",
+  "injection",
+  "duplicate",
+  "over-contract",
+  "address-swap",
+  "over-limit",
+  "kill-switch",
+  // PLACEHOLDER — simulated escrow (api/src/demo/escrowPlaceholder.ts). Remove these two with it.
+  "escrow",
+  "escrow-release",
+] as const;
 export type DemoScenario = (typeof DEMO_SCENARIOS)[number];
 
 export async function runDemo(scenario: DemoScenario): Promise<void> {
