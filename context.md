@@ -60,11 +60,12 @@ Product overview (`web/src/app/page.tsx`): transparency pitch, the problem (Comp
 
 ### 2. Event alerts sign-up (for individuals)
 Separate from the map. Individuals sign up so they can get notified about events and benefits **they qualify for**.
-- Sidebar form: phone (required), ZIP (required), first name, age, street address, borough, household size, preferred language, interests (the API's site types), iMessage consent (required).
+- Sidebar form: phone (required), ZIP (required), first name, age, street address, borough, household size, preferred language, interests (the API's site types), household benefits (optional: SNAP, WIC, TANF, Medicaid, SSI), iMessage consent (required).
+- Fields are checked against real NYC sign-ups: Plentiful (pantry reservations: name, phone, ZIP, household size, birthday) and the Uniform TEFAP Intake Form (name, address, ZIP, county, household size, and SNAP/WIC/SSI participation; NY adds TANF and Medicaid for categorical eligibility). Dietary needs and accessibility were left out because neither form asks for them.
 - "Follow this location" in a pin's panel adds that site to the person's alerts.
 - Photon free plan requires the person to text the line first, so the confirmation shows **"Text 'hi' to (628) 789-6792"**.
 - **Where the data lives:** phone, ZIP, interests and followed sites go to the API (`POST /subscribers`). Name, age, address, household size and language are eligibility data; the API's `Subscriber` type has no field for them yet, so they're kept in `web/` (in memory) for now.
-- **Request to backend:** add an optional `profile` field on `Subscriber` (first name, age, street address, borough, household size, language) so eligibility matching can move to the API. This is personal data: never shown on the map, never logged, not in fixtures.
+- **Request to backend:** add an optional `profile` field on `Subscriber` (first name, age, street address, borough, household size, language, benefits) so eligibility matching can move to the API. This is personal data: never shown on the map, never logged, not in fixtures.
 
 ## Repo layout & owners
 
@@ -120,7 +121,6 @@ Without keys the service runs in **dry-run** mode: it logs messages instead of s
 - Inbound replies: **built** in `imessage/src/replies.ts`. "STOP" unsubscribes (`DELETE /subscribers/:phone`). Anything else (e.g. "why?") is answered by **Grok** (`grok-4.3`, `reasoning_effort: none`, ~1 s) using only facts from the API for the sites the sender follows (`/subscribers`, `/sites/:id`, `/sites/:id/trail`). The prompt forbids wallet addresses and treats the user's text as untrusted (tested against a prompt injection). Needs `XAI_API_KEY` in `imessage/.env` (never commit it).
 - **Grok budget (~$5 of credit):** ~900 tokens per call (compact facts, max 150 output tokens, max 3 sites). Same question + unchanged data is cached for 30 min. Limits: 5 Grok answers per phone per hour, 150 per day overall (`GROK_PER_PHONE_PER_HOUR`, `GROK_DAILY_CAP`). Past a limit, or if Grok errors, the reply is the free risk summary from the API. Every call logs its token count (`[grok] call N/150 today, X tokens`).
 - "Funded ✅" alerts: **built** in `imessage/src/fundedAlerts.ts`. The service listens to WS `/live`; when a site changes to green it texts everyone from `GET /subscribers?site_id=` ("✅ <site> is funded. <risk summary>"). Numbers not on the Photon Users list are skipped and logged. Set `API_URL` in `imessage/.env` if the API isn't on :4000.
-- More intake questions (SNAP/WIC eligibility, dietary needs, accessibility): `SignupForm.tsx` and `SubscriberProfile` in `web/src/lib/types.ts`.
 - Site details (hours, what to bring, eligibility): "What to know before you go" in `SitePanel.tsx`.
 
 ## How the payment agent is guarded (Ripple story)

@@ -17,6 +17,15 @@ const INTERESTS = [
   { value: "event", label: "Community events" },
 ];
 
+// TEFAP categorical eligibility in New York State (same programs the Uniform TEFAP Intake Form asks about).
+const BENEFITS = [
+  { value: "snap", label: "SNAP" },
+  { value: "wic", label: "WIC" },
+  { value: "tanf", label: "TANF / Cash Assistance" },
+  { value: "medicaid", label: "Medicaid" },
+  { value: "ssi", label: "SSI" },
+];
+
 const input = "w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none";
 
 export default function SignupForm() {
@@ -28,23 +37,31 @@ export default function SignupForm() {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     setState("sending");
-    const res = await fetch("/api/subscribe", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        phone: form.get("phone"),
-        first_name: form.get("first_name"),
-        age: form.get("age"),
-        street_address: form.get("street_address"),
-        zip: form.get("zip"),
-        borough: form.get("borough"),
-        household_size: form.get("household_size"),
-        language: form.get("language"),
-        interests: form.getAll("interests"),
-        consent_sms: form.get("consent_sms") === "on",
-      }),
-    });
-    const data = await res.json();
+    let res: Response;
+    try {
+      res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: form.get("phone"),
+          first_name: form.get("first_name"),
+          age: form.get("age"),
+          street_address: form.get("street_address"),
+          zip: form.get("zip"),
+          borough: form.get("borough"),
+          household_size: form.get("household_size"),
+          language: form.get("language"),
+          interests: form.getAll("interests"),
+          benefits: form.getAll("benefits"),
+          consent_sms: form.get("consent_sms") === "on",
+        }),
+      });
+    } catch {
+      setState("error");
+      setError("Couldn't reach the server. Try again.");
+      return;
+    }
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) {
       setState("error");
       setError(data.error ?? "Sign-up failed");
@@ -122,10 +139,18 @@ export default function SignupForm() {
         </div>
       </fieldset>
 
-      {/* Placeholder: more intake questions go here (SNAP/WIC eligibility, dietary needs, accessibility). */}
-      <div className="rounded-md border border-dashed border-gray-300 p-3 text-xs text-gray-500">
-        More questions coming soon: eligibility, dietary needs, accessibility.
-      </div>
+      <fieldset>
+        <legend className="mb-1 text-xs font-medium text-gray-700">Does anyone in your household get any of these? (optional)</legend>
+        <div className="grid grid-cols-2 gap-1">
+          {BENEFITS.map((b) => (
+            <label key={b.value} className="flex items-center gap-2 text-sm text-gray-800">
+              <input type="checkbox" name="benefits" value={b.value} />
+              {b.label}
+            </label>
+          ))}
+        </div>
+        <p className="mt-1 text-[11px] text-gray-500">Many free food programs (TEFAP) automatically qualify you if you get one of these.</p>
+      </fieldset>
 
       <label className="flex items-start gap-2 text-xs text-gray-700">
         <input type="checkbox" name="consent_sms" required className="mt-0.5" />

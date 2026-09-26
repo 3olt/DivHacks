@@ -5,6 +5,7 @@ import type { SiteType } from "@/lib/contracts";
 import type { SubscriberProfile } from "@/lib/types";
 
 const INTERESTS: SiteType[] = ["food_pantry", "grocery_giveaway", "shelter", "youth_program", "event"];
+const BENEFITS = ["snap", "wic", "tanf", "medicaid", "ssi"];
 
 const toInt = (v: unknown): number | null => {
   const n = Number(v);
@@ -37,6 +38,7 @@ export async function POST(req: Request) {
     household_size: toInt(body.household_size),
     language: str(body.language) || "English",
     interests,
+    benefits: Array.isArray(body.benefits) ? BENEFITS.filter((b) => (body.benefits as unknown[]).includes(b)) : [],
     consent_sms: true,
     created_at: existing?.created_at ?? new Date().toISOString(),
   };

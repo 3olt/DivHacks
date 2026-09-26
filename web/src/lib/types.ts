@@ -13,7 +13,8 @@ export interface SubscriberProfile {
   household_size: number | null;
   language: string;
   interests: SiteType[];
+  // Household benefits (TEFAP categorical eligibility in NY): snap | wic | tanf | medicaid | ssi
+  benefits: string[];
   consent_sms: boolean;
   created_at: string;
-  // TODO: eligibility (SNAP/WIC), dietary needs, accessibility needs
 }
