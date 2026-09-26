@@ -118,7 +118,7 @@ Without keys the service runs in **dry-run** mode: it logs messages instead of s
 
 **Placeholders to fill in later:**
 - Inbound replies (e.g. "why?") get a generic answer. The money-trail answer goes in `replyLoop()` in `imessage/src/index.ts` (backend: Grok grounded in `/sites/:id` + `/trail`).
-- "Funded ✅" alerts to subscribers when a pin flips (backend: from WS `/live` + `GET /subscribers?site_id=`).
+- "Funded ✅" alerts: **built** in `imessage/src/fundedAlerts.ts`. The service listens to WS `/live`; when a site changes to green it texts everyone from `GET /subscribers?site_id=` ("✅ <site> is funded. <risk summary>"). Numbers not on the Photon Users list are skipped and logged. Set `API_URL` in `imessage/.env` if the API isn't on :4000.
 - More intake questions (SNAP/WIC eligibility, dietary needs, accessibility): `SignupForm.tsx` and `SubscriberProfile` in `web/src/lib/types.ts`.
 - Site details (hours, what to bring, eligibility): "What to know before you go" in `SitePanel.tsx`.
 
@@ -200,17 +200,19 @@ The API currently serves **fixture data** (15 sites, all fictional, `is_demo_dat
 - [x] iMessage sign-up + "follow this location" via Photon (tested on a real phone)
 - [x] Live ledger feed + demo buttons (`POST /demo/:scenario`)
 - [x] Bigger pin click targets
+- [x] Map filters by site type (chips in the legend; client-side over the loaded pins)
+- [x] "Funded ✅" iMessage alerts to a site's followers when it turns green (`imessage/src/fundedAlerts.ts`)
+- [x] XRPL agent + co-signer making real multisig RLUSD payments on Testnet (backend Phase 1)
 
 **In progress / next:**
-- [ ] XRPL agent + co-signer on Testnet (backend)
 - [ ] Real data (Checkbook, Comptroller, 990) in Mongo (backend)
 - [x] Simulated escrow demo (placeholder in `api/`, marked for removal)
 - [ ] Real test-token escrow on Testnet (backend, replaces the placeholder)
-- [ ] "Why?" iMessage answers and "funded ✅" alerts
+- [ ] "Why?" iMessage answers (backend: Grok)
 - [ ] Profile field on the API's `Subscriber` (see sign-up section)
 
 **Nice to have:**
-- [ ] Filters by site type (`GET /sites?type=`), "near me" (`near=`)
+- [ ] "Near me" (`GET /sites?near=`)
 - [ ] Deployed on DigitalOcean + .tech domain
 
 ## Pitch outline (~3 min)

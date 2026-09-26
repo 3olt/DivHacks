@@ -3,8 +3,9 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { fetchDecisions, fetchSites, fetchTrail } from "@/lib/api";
-import type { Decision, Site, Trail } from "@/lib/contracts";
+import type { Decision, Site, SiteType, Trail } from "@/lib/contracts";
 import { connectLive } from "@/lib/live";
+import { SITE_TYPE_LABELS } from "@/lib/format";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/risk";
 import LedgerFeed from "./LedgerFeed";
 import SitePanel from "./SitePanel";
@@ -20,6 +21,7 @@ export default function Dashboard() {
   const [popupOpen, setPopupOpen] = useState(false);
   const [decisions, setDecisions] = useState<Decision[]>([]);
   const [tab, setTab] = useState<"ledger" | "alerts">("ledger");
+  const [hiddenTypes, setHiddenTypes] = useState<Set<SiteType>>(new Set());
 
   // Read inside WS callbacks without reconnecting when the selection changes.
   const selectedRef = useRef<string | null>(null);
@@ -103,15 +105,28 @@ export default function Dashboard() {
     setTrail(null);
   }
 
+  function toggleType(type: SiteType) {
+    // Hiding the open site's type would leave its panel without a pin, so close it.
+    if (!hiddenTypes.has(type) && sites.find((s) => s.id === selectedId)?.type === type) closePanel();
+    setHiddenTypes((prev) => {
+      const next = new Set(prev);
+      if (next.has(type)) next.delete(type);
+      else next.add(type);
+      return next;
+    });
+  }
+
   const selectedSite = sites.find((s) => s.id === selectedId) ?? null;
-  const counts = sites.reduce<Record<string, number>>((acc, s) => ({ ...acc, [s.risk.level]: (acc[s.risk.level] ?? 0) + 1 }), {});
+  const visibleSites = sites.filter((s) => !hiddenTypes.has(s.type));
+  const counts = visibleSites.reduce<Record<string, number>>((acc, s) => ({ ...acc, [s.risk.level]: (acc[s.risk.level] ?? 0) + 1 }), {});
+  const typeCounts = sites.reduce<Partial<Record<SiteType, number>>>((acc, s) => ({ ...acc, [s.type]: (acc[s.type] ?? 0) + 1 }), {});
 
   return (
     <div className="flex h-dvh flex-col md:flex-row">
       <div className="relative h-[55dvh] md:h-full md:flex-1">
-        <MapView sites={sites} selectedId={selectedId} onSelect={setSelectedId} onPopupChange={setPopupOpen} onDismiss={closePanel} />
-        {/* Hidden while a pin popup is open so it doesn't cover it. */}
-        <div className={`pointer-events-none absolute left-3 top-3 z-[1000] max-w-xs rounded-lg bg-white/95 p-4 shadow-md transition-opacity ${popupOpen ? "opacity-0" : "opacity-100"}`}>
+        <MapView sites={visibleSites} selectedId={selectedId} onSelect={setSelectedId} onPopupChange={setPopupOpen} onDismiss={closePanel} />
+        {/* Hidden (and click-through) while a pin popup is open so it doesn't cover it. */}
+        <div className={`absolute left-3 top-3 z-[1000] max-w-xs rounded-lg bg-white/95 p-4 shadow-md transition-opacity ${popupOpen ? "pointer-events-none opacity-0" : "opacity-100"}`}>
           <h1 className="text-base font-semibold text-gray-900">NYC community resources</h1>
           <p className="mt-1 hidden text-xs text-gray-600 md:block">Colored by whether the city money behind each one is on time.</p>
           <ul className="mt-3 space-y-1">
@@ -123,6 +138,23 @@ export default function Dashboard() {
               </li>
             ))}
           </ul>
+          <div className="mt-3 flex flex-wrap gap-1" role="group" aria-label="Filter by type">
+            {(Object.keys(SITE_TYPE_LABELS) as SiteType[])
+              .filter((t) => typeCounts[t])
+              .map((t) => {
+                const on = !hiddenTypes.has(t);
+                return (
+                  <button
+                    key={t}
+                    onClick={() => toggleType(t)}
+                    aria-pressed={on}
+                    className={`rounded-full border px-2 py-0.5 text-[11px] transition-colors ${on ? "border-gray-900 bg-gray-900 text-white" : "border-gray-300 bg-white text-gray-500 hover:border-gray-500"}`}
+                  >
+                    {SITE_TYPE_LABELS[t]} {typeCounts[t]}
+                  </button>
+                );
+              })}
+          </div>
           {sites.some((s) => s.is_demo_data) && <p className="mt-3 text-[11px] text-gray-500">Includes demo data.</p>}
           {apiError && <p className="mt-3 text-[11px] text-red-600">Can&apos;t reach the API. Is it running on :4000?</p>}
         </div>

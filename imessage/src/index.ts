@@ -2,10 +2,12 @@
 // - POST /notify { phone, text }  -> sends an iMessage (called by the web app)
 // - GET  /health                  -> { mode: "live" | "dry-run" }
 // - Inbound iMessages get a placeholder reply (money-trail Q&A goes here later).
+// - "Funded ✅" alerts: texts a site's followers when it turns green (see fundedAlerts.ts).
 // Without SPECTRUM_PROJECT_ID / SPECTRUM_PROJECT_SECRET it runs in dry-run mode and only logs.
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { Spectrum } from "spectrum-ts";
 import { imessage } from "spectrum-ts/providers/imessage";
+import { startFundedAlerts } from "./fundedAlerts";
 
 const PORT = Number(process.env.PORT ?? 4003);
 const projectId = process.env.SPECTRUM_PROJECT_ID;
@@ -82,3 +84,4 @@ createServer(async (req, res) => {
 }).listen(PORT, () => console.log(`imessage service on :${PORT} (${live ? "live" : "dry-run"})`));
 
 replyLoop().catch((err) => console.error("reply loop stopped", err));
+startFundedAlerts(sendIMessage);
