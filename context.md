@@ -43,7 +43,7 @@ Judging weights: Concept 30%, Functionality 30%, Wow Factor 20%, UX/Design 10%, 
 ## Product: two separate features
 
 ### 0. Landing page (`/`)
-Product overview (`web/src/app/page.tsx`): transparency pitch, the problem (Comptroller figures with source links), how it works, the agent's guardrails, a demo-data disclaimer, and **"Launch the map"** buttons to `/map`.
+Product overview (`web/src/app/page.tsx`), with **Open data** links to `/data`: transparency pitch, the problem (Comptroller figures with source links), how it works, the agent's guardrails, a demo-data disclaimer, and **"Launch the map"** buttons to `/map`.
 
 ### 1. Money map (`/map`, shows delays)
 1. **Map:** NYC with pins for food pantries, grocery giveaways, shelters, youth programs, and events.
@@ -57,6 +57,19 @@ Product overview (`web/src/app/page.tsx`): transparency pitch, the problem (Comp
 5. **Live:** when the agent releases a payment, the API broadcasts over WebSocket and the pin recolors instantly (e.g. 🟡→🟢).
 6. **Live ledger** (sidebar default tab, `LedgerFeed.tsx`): every agent decision, newest first, from `GET /decisions` + WebSocket. Shows totals (paid / blocked / needs approval), each decision's outcome, site, reason, what stopped it, signers, XRPL link and audit hash. Clicking the site opens its panel. **Demo controls** (`DemoControls.tsx`) trigger `POST /demo/:scenario` and reset.
 7. Pins are HTML markers (`.map-pin` in `globals.css`): a 36px click area around a smaller dot, which grows smoothly on hover and gets a dark ring when selected.
+
+### 1b. Site report (`/sites/<id>`, accountability page)
+Opened from **"Full report →"** in the side panel (`web/src/components/report/`). Sections:
+1. Header: status, score, when it was computed, locator map, **Open on the map** (`/map?site=<id>`), **All records** (`/data`), **Download this report's data (JSON)**.
+2. **Is the money on pace?** Chart of cumulative city payments (USD) vs the straight-line on-pace target from contract start to end, with a today marker, hover values, and a table view. Agent payments (testnet RLUSD) are a separate strip, never added to the USD line.
+3. **How the risk score was calculated:** score meter with the green/yellow/red bands, the API's reasons, and the formula weights (display only; the API computes the score).
+4. **Target vs actual reach:** placeholder until the backend adds the data (see requests below).
+5. **Where the data came from and how it was processed:** pipeline (contract → city payments → agency record → 990 → risk score → payment agent) with source links, dates, and demo labels.
+6. **Verify it yourself:** each decision's hash, memo hash (only when that exact transaction reached the ledger), explorer link (real hashes only), and how to recompute the hash.
+
+**Requests to backend for the report:**
+- `risk.components`: per-factor points (payment pace /40, registration /20, agency /20, cash /20) so the score can be shown as a stacked bar. `api/src/risk.ts` already computes them.
+- **Target vs actual reach** per site, from NYC Open Data already probed in `data/raw/samples/`: neighborhood need from Emergency Food Supply Gap (`4kc9-zrs2`: supply gap lbs, % food insecure, by NTA); people served from Community Food Connection (`mpqk-skis`) and site `capacity` from Verified Locations: Sites (`y9si-s7ab`).
 
 ### 2. Event alerts sign-up (for individuals)
 Separate from the map. Individuals sign up so they can get notified about events and benefits **they qualify for**.

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import type { Contract, Decision, Payment, Site, Trail } from "@/lib/contracts";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/risk";
@@ -28,6 +29,9 @@ export default function SitePanel({
           <div>
             <h2 className="text-lg font-semibold text-gray-900">{site.name}</h2>
             <p className="text-sm text-gray-500">{site.address ?? `${site.borough} ${site.zip}`}</p>
+            <Link href={`/sites/${site.id}`} className="mt-1 inline-block text-sm font-medium text-blue-700 underline">
+              Full report: charts, sources, and how to verify →
+            </Link>
           </div>
           <button onClick={onClose} className="text-sm text-gray-500 hover:text-gray-900" aria-label="Close">
             ✕

@@ -37,3 +37,9 @@ body {
   border-color: #111827;
   border-width: 3px;
 }
+
+/* Chart series colors (validated with the dataviz palette checker: blue + orange, light surface). */
+:root {
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+}

@@ -13,10 +13,10 @@ import SignupForm from "./SignupForm";
 
 const MapView = dynamic(() => import("./MapView"), { ssr: false });
 
-export default function Dashboard() {
+export default function Dashboard({ initialSiteId = null }: { initialSiteId?: string | null }) {
   const [sites, setSites] = useState<Site[]>([]);
   const [apiError, setApiError] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(initialSiteId);
   const [trail, setTrail] = useState<Trail | null>(null);
   const [trailErrorFor, setTrailErrorFor] = useState<string | null>(null);
   const [popupOpen, setPopupOpen] = useState(false);
