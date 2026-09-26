@@ -112,6 +112,16 @@ const REFUSAL_LABELS: Record<string, string> = {
   suspicious_instructions_in_invoice: "the invoice contained hidden instructions",
   verifier_rejected: "the invoice failed verification",
   ledger_rejected: "the XRP Ledger itself rejected it",
+  bad_tx_fields: "the transaction had invalid fields or signatures",
+  tx_not_fresh: "the transaction was stale (replay protection)",
+  cosigner_unavailable: "the compliance co-signer was unavailable, so nothing was signed",
+  verifier_unavailable: "the AI invoice check was unavailable, so nothing was sent",
+  registry_drift: "the payee registry changed unexpectedly",
+  contract_not_found: "there was no contract on file for the invoice",
+  contract_not_active: "the contract isn't active today",
+  ledger_status_unknown: "the final result isn't confirmed yet",
+  ledger_unavailable: "the XRP Ledger couldn't be reached",
+  agent_balance_insufficient: "the agent's balance was too low",
 };
 
 function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {

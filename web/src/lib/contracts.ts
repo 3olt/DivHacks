@@ -180,5 +180,28 @@ export const REFUSAL_CODES = [
   "suspicious_instructions_in_invoice",
   "verifier_rejected",
   "ledger_rejected",
+  // Added in Phase 2 (additive; see docs/API.md refusal code table):
+  /** The tx carries fields outside the co-signer's whitelist, non-zero Flags, a bad Fee, or bad/unknown signatures. */
+  "bad_tx_fields",
+  /** Sequence is not the agent account's current one, LastLedgerSequence is outside the window, or a co-signature for it is still live. */
+  "tx_not_fresh",
+  /** The co-signer could not be reached, timed out, or could not read the ledger / registry, so it signed nothing. */
+  "cosigner_unavailable",
+  /** The AI invoice verifier timed out, errored or returned unparseable output (fail closed: nothing built). */
+  "verifier_unavailable",
+  /** The registry in the database changed since the co-signer pinned it at startup (possible tampering). */
+  "registry_drift",
+  /** The invoice's contract is not in the contracts collection. */
+  "contract_not_found",
+  // Added by the Phase 2 fixes (additive):
+  /** Today is outside the contract's start_date..end_date. */
+  "contract_not_active",
+  /** The payment was submitted but its final ledger status could not be established (e.g. connection lost).
+   *  outcome is "refused" until `npm run reconcile -w xrpl` looks the tx up by xrpl_tx_hash and records the real result. */
+  "ledger_status_unknown",
+  /** The agent could not read or write the XRPL ledger (autofill / submit failed) before anything landed. */
+  "ledger_unavailable",
+  /** agent_account's RLUSD working balance is below the invoice amount (pre-flight; nothing signed). */
+  "agent_balance_insufficient",
 ] as const;
 export type RefusalCode = (typeof REFUSAL_CODES)[number];

@@ -42,6 +42,16 @@ export const REFUSAL_LABELS: Record<RefusalCode, string> = {
   suspicious_instructions_in_invoice: "Invoice contained hidden instructions (prompt injection)",
   verifier_rejected: "AI verifier rejected the invoice",
   ledger_rejected: "Rejected by the XRP Ledger itself",
+  bad_tx_fields: "Invalid transaction fields or signatures",
+  tx_not_fresh: "Stale or pre-signed transaction (replay guard)",
+  cosigner_unavailable: "Compliance co-signer unavailable: nothing signed",
+  verifier_unavailable: "AI invoice check unavailable: nothing built",
+  registry_drift: "Payee registry changed since the co-signer started (possible tampering)",
+  contract_not_found: "No contract on file for this invoice",
+  contract_not_active: "Contract isn't active today",
+  ledger_status_unknown: "Submitted, final result not yet confirmed",
+  ledger_unavailable: "Couldn't reach the XRP Ledger: nothing landed",
+  agent_balance_insufficient: "Agent's working balance too low: nothing signed",
 };
 
 export const refusalLabel = (code: string) => REFUSAL_LABELS[code as RefusalCode] ?? code;
