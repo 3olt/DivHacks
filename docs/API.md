@@ -77,6 +77,7 @@ In `web/`, put the base URL in `web/.env.local` as `NEXT_PUBLIC_API_URL=http://l
 | POST | [`/demo/:scenario`](#post-demoscenario) | 202 `{scenario, mode, decision, site_updated?}` | demo buttons |
 | POST | [`/dev/flip/:site_id`](#post-devflipsite_id) | `{site_id, risk}` | UI development only |
 | POST | [`/dev/reset`](#post-devreset) | `{ok: true}` | UI development / demo reset |
+| GET | [`/xrpl/accounts`](#get-xrplaccounts) | public Testnet address registry (roles, signer weights, quorum) | `/data` page (On-chain, Accounts tabs) |
 | WS | [`/live`](#websocket-live) | `hello`, `site_updated`, `decision` messages | map + feed |
 
 ---
@@ -943,6 +944,37 @@ Other handy calls:
 curl -X POST http://localhost:4000/demo/happy                              # golden pin yellow -> green
 curl -X POST http://localhost:4000/events/payment -H "content-type: application/json" -d '{"decision_id":"fx_dec_001"}'
 curl "http://localhost:4000/sites?type=food_pantry&near=-73.9095,40.8538&radius_m=5000"
+```
+
+---
+
+## `GET /xrpl/accounts`
+
+The public XRPL **Testnet** registry: which address plays which role. It comes from `xrpl/data/accounts.testnet.json` (written by `npm run setup:xrpl`) and is read on every request. It holds addresses only, never keys. The `/data` page uses it to read the agent account's real transactions and balances straight from the ledger (`wss://s.altnet.rippletest.net:51233`). Errors: 404 `accounts_not_found` (setup not run), 500 `accounts_invalid`.
+
+The signer entries are **keypairs, not funded accounts**. The agent account's on-ledger signer list gives them weights agent 1 + co-signer 2 + officer 1, quorum 3, and its master key is disabled.
+
+```jsonc
+// 200  GET /xrpl/accounts
+{
+  "network": "testnet",
+  "rlusd": { "issuer": "rQhWct2fv4Vc4KRjRgMrxa8xPN9Zx9iLKV", "currency": "524C555344000000000000000000000000000000" },
+  "city_issuer": "rHEvmzksu87KDm8SuNt5iSWL9xSN9o9KEL",
+  "city_treasury": "rLfrnvDZ4WsFybU8yCbA16jEvsMCQc6mkJ",
+  "agent_account": "rE9y8ZrG9vVznrw7QyGMvWVr6TsfuSWKwN",
+  "signers": {
+    "agent": { "address": "r3fwiSv8xiki1ibN4t3VVSXtsPLhpABKku", "weight": 1 },
+    "cosigner": { "address": "rLukzPuZHDStuW644LUKKLW6RQ2Caw9sBD", "weight": 2 },
+    "officer": { "address": "rENDLmUpBaRrXfrxTiBNcSTjeTNY9MBLZk", "weight": 1 }
+  },
+  "quorum": 3,
+  "nonprofits": {
+    "np_1": { "address": "rnJzKAteJoTtWssbPnqoLnFAfCHqqwtN9F", "ein": "00-0000001", "name": "Burnside Heights Food Collective (demo)", "contract_id": "CT1-069-20261409087" }
+    // ... np_2 .. np_4
+  },
+  "attacker": "rK7duxM9smjdXH7nEUBJfKMjC3Sv9BTM6v",
+  "source_tag": 26092026
+}
 ```
 
 ---

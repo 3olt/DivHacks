@@ -275,6 +275,32 @@ async function main() {
   const a404 = await call("GET", "/agencies/NYPD/stats");
   check("GET /agencies/NYPD/stats -> 404 agency_not_found", a404.status === 404 && a404.body?.error === "agency_not_found");
 
+  // ---- /xrpl/accounts (public Testnet registry for the open-data page) ----
+  const isRAddress = (a: unknown) => typeof a === "string" && /^r[1-9A-HJ-NP-Za-km-z]{24,34}$/.test(a);
+  const reg = await call("GET", "/xrpl/accounts");
+  check(
+    "GET /xrpl/accounts -> 200 testnet registry: agent_account, treasury, issuer, attacker are r-addresses",
+    reg.status === 200 && reg.body?.network === "testnet" && ["agent_account", "city_treasury", "city_issuer", "attacker"].every((k) => isRAddress(reg.body[k])),
+    reg.status === 200 ? Object.keys(reg.body ?? {}) : reg.body,
+  );
+  check(
+    "GET /xrpl/accounts signers agent/cosigner/officer with weights 1/2/1, quorum 3",
+    ["agent", "cosigner", "officer"].every((r) => isRAddress(reg.body?.signers?.[r]?.address)) &&
+      reg.body?.signers?.agent?.weight === 1 && reg.body?.signers?.cosigner?.weight === 2 && reg.body?.signers?.officer?.weight === 1 && reg.body?.quorum === 3,
+    reg.body?.signers,
+  );
+  check(
+    "GET /xrpl/accounts nonprofits np_1..np_4 map to EINs 00-0000001..4",
+    [1, 2, 3, 4].every((i) => isRAddress(reg.body?.nonprofits?.[`np_${i}`]?.address) && reg.body.nonprofits[`np_${i}`].ein === `00-000000${i}`),
+    reg.body?.nonprofits,
+  );
+  check(
+    "GET /xrpl/accounts RLUSD = 40-hex currency + r-address issuer, source_tag 26092026",
+    /^[0-9A-F]{40}$/i.test(reg.body?.rlusd?.currency ?? "") && isRAddress(reg.body?.rlusd?.issuer) && reg.body?.source_tag === 26092026,
+    { rlusd: reg.body?.rlusd, source_tag: reg.body?.source_tag },
+  );
+  check("GET /xrpl/accounts serves no secret-looking field (seed/secret/private)", !/seed|secret|private/i.test(JSON.stringify(reg.body ?? {})));
+
   // ---- decisions ----
   const decRes = await call<Decision[]>("GET", "/decisions");
   const decs = decRes.body;

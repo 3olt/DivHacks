@@ -13,6 +13,7 @@ import { registerHealthRoutes } from "./routes/health";
 import { registerLiveRoutes } from "./routes/live";
 import { registerSiteRoutes } from "./routes/sites";
 import { registerSubscriberRoutes } from "./routes/subscribers";
+import { registerXrplRoutes } from "./routes/xrpl";
 import { FixtureStore, type DataStore } from "./store";
 
 export const API_VERSION = "0.1.0";
@@ -76,6 +77,7 @@ export async function buildApp(opts: BuildAppOptions = {}): Promise<FastifyInsta
   registerEventRoutes(app, ctx);
   registerDemoRoutes(app, ctx);
   registerDevRoutes(app, ctx);
+  registerXrplRoutes(app, ctx);
   registerLiveRoutes(app, ctx);
 
   app.addHook("onClose", async () => hub.close());
