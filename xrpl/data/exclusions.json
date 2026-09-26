@@ -1,0 +1,33 @@
+{
+  "network": "testnet",
+  "is_demo_data": true,
+  "description": "FICTIONAL exclusion list for the demo, modelled on SAM.gov exclusion records and OFAC SDN-style sanctions entries. Every organization and EIN below is made up (the EINs 00-000009x are fictional, like every 00-00000xx EIN in this repo). The compliance co-signer reads this file once at startup and pins its SHA-256 (check payee_not_excluded); restart the co-signer after changing it.",
+  "source": "demo data (fictional entries; field names follow the public SAM.gov Exclusions extract)",
+  "source_url": "https://sam.gov/content/exclusions",
+  "entries": [
+    {
+      "ein": "00-0000090",
+      "name": "Gowanus Shell Services LLC (demo)",
+      "list": "SAM.gov exclusion (demo)",
+      "exclusion_type": "Ineligible (Proceedings Completed)",
+      "reason": "Debarred after billing for undelivered meal kits (fictional)",
+      "since": "2025-11-03"
+    },
+    {
+      "ein": "00-0000091",
+      "name": "Harbor Relief Partners Inc (demo)",
+      "list": "SAM.gov exclusion (demo)",
+      "exclusion_type": "Prohibition/Restriction",
+      "reason": "Suspended pending investigation of duplicate invoices (fictional)",
+      "since": "2026-04-18"
+    },
+    {
+      "ein": "00-0000092",
+      "name": "Northstar Aid Logistics Ltd (demo)",
+      "list": "Sanctions list (demo, OFAC SDN-style)",
+      "exclusion_type": "Blocked entity",
+      "reason": "Listed entity (fictional)",
+      "since": "2026-01-09"
+    }
+  ]
+}

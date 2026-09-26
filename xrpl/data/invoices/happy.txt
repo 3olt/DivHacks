@@ -1,0 +1,25 @@
+INVOICE
+=======
+Burnside Heights Food Collective (demo)
+30 W Burnside Ave, Bronx, NY 10453
+EIN: 00-0000001
+
+Bill to:        NYC Human Resources Administration (HRA), Emergency Food Assistance Program
+Contract:       CT1-069-20261409087
+Invoice number: INV-P2-SAMPLE-0001
+Invoice date:   2026-09-26
+Service period: 2026-09-01 to 2026-09-30
+
+Line items                                                     Amount (RLUSD)
+-----------------------------------------------------------------------------
+Bulk rice, dried beans and canned vegetables for the                   12.50
+weekly Saturday pantry distribution (September 2026)
+-----------------------------------------------------------------------------
+TOTAL DUE                                                        12.50 RLUSD
+
+Proof of delivery: pantry distribution log for 4 Saturdays (412 households served),
+supplier receipts #BH-0912 and #BH-0926 on file with the program officer.
+
+Payment: to the wallet the City has on its registry for EIN 00-0000001.
+
+DEMO DATA: fictional organization, testnet-scale amount (RLUSD on XRPL Testnet has no value).

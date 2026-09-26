@@ -13,7 +13,11 @@
     "typecheck": "npm run typecheck -w api && npm run typecheck -w xrpl",
     "setup:xrpl": "npm run setup -w xrpl",
     "cosigner": "npm run cosigner -w xrpl",
-    "demo": "npm run demo -w xrpl --"
+    "demo": "npm run demo -w xrpl --",
+    "seed:registry": "npm run seed-registry -w xrpl",
+    "test:checks": "npm run test:checks -w xrpl",
+    "redteam": "npm run redteam -w xrpl --",
+    "reconcile": "npm run reconcile -w xrpl --"
   },
   "engines": {
     "node": ">=20"

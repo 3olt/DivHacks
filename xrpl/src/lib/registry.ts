@@ -1,5 +1,6 @@
-// The public account registry (xrpl/data/accounts.testnet.json) and the Phase 1 co-signer allowlist
-// (xrpl/data/allowlist.json). Both are written by scripts/setup.ts, committed to git, and hold addresses only.
+// The public account registry (xrpl/data/accounts.testnet.json), the co-signer allowlist (xrpl/data/allowlist.json)
+// and the fictional exclusion list (xrpl/data/exclusions.json). The first two are written by scripts/setup.ts; all three are
+// committed to git and hold no secrets.
 // loadRegistry()/loadAllowlist() re-read the file on every call (agent, setup, verify).
 // The co-signer does NOT use them per request: it pins both files once at startup with readPinnedPolicy()
 // (content + SHA-256), so edits made on disk afterwards (e.g. by a compromised agent process running as the same
@@ -42,8 +43,27 @@ export interface Allowlist {
   addresses: string[];
 }
 
+/** xrpl/data/exclusions.json: a FICTIONAL SAM.gov / sanctions-style list (demo data). Pinned by the co-signer at startup. */
+export interface ExclusionEntry {
+  ein: string;
+  name: string;
+  list: string;
+  exclusion_type: string;
+  reason: string;
+  since: string;
+}
+export interface Exclusions {
+  network: "testnet";
+  is_demo_data: boolean;
+  description: string;
+  source: string;
+  source_url: string;
+  entries: ExclusionEntry[];
+}
+
 export const registryPath = path.join(paths.dataDir, "accounts.testnet.json");
 export const allowlistPath = path.join(paths.dataDir, "allowlist.json");
+export const exclusionsPath = path.join(paths.dataDir, "exclusions.json");
 export const decisionsLogPath = path.join(paths.dataDir, "decisions.local.jsonl");
 
 export function loadRegistry(): Registry {
@@ -54,6 +74,10 @@ export function loadRegistry(): Registry {
 export function loadAllowlist(): Allowlist {
   if (!fs.existsSync(allowlistPath)) throw new Error(`${allowlistPath} not found: run "npm run setup:xrpl" first`);
   return JSON.parse(fs.readFileSync(allowlistPath, "utf8")) as Allowlist;
+}
+
+export function loadExclusions(): Exclusions {
+  return JSON.parse(fs.readFileSync(exclusionsPath, "utf8")) as Exclusions;
 }
 
 /** Registry lookup by payee EIN: the ONLY place a payment destination comes from. */
@@ -81,7 +105,7 @@ export function readPinned<T>(file: string): PinnedFile<T> {
   return { path: file, sha256: createHash("sha256").update(bytes).digest("hex"), data: JSON.parse(bytes.toString("utf8")) as T };
 }
 
-/** The co-signer's policy: registry + allowlist, read once and pinned by hash. */
-export function readPinnedPolicy(): { registry: PinnedFile<Registry>; allowlist: PinnedFile<Allowlist> } {
-  return { registry: readPinned<Registry>(registryPath), allowlist: readPinned<Allowlist>(allowlistPath) };
+/** The co-signer's file policy: registry + allowlist + exclusions, read once and pinned by hash. */
+export function readPinnedPolicy(): { registry: PinnedFile<Registry>; allowlist: PinnedFile<Allowlist>; exclusions: PinnedFile<Exclusions> } {
+  return { registry: readPinned<Registry>(registryPath), allowlist: readPinned<Allowlist>(allowlistPath), exclusions: readPinned<Exclusions>(exclusionsPath) };
 }

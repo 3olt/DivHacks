@@ -7,7 +7,13 @@
     "setup": "tsx scripts/setup.ts",
     "cosigner": "tsx src/cosigner/server.ts",
     "demo": "tsx scripts/demo.ts",
-    "verify": "tsx scripts/verify.ts"
+    "verify": "tsx scripts/verify.ts",
+    "seed-registry": "tsx scripts/seed-registry.ts",
+    "make-invoices": "python scripts/make_sample_invoices.py --scanned",
+    "test:checks": "tsx scripts/test-checks.ts",
+    "redteam": "tsx scripts/redteam.ts",
+    "verify-invoice": "tsx scripts/verify-invoice.ts",
+    "reconcile": "tsx scripts/reconcile.ts"
   },
   "dependencies": {
     "dotenv": "^18.0.4",

@@ -6,6 +6,13 @@ The REST + WebSocket API the map (`web/`) builds against. Types live in **[`shar
 > - **Agent (XRPL) amounts are testnet-scale RLUSD.** AUTO_LIMIT is **25** and DAILY_CAP is **100** RLUSD (were 2,500 / 10,000). The golden demo invoice is `"12.50"`, the other fixture invoices are 7.50-18.00, and the over-limit ones are 32.00-48.00. Decision/XRPL `amount` values, check `detail` texts, `agent_reasoning`, and risk `reasons`/`summary` that quote an RLUSD amount changed with them (e.g. `"RLUSD 12.50 released on XRPL today (demo)"`). **Checkbook contracts and payments stay real-dollar USD**, and every risk score and level is unchanged.
 > - **`decision_hash` has a new definition:** SHA-256 of the canonical JSON of **only the pre-signing fields** (see [`GET /decisions`](#get-decisions)). Every fixture `decision_hash` and `memo_hash` was recomputed. The code is in `shared/hash.ts`, which the api and the xrpl services both use.
 
+> **Changed in Phase 2 (additive; no shape changes).**
+> - **New refusal codes** (table below): `bad_tx_fields`, `tx_not_fresh`, `cosigner_unavailable`, `verifier_unavailable`, `registry_drift`, `contract_not_found`, `contract_not_active`, `ledger_status_unknown`, `ledger_unavailable`, `agent_balance_insufficient`. Unknown codes should be shown raw, never hidden.
+> - **`enforced_by: null` on a refused decision** now means "stopped by the agent's own policy before anything was signed" (e.g. the AI verifier flagged a prompt injection). On a released decision `null` still means nothing stopped it.
+> - **Checks that never ran:** when the co-signer was never asked, the 8 checks are an agent-side audit and each `detail` starts with `[agent-side audit: ...]`. When the AI verifier failed, all 8 are `{passed:false, detail:"not evaluated: ..."}` with no per-check refusal code.
+> - **Limits (testnet scale):** AUTO_LIMIT **25**, DAILY_CAP **1000** per agent and PAYEE_DAILY_CAP **400** per payee (rolling 24 h, read from the ledger). The fixture API still demos a 100 cap internally.
+> - **Rule versions:** real decisions carry `rule_version: "p2-grok-1"`.
+
 > **FIXTURE MODE (Phase 0).** Right now the API serves realistic **fake** data from memory:
 > - **All organizations are fictional.** 14 nonprofits (names end in "(demo)", EINs `00-0000001`..`00-0000014`), 15 sites, their contracts, Checkbook-style payments, agency stats, events and 2 seed subscribers (555-01XX numbers, reserved for fiction).
 > - **Street addresses are real NYC addresses used only to place pins plausibly**; the fictional organizations are not at them. Each pin is within ~200 m of its address and uses that address's zip (checked against OpenStreetMap Nominatim, 2026-09-26).
@@ -1114,9 +1121,19 @@ useEffect(() => connectLive((msg) => {
 | `bad_memo` | Missing or malformed payment memo | cosigner |
 | `bad_currency` | Wrong currency or issuer | cosigner |
 | `payee_change_on_hold` | Wallet change on 72-hour hold | hold |
-| `suspicious_instructions_in_invoice` | Invoice contained hidden instructions (prompt injection) | cosigner |
-| `verifier_rejected` | AI verifier rejected the invoice | cosigner |
+| `suspicious_instructions_in_invoice` | Invoice contained hidden instructions (prompt injection) | `null` (agent policy: nothing signed) |
+| `verifier_rejected` | Invoice didn't match the contract on file (AI proposal rejected) | `null` (agent policy) |
 | `ledger_rejected` | Rejected by the XRP Ledger itself | ledger |
+| `bad_tx_fields` | Invalid transaction fields or signatures | cosigner |
+| `tx_not_fresh` | Stale or pre-signed transaction (replay guard) | cosigner |
+| `cosigner_unavailable` | Compliance co-signer unavailable: nothing signed | cosigner |
+| `verifier_unavailable` | AI invoice check unavailable: nothing built (fail closed) | `null` (agent policy) |
+| `registry_drift` | Payee registry changed since the co-signer started (possible tampering) | cosigner |
+| `contract_not_found` | No contract on file for this invoice | `null` or cosigner |
+| `contract_not_active` | Contract isn't active today | cosigner |
+| `ledger_status_unknown` | Submitted, final result not yet confirmed | `null` |
+| `ledger_unavailable` | Couldn't reach the XRP Ledger: nothing landed | `null` |
+| `agent_balance_insufficient` | Agent's working balance too low: nothing signed | `null` (agent policy) |
 
 A failed check always comes with its matching code (e.g. `invoice_not_already_paid` failed -> `invoice_already_paid`). `suspicious_instructions_in_invoice`, `payee_change_on_hold`, `verifier_rejected` and `ledger_rejected` can appear with every check passing: the payment itself was well-formed, but something outside the transaction stopped it.
 
@@ -1126,12 +1143,12 @@ A failed check always comes with its matching code (e.g. `invoice_not_already_pa
 
 | Check | Passes when |
 |---|---|
-| `credential_valid` | The destination wallet holds an accepted, unexpired `NYC_VERIFIED_NONPROFIT` credential for the payee's EIN (read on-ledger) |
+| `credential_valid` | The destination wallet holds an accepted, unexpired `NYC_VERIFIED_NONPROFIT` credential for the payee's EIN (read on-ledger from Phase 3; until then an allowlist + registry fallback, which the `detail` says) |
 | `destination_is_registry_wallet` | The destination is the registry wallet for the contract's payee EIN (the payment builder never takes an address from an invoice) |
 | `invoice_not_already_paid` | The invoice id is not in the agent account's on-ledger memo history |
 | `within_contract_amount` | Paid to date + this amount <= the contract amount (fixtures count Checkbook `spent_to_date` + released RLUSD) |
 | `within_auto_limit_or_officer_signed` | Amount <= AUTO_LIMIT (25 RLUSD, testnet scale), or the officer's signature is already present |
-| `within_daily_caps` | Rolling 24 h totals stay within DAILY_CAP (100 RLUSD, testnet scale) for the agent, and within the payee cap |
+| `within_daily_caps` | Rolling 24 h on-ledger totals stay within DAILY_CAP (1000 RLUSD) for the agent and PAYEE_DAILY_CAP (400 RLUSD) per payee (the fixture API demos a 100 cap) |
 | `payee_not_excluded` | The EIN is not on the exclusions list (SAM.gov / sanctions-style) |
 | `tx_format_valid` | SourceTag 26092026, memo type `divhacks/payment/v1`, RLUSD currency and issuer are correct |
 
@@ -1146,7 +1163,7 @@ A failed check always comes with its matching code (e.g. `invoice_not_already_pa
 
 | `enforced_by` | Show as |
 |---|---|
-| `null` | nothing stopped it (released) |
+| `null` | released: nothing stopped it. refused: "Stopped by the agent's own policy (nothing signed)" |
 | `"cosigner"` | "Stopped by the compliance co-signer" (a separate process and key the agent doesn't control) |
 | `"ledger"` | "Stopped by the XRP Ledger" (the agent's key alone can't reach the multisig quorum; `ledger_result` holds the ledger's code, e.g. `tefBAD_QUORUM`) |
 | `"hold"` | "Stopped by the 72-hour wallet-change hold" |

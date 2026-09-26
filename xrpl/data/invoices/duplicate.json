@@ -1,0 +1,12 @@
+{
+  "invoice_id": "INV-P2-DUP-TEMPLATE",
+  "contract_id": "CT1-069-20271522304",
+  "payee_ein": "00-0000002",
+  "amount": "10.00",
+  "currency": "RLUSD",
+  "period": { "from": "2026-09-01", "to": "2026-09-30" },
+  "description": "September 2026 weekly grocery giveaways under HRA community food distribution contract CT1-069-20271522304: produce boxes for 4 Saturday distributions at 412 E 138th St (testnet-scale amount). Proof: distribution sign-in sheets, 1,480 boxes.",
+  "submitted_via": "seed",
+  "created_at": "2026-09-26T12:00:00Z",
+  "is_demo_data": true
+}

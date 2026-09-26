@@ -6,9 +6,22 @@ import { Client, type Wallet, type SubmittableTransaction, type TxResponse } fro
 
 export const LSF_DISABLE_MASTER = 0x00100000;
 
+/** The only ledger nodes any process here will talk to: public XRPL TESTNET endpoints (the RLUSD issuer is on Testnet).
+ *  A substring test such as /testnet/ would accept wss://attacker.example.com/testnet, whose node could report fake
+ *  history and Sequence numbers to the co-signer, so the host must match exactly. */
+export const TESTNET_WS_HOSTS = new Set(["s.altnet.rippletest.net", "testnet.xrpl-labs.com", "clio.altnet.rippletest.net"]);
+
 export function xrplWs(): string {
   const ws = process.env.XRPL_WS ?? "wss://s.altnet.rippletest.net:51233";
-  if (!/altnet|testnet|devnet/.test(ws)) throw new Error(`refusing to run against non-test network ${ws}`);
+  let u: URL;
+  try {
+    u = new URL(ws);
+  } catch {
+    throw new Error(`XRPL_WS ${JSON.stringify(ws)} is not a URL`);
+  }
+  if (u.protocol !== "wss:" || !TESTNET_WS_HOSTS.has(u.hostname) || u.username || u.password) {
+    throw new Error(`refusing XRPL_WS ${ws}: only wss:// to a public Testnet host (${[...TESTNET_WS_HOSTS].join(", ")}) is allowed`);
+  }
   return ws;
 }
 
@@ -148,12 +161,38 @@ export interface SubmitResult {
   close_time_iso?: string;
 }
 
+type TxLookup = { kind: "validated"; result: { meta: { TransactionResult: string }; ledger_index?: number; close_time_iso?: string } } | { kind: "pending" } | { kind: "not_found"; searched_all: boolean } | { kind: "error" };
+
+/** One `tx` lookup. Only an explicit txnNotFound counts as "not found"; transport errors are "error". */
+async function lookupTx(client: Client, hash: string, range?: { min: number; max: number }): Promise<TxLookup> {
+  try {
+    const req: Record<string, unknown> = { command: "tx", transaction: hash };
+    if (range) Object.assign(req, { min_ledger: range.min, max_ledger: range.max });
+    const t = await client.request(req as never);
+    const tr = (t as { result: { validated?: boolean; meta?: { TransactionResult: string }; ledger_index?: number; close_time_iso?: string } }).result;
+    return tr.validated && tr.meta ? { kind: "validated", result: tr as never } : { kind: "pending" };
+  } catch (e) {
+    const data = (e as { data?: { error?: string; searched_all?: boolean } }).data;
+    if (data?.error === "txnNotFound") return { kind: "not_found", searched_all: data.searched_all === true };
+    return { kind: "error" };
+  }
+}
+
 /** Submits an already-signed blob and waits for a FINAL status: validated, or definitively not landing.
  *  It keeps polling until the tx is validated or the validated ledger passes `lastLedgerSequence`
  *  (a tx inside its LastLedgerSequence window can still land, so a fixed timeout is not final).
  *  If the submit call itself errors, the blob may still have been relayed, so it polls by hash all the same.
- *  `hardDeadlineMs` only guards against a stalled ledger or a dead connection; it yields status "unknown". */
+ *  "expired" is returned ONLY after the node answers txnNotFound with searched_all:true for the whole ledger range
+ *  the tx could have landed in (submit-time validated ledger .. LastLedgerSequence). Lookup errors (timeouts,
+ *  disconnects) never count toward expiry; if no definitive answer arrives before `hardDeadlineMs`, the status is
+ *  "unknown" (the caller records ledger_status_unknown and `npm run reconcile` settles it later by hash). */
 export async function submitBlobAndWait(client: Client, blob: string, hash: string, lastLedgerSequence: number, hardDeadlineMs = 300000): Promise<SubmitResult> {
+  let startLedger: number | null = null;
+  try {
+    startLedger = await client.getLedgerIndex();
+  } catch {
+    /* fall back to a range below */
+  }
   let engine_result: string;
   let engine_result_message: string;
   try {
@@ -170,37 +209,38 @@ export async function submitBlobAndWait(client: Client, blob: string, hash: stri
     out.final = engine_result;
     return out;
   }
+  const settle = (r: Extract<TxLookup, { kind: "validated" }>["result"]): SubmitResult => {
+    out.status = "validated";
+    out.final = r.meta.TransactionResult;
+    out.validated = true;
+    out.ledger_index = r.ledger_index;
+    out.meta = r.meta;
+    out.close_time_iso = r.close_time_iso;
+    return out;
+  };
+  // The tx can only land in a ledger in [range.min, LastLedgerSequence]. (Autofill sets LLS ~20 ahead.)
+  const range = { min: Math.max(1, Math.min(startLedger ?? lastLedgerSequence - 60, lastLedgerSequence) - 1), max: lastLedgerSequence };
   const end = Date.now() + hardDeadlineMs;
-  let pastLls = 0; // consecutive polls that saw validated ledger > LastLedgerSequence without the tx
   while (Date.now() < end) {
     await sleep(1500);
+    const t = await lookupTx(client, hash);
+    if (t.kind === "validated") return settle(t.result);
+    let validated: number;
     try {
-      const t = await client.request({ command: "tx", transaction: hash });
-      const tr = t.result as { validated?: boolean; meta?: { TransactionResult: string }; ledger_index?: number; close_time_iso?: string };
-      if (tr.validated && tr.meta) {
-        out.status = "validated";
-        out.final = tr.meta.TransactionResult;
-        out.validated = true;
-        out.ledger_index = tr.ledger_index;
-        out.meta = tr.meta;
-        out.close_time_iso = tr.close_time_iso;
-        return out;
-      }
+      validated = await client.getLedgerIndex();
     } catch {
-      /* txnNotFound until it lands, or a transient connection error: keep polling */
+      continue; // connection trouble: keep trying until the hard deadline
     }
-    try {
-      const validated = await client.getLedgerIndex();
-      pastLls = validated > lastLedgerSequence ? pastLls + 1 : 0;
-      // Seen twice (one more tx lookup after the validated ledger passed LLS): it can never land.
-      if (pastLls >= 2) {
-        out.status = "expired";
-        out.final = "expired_past_LastLedgerSequence";
-        return out;
-      }
-    } catch {
-      /* connection trouble: keep trying until the hard deadline */
+    if (validated <= lastLedgerSequence) continue;
+    // The validated ledger is past LastLedgerSequence: ask for a definitive answer over the whole window.
+    const d = await lookupTx(client, hash, range);
+    if (d.kind === "validated") return settle(d.result);
+    if (d.kind === "not_found" && d.searched_all) {
+      out.status = "expired";
+      out.final = "expired_past_LastLedgerSequence";
+      return out;
     }
+    // pending / partial history / error: not definitive, keep polling
   }
   return out;
 }
