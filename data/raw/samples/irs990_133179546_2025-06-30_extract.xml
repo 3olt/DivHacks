@@ -1,0 +1,18 @@
+<!-- trimmed from https://apps.irs.gov/pub/epostcard/990/xml/2026/2026_TEOS_XML_05B.zip member 202621349349304557_public.xml; values only -->
+<irs990_extract>
+  <tax_period_begin>2024-07-01</tax_period_begin>
+  <tax_period_end>2025-06-30</tax_period_end>
+  <filer_ein>133179546</filer_ein>
+  <filer_name>FOOD BANK FOR NEW YORK CITY</filer_name>
+  <return_type>990</return_type>
+  <CYTotalRevenueAmt>173505104</CYTotalRevenueAmt>
+  <CYTotalExpensesAmt>175667473</CYTotalExpensesAmt>
+  <NetAssetsOrFundBalancesEOYAmt>38879439</NetAssetsOrFundBalancesEOYAmt>
+  <TotalFunctionalExpensesGrp_TotalAmt>175667473</TotalFunctionalExpensesGrp_TotalAmt>
+  <CashNonInterestBearingGrp_EOYAmt>311986</CashNonInterestBearingGrp_EOYAmt>
+  <SavingsAndTempCashInvstGrp_EOYAmt>4771942</SavingsAndTempCashInvstGrp_EOYAmt>
+  <TotalAssetsGrp_EOYAmt>75007272</TotalAssetsGrp_EOYAmt>
+  <TotalLiabilitiesGrp_EOYAmt>36127833</TotalLiabilitiesGrp_EOYAmt>
+  <InvestmentsPubTradedSecGrp_EOYAmt>8276089</InvestmentsPubTradedSecGrp_EOYAmt>
+  <GovernmentGrantsAmt>60859579</GovernmentGrantsAmt>
+</irs990_extract>

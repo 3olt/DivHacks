@@ -1,0 +1,39 @@
+<!-- Live Checkbook NYC API response. POST https://www.checkbooknyc.com/api, Content-Type: text/xml, no auth.
+     Sent 2026-09-26 17:17:12 UTC; HTTP 200 application/xml after 1390.26 s (curl time_total). X-CDN: Imperva.
+     Request body = the <request> echoed in <request_criteria> below. Response unmodified. -->
+<?xml version="1.0"?>
+<response>
+  <status>
+    <result>failure</result>
+    <messages>
+      <message>
+        <code>1001</code>
+        <description>Invalid value 'active' is provided for 'status'. Valid values are 'pending,registered'.</description>
+      </message>
+    </messages>
+  </status>
+  <request_criteria>
+    <request>
+      <type_of_data>Contracts</type_of_data>
+      <records_from>1</records_from>
+      <max_records>5</max_records>
+      <search_criteria>
+        <criteria>
+          <name>status</name>
+          <type>value</type>
+          <value>active</value>
+        </criteria>
+        <criteria>
+          <name>category</name>
+          <type>value</type>
+          <value>expense</value>
+        </criteria>
+        <criteria>
+          <name>prime_vendor</name>
+          <type>value</type>
+          <value>FOOD BANK FOR NEW YORK CITY</value>
+        </criteria>
+      </search_criteria>
+    </request>
+  </request_criteria>
+</response>

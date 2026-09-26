@@ -1,0 +1,477 @@
+{
+  "datasets": {
+    "cfc_quarterly": {
+      "id": "mpqk-skis",
+      "name": "Community Food Connection (Quarterly Report)",
+      "rows": 118,
+      "fields": [
+        "facility",
+        "report_start_date",
+        "report_end_date",
+        "number"
+      ],
+      "page": "https://data.cityofnewyork.us/d/mpqk-skis"
+    },
+    "supply_gap": {
+      "id": "4kc9-zrs2",
+      "name": "Emergency Food Supply Gap",
+      "rows": 786,
+      "fields": [
+        "year",
+        "nta",
+        "nta_name",
+        "supply_gap_lbs",
+        "food_insecure_percentage",
+        "unemployment_rate",
+        "vulnerable_population",
+        "weighted_score",
+        "rank"
+      ],
+      "page": "https://data.cityofnewyork.us/d/4kc9-zrs2"
+    },
+    "providers": {
+      "id": "x882-mwt5",
+      "name": "Verified Locations for NYC City-Funded Social Service Contracts - Providers",
+      "rows": 1809,
+      "fields": [
+        "provider_id",
+        "provider_name",
+        "hq_address_1",
+        "hq_address_2",
+        "hq_borough",
+        "hq_city",
+        "hq_state",
+        "hq_zip",
+        "provider_ein",
+        "provider_website",
+        "latitude",
+        "longitude",
+        "community_board",
+        "council_district",
+        "census_tract",
+        "bin",
+        "bbl",
+        "nta"
+      ],
+      "page": "https://data.cityofnewyork.us/d/x882-mwt5"
+    },
+    "contracts": {
+      "id": "2bvn-ky2h",
+      "name": "Verified Locations for NYC City-Funded Social Service Contracts - Contracts",
+      "rows": 4465,
+      "fields": [
+        "contract_id",
+        "contract_number",
+        "start_date",
+        "end_date",
+        "amount",
+        "fiscal_year",
+        "purpose",
+        "program_id",
+        "provider_id",
+        "agency_name"
+      ],
+      "page": "https://data.cityofnewyork.us/d/2bvn-ky2h"
+    },
+    "sites": {
+      "id": "y9si-s7ab",
+      "name": "Verified Locations for NYC City-Funded Social Service Contracts - Sites",
+      "rows": 5635,
+      "fields": [
+        "site_id",
+        "provider_id",
+        "program_id",
+        "contract_id",
+        "agency_name",
+        "bbl",
+        "bin",
+        "community_district",
+        "council_district",
+        "latitude",
+        "longitude",
+        "nta",
+        "census_tract",
+        "catchment_type",
+        "catchment_zone",
+        "catchment_intersection_1",
+        "catchment_intersection_2",
+        "fixed_address",
+        "address_1",
+        "address_2",
+        "borough",
+        "city",
+        "state",
+        "zip",
+        "site_name",
+        "site_budget",
+        "notes",
+        "accepts_dropins",
+        "language_taxonomy",
+        "service_taxonomy",
+        "population_taxonomy",
+        "service_setting_taxonomy",
+        "bp_category",
+        "bp_population",
+        "capacity",
+        "capacity_units",
+        "serves_food",
+        "catchment_description",
+        "state_senate_district",
+        "state_assembly_district"
+      ],
+      "page": "https://data.cityofnewyork.us/d/y9si-s7ab"
+    },
+    "council_discretionary": {
+      "id": "4d7f-74pe",
+      "name": "City Council Discretionary Funding",
+      "rows": 97002,
+      "fields": [
+        "mocs_id",
+        "fiscal_year",
+        "source",
+        "council_member",
+        "legal_name_of_organization",
+        "ein",
+        "status",
+        "amount",
+        "agency",
+        "program_name",
+        "address",
+        "address_2_optional",
+        "city",
+        "state",
+        "postcode",
+        "purpose_of_funds",
+        "fiscal_conduit_name",
+        "fc_ein",
+        "borough",
+        "latitude",
+        "longitude",
+        "community_board",
+        "council_district",
+        "census_tract",
+        "bin",
+        "bbl",
+        "nta"
+      ],
+      "page": "https://data.cityofnewyork.us/d/4d7f-74pe"
+    }
+  },
+  "cfc_latest_quarter": {
+    "rows": [
+      {
+        "facility": "Soup Kitchens ( meals served)",
+        "report_start_date": "2026-04-01T00:00:00.000",
+        "report_end_date": "2026-06-30T00:00:00.000",
+        "number": "858,335"
+      },
+      {
+        "facility": "Food Pantries (Individuals Served)",
+        "report_start_date": "2026-04-01T00:00:00.000",
+        "report_end_date": "2026-06-30T00:00:00.000",
+        "number": "8,291,839"
+      }
+    ],
+    "query": "https://data.cityofnewyork.us/resource/mpqk-skis.json?%24order=report_end_date+DESC&%24limit=2"
+  },
+  "supply_gap_top3": {
+    "year": "2025",
+    "rows": [
+      {
+        "year": "2025",
+        "nta": "MN1201",
+        "nta_name": "Washington Heights (South)",
+        "supply_gap_lbs": "2673103.36007119",
+        "food_insecure_percentage": "0.267761244563723",
+        "unemployment_rate": "0.1417649004799",
+        "vulnerable_population": "0.522362124736012",
+        "weighted_score": "8.91946054012885",
+        "rank": "1"
+      },
+      {
+        "year": "2025",
+        "nta": "BX0901",
+        "nta_name": "Soundview-Bruckner-Bronx River",
+        "supply_gap_lbs": "2780543.96088838",
+        "food_insecure_percentage": "0.246098127232093",
+        "unemployment_rate": "0.0937800888856359",
+        "vulnerable_population": "0.618131746102252",
+        "weighted_score": "8.78049126099647",
+        "rank": "2"
+      },
+      {
+        "year": "2025",
+        "nta": "BK1101",
+        "nta_name": "Bensonhurst",
+        "supply_gap_lbs": "2856339.12280089",
+        "food_insecure_percentage": "0.186951187263224",
+        "unemployment_rate": "0.072467001567901",
+        "vulnerable_population": "0.657396135718076",
+        "weighted_score": "8.48450301029407",
+        "rank": "3"
+      }
+    ],
+    "query": "https://data.cityofnewyork.us/resource/4kc9-zrs2.json?%24where=year%3D2025&%24order=rank+ASC&%24limit=3"
+  },
+  "providers_for_ein": {
+    "rows": [
+      {
+        "provider_id": "44",
+        "provider_name": "FOOD BANK FOR NEW YORK CITY",
+        "hq_address_1": "39 Broadway",
+        "hq_address_2": "10th Floor",
+        "hq_borough": "Manhattan",
+        "hq_city": "New York",
+        "hq_state": "NY",
+        "hq_zip": "10006",
+        "provider_ein": "13-3179546",
+        "provider_website": "www.foodbanknyc.org",
+        "latitude": "40.706251",
+        "longitude": "-74.012952",
+        "community_board": "101",
+        "council_district": "1",
+        "census_tract": "13",
+        "bin": "1000803",
+        "bbl": "1000200004",
+        "nta": "Battery Park City-Lower Manhattan"
+      }
+    ],
+    "query": "https://data.cityofnewyork.us/resource/x882-mwt5.json?provider_ein=13-3179546",
+    "ein_coverage": {
+      "count": "1809",
+      "count_provider_ein": "77"
+    }
+  },
+  "contracts_for_provider": {
+    "rows": [
+      {
+        "contract_id": "875",
+        "contract_number": "CT106920201406469",
+        "start_date": "2019-07-01T00:00:00.000",
+        "end_date": "2020-06-30T00:00:00.000",
+        "amount": "4393582",
+        "fiscal_year": "FY2020",
+        "purpose": "TO PROVIDE WAREHOUSE AND DELIVERY OF NON-PERISHABLE FOOD",
+        "program_id": "134",
+        "provider_id": "44",
+        "agency_name": "DSS"
+      },
+      {
+        "contract_id": "7116",
+        "contract_number": "CT126020201417708",
+        "start_date": "2019-07-01T00:00:00.000",
+        "end_date": "2020-06-30T00:00:00.000",
+        "amount": "1902134",
+        "fiscal_year": "FY2020",
+        "purpose": "FUND IMPLEMENTATION OF FOOD BANK FOR NYC's PANTRY PROGRAM.",
+        "program_id": "264",
+        "provider_id": "44",
+        "agency_name": "DYCD"
+      },
+      {
+        "contract_id": "446",
+        "contract_number": "CT126020201410441",
+        "start_date": "2019-07-01T00:00:00.000",
+        "end_date": "2020-06-30T00:00:00.000",
+        "amount": "1000000",
+        "fiscal_year": "FY2020",
+        "purpose": "TO SUPPORT 25 FOOD & HYGIENE PANTRIES IN PUBLIC SCHOOLS.",
+        "program_id": "264",
+        "provider_id": "44",
+        "agency_name": "DYCD"
+      },
+      {
+        "contract_id": "861",
+        "contract_number": "CT112520201406950",
+        "start_date": "2019-11-01T00:00:00.000",
+        "end_date": "2021-06-30T00:00:00.000",
+        "amount": "979952",
+        "fiscal_year": "FY2020",
+        "purpose": "PROVIDE SENIOR CENTER SERVICES TO OLDER ADULTS",
+        "program_id": "464",
+        "provider_id": "44",
+        "agency_name": "DFTA"
+      },
+      {
+        "contract_id": "47",
+        "contract_number": "CT106920201416967",
+        "start_date": "2019-07-01T00:00:00.000",
+        "end_date": "2020-06-30T00:00:00.000",
+        "amount": "625000",
+        "fiscal_year": "FY2020",
+        "purpose": "Prov. of fund to support EITC program, food pantries expans.",
+        "program_id": "134",
+        "provider_id": "44",
+        "agency_name": "DSS"
+      },
+      {
+        "contract_id": "6951",
+        "contract_number": "CT106920201419491",
+        "start_date": "2019-10-01T00:00:00.000",
+        "end_date": "2020-06-30T00:00:00.000",
+        "amount": "187500",
+        "fiscal_year": "FY2020",
+        "purpose": "Supplemental Nutrition Assistance Program(SNAP) outreach svc",
+        "program_id": "134",
+        "provider_id": "44",
+        "agency_name": "DSS"
+      },
+      {
+        "contract_id": "10263",
+        "contract_number": "CT126020211407909",
+        "start_date": "2019-07-01T00:00:00.000",
+        "end_date": "2020-06-30T00:00:00.000",
+        "amount": "142719",
+        "fiscal_year": "FY2020",
+        "purpose": "Fund public assistance and help low-income families",
+        "program_id": "264",
+        "provider_id": "44",
+        "agency_name": "DYCD"
+      },
+      {
+        "contract_id": "136",
+        "contract_number": "CT106920201417298",
+        "start_date": "2019-07-01T00:00:00.000",
+        "end_date": "2020-06-30T00:00:00.000",
+        "amount": "7000",
+        "fiscal_year": "FY2020",
+        "purpose": "Provide nutrition, health education and related services.",
+        "program_id": "134",
+        "provider_id": "44",
+        "agency_name": "DSS"
+      }
+    ],
+    "query": "https://data.cityofnewyork.us/resource/2bvn-ky2h.json?provider_id=44&%24order=amount+DESC"
+  },
+  "sites_for_provider": {
+    "rows": [
+      {
+        "site_id": "243",
+        "contract_id": "47",
+        "program_id": "134",
+        "agency_name": "DSS",
+        "site_name": "Discretionary SNAP Enrollment, EITC program and Capacity Expansion Efforts at Food Pantries Citywide",
+        "serves_food": "true",
+        "bp_category": "[\"food\"]"
+      },
+      {
+        "site_id": "244",
+        "contract_id": "136",
+        "program_id": "134",
+        "agency_name": "DSS",
+        "site_name": "Discretionary - To support nutrition and health education programming and related services for low-income residents of Council Districts 25 and 33.",
+        "serves_food": "true",
+        "bp_category": "[\"food\"]"
+      },
+      {
+        "site_id": "245",
+        "contract_id": "875",
+        "program_id": "134",
+        "agency_name": "DSS",
+        "site_name": "Warehouse and Delivery of non-perishable food to Food Pantries and Soup Kitchens",
+        "serves_food": "true",
+        "bp_category": "[\"food\"]"
+      },
+      {
+        "site_id": "246",
+        "contract_id": "6951",
+        "program_id": "134",
+        "agency_name": "DSS",
+        "site_name": "Provision of Supplemental Nutrition Assistance Program (SNAP) Outreach Plan.",
+        "serves_food": "true",
+        "bp_category": "[\"food\"]"
+      },
+      {
+        "site_id": "2016",
+        "contract_id": "446",
+        "program_id": "264",
+        "agency_name": "DYCD",
+        "site_name": "Food Bank For New York City",
+        "address_1": "39 Broadway",
+        "borough": "manhattan",
+        "zip": "10006",
+        "latitude": "40.706251",
+        "longitude": "-74.012952",
+        "serves_food": "false"
+      },
+      {
+        "site_id": "2017",
+        "contract_id": "7116",
+        "program_id": "264",
+        "agency_name": "DYCD",
+        "site_name": "Food Bank For New York City",
+        "address_1": "39 Broadway",
+        "borough": "manhattan",
+        "zip": "10006",
+        "latitude": "40.706251",
+        "longitude": "-74.012952",
+        "serves_food": "false"
+      },
+      {
+        "site_id": "2018",
+        "contract_id": "10263",
+        "program_id": "264",
+        "agency_name": "DYCD",
+        "site_name": "Food Bank For New York City",
+        "address_1": "39 Broadway",
+        "borough": "manhattan",
+        "zip": "10006",
+        "latitude": "40.706251",
+        "longitude": "-74.012952",
+        "serves_food": "false"
+      },
+      {
+        "site_id": "6070",
+        "contract_id": "861",
+        "program_id": "464",
+        "agency_name": "DFTA",
+        "site_name": "Food Bank Neighborhood Senior Center",
+        "address_1": "252 West 116th Street",
+        "borough": "manhattan",
+        "zip": "10026",
+        "latitude": "40.804725",
+        "longitude": "-73.956073",
+        "serves_food": "true"
+      }
+    ],
+    "query": "https://data.cityofnewyork.us/resource/y9si-s7ab.json?provider_id=44&%24select=site_id%2Ccontract_id%2Cprogram_id%2Cagency_name%2Csite_name%2Caddress_1%2Cborough%2Czip%2Clatitude%2Clongitude%2Cserves_food%2Cbp_category"
+  },
+  "council_discretionary_names_for_ein": {
+    "rows": [
+      {
+        "legal_name_of_organization": "Food Bank for New York City, The",
+        "count": "210",
+        "min_fiscal_year": "2009",
+        "max_fiscal_year": "2017",
+        "sum_amount": "11780709"
+      },
+      {
+        "legal_name_of_organization": "Food Bank for New York City",
+        "count": "4",
+        "min_fiscal_year": "2012",
+        "max_fiscal_year": "2012",
+        "sum_amount": "1550000"
+      },
+      {
+        "legal_name_of_organization": "Food Bank For New York City",
+        "count": "841",
+        "min_fiscal_year": "2018",
+        "max_fiscal_year": "2021",
+        "sum_amount": "13762007"
+      }
+    ],
+    "query": "https://data.cityofnewyork.us/resource/4d7f-74pe.json?ein=133179546&%24select=legal_name_of_organization%2Ccount%28%2A%29%2Cmin%28fiscal_year%29%2Cmax%28fiscal_year%29%2Csum%28amount%29&%24group=legal_name_of_organization"
+  },
+  "geosearch": {
+    "text": "355 Food Center Drive, Bronx, NY",
+    "result": {
+      "coordinates_lng_lat": [
+        -73.872917,
+        40.807808
+      ],
+      "label": "355 FOOD CENTER DRIVE, Bronx, NY, USA",
+      "confidence": 0.8,
+      "bbl": "2027810460"
+    }
+  }
+}

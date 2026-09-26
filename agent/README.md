@@ -1,5 +1,7 @@
 # XRPL payment agent
 
+> **Moved.** The agent now lives in [`../xrpl/`](../xrpl/), and it reports to the Fastify API in [`../api/`](../api/) (`POST /events/payment`, WebSocket `/live`) instead of `POST /api/payments` on the Next.js app. The frontend contract is [`../docs/API.md`](../docs/API.md). The notes below are the original plan, kept for reference.
+
 TypeScript. Owner: XRPL teammate. See `../context.md` ("Payee verification", "Edge cases and guardrails", "Integration: agent → frontend").
 
 ## Reporting to the frontend

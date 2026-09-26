@@ -1,0 +1,2 @@
+# local caches of full API responses (trimmed samples live in raw/samples/)
+.cache/

@@ -1,0 +1,15 @@
+HTTP/1.1 200 OK
+Date: Sat, 26 Sep 2026 17:40:22 GMT
+Server: Apache
+Cache-Control: must-revalidate, no-cache, private
+Content-language: en
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+Expires: Sun, 19 Nov 1978 05:00:00 GMT
+Content-Security-Policy: default-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.addtoany.com *.google-analytics.com *.newrelic.com https://code.jquery.com https://cdn.jsdelivr.net https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://www.gstatic.com; img-src 'self' *.google-analytics.com data:  https://ssl.gstatic.com/; frame-src *.addtoany.com *.youtube.com 'self' https://docs.google.com/; connect-src 'self' *.addtoany.com  *.google-analytics.com *.nr-data.net https://docs.google.com; report-uri /report-csp-violation
+Content-Length: 968
+Content-Type: application/xml
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+X-CDN: Imperva
+X-Iinfo: 18-115039772-115039775 NNNN CT(4200 -1 1) RT(1790443032655 22) q(0 0 92 -1) r(13899 13899) U6
+

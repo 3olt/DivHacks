@@ -1,0 +1,64 @@
+{
+  "_source": "https://projects.propublica.org/nonprofits/api/v2/organizations/133179546.json",
+  "organization": {
+    "ein": 133179546,
+    "name": "Food Bank For New York City",
+    "address": "355 FOOD CENTER DRIVE",
+    "city": "Bronx",
+    "state": "NY",
+    "zipcode": "10474-7000",
+    "ntee_code": "S50",
+    "subsection_code": 3,
+    "ruling_date": "1983-11-01",
+    "tax_period": "2025-06-01",
+    "revenue_amount": 173505104,
+    "asset_amount": 75007272,
+    "income_amount": 196072275,
+    "latest_object_id": "202621349349304557",
+    "updated_at": "2026-09-16T19:48:52.314Z"
+  },
+  "filings_with_data": [
+    {
+      "tax_prd": 202306,
+      "tax_prd_yr": 2023,
+      "formtype": 0,
+      "totrevenue": 164260366,
+      "totfuncexpns": 168654639,
+      "totassetsend": 86494065,
+      "totliabend": 42961631,
+      "totnetassetend": 43532434,
+      "pdf_url": null,
+      "updated": "2025-08-05T16:08:00.608Z"
+    },
+    {
+      "tax_prd": 202206,
+      "tax_prd_yr": 2022,
+      "formtype": 0,
+      "totrevenue": 187094963,
+      "totfuncexpns": 188033917,
+      "totassetsend": 62094729,
+      "totliabend": 14287095,
+      "totnetassetend": 47807634,
+      "pdf_url": "https://projects.propublica.org/nonprofits/download-filing?path=IRS%2F133179546_202206_990_2023060921428539.pdf",
+      "updated": "2024-08-28T20:05:20.639Z"
+    }
+  ],
+  "filings_without_data": [
+    {
+      "tax_prd": 202406,
+      "tax_prd_yr": 2024,
+      "formtype": 0,
+      "formtype_str": "990",
+      "pdf_url": "https://projects.propublica.org/nonprofits/download-filing?path=IRS%2F133179546_202406_990_2025051223426611.pdf"
+    },
+    {
+      "tax_prd": 201006,
+      "tax_prd_yr": 2010,
+      "formtype": 0,
+      "formtype_str": "990",
+      "pdf_url": "https://projects.propublica.org/nonprofits/download-filing?path=2011_05_EO%2F13-3179546_990_201006.pdf"
+    }
+  ],
+  "data_source": "ProPublica Nonprofit Explorer API: https://projects.propublica.org/nonprofits/api/\nIRS Exempt Organizations Business Master File Extract (EO BMF): https://www.irs.gov/charities-non-profits/exempt-organizations-business-master-file-extract-eo-bmf\nIRS Annual Extract of Tax-Exempt Organization Financial Data: https://www.irs.gov/uac/soi-tax-stats-annual-extract-of-tax-exempt-organization-financial-data",
+  "api_version": 2
+}

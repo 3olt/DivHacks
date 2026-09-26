@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<request>
+  <type_of_data>Spending</type_of_data>
+  <records_from>1</records_from>
+  <max_records>100</max_records>
+  <search_criteria>
+    <criteria><name>fiscal_year</name><type>value</type><value>2026</value></criteria>
+    <criteria><name>agency_code</name><type>value</type><value>069</value></criteria>
+    <criteria><name>payee_name</name><type>value</type><value>FOOD BANK FOR NEW YORK CITY</value></criteria>
+  </search_criteria>
+  <response_columns>
+    <column>agency</column>
+    <column>payee_name</column>
+    <column>associated_prime_vendor</column>
+    <column>check_amount</column>
+    <column>issue_date</column>
+    <column>contract_id</column>
+    <column>contract_purpose</column>
+    <column>document_id</column>
+    <column>expense_category</column>
+    <column>department</column>
+    <column>fiscal_year</column>
+    <column>spending_category</column>
+    <column>industry</column>
+    <column>mocs_registered</column>
+  </response_columns>
+</request>

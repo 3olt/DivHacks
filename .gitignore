@@ -1,1 +1,18 @@
 .DS_Store
+
+# dependencies / build output
+node_modules/
+dist/
+*.tsbuildinfo
+
+# secrets: real values live only in these files (never commit them)
+.env
+.env.*
+!.env.example
+*.local
+xrpl/.env.*
+
+# python
+data/.venv/
+__pycache__/
+*.pyc

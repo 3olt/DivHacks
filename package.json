@@ -1,0 +1,19 @@
+{
+  "name": "divhacks",
+  "private": true,
+  "description": "NYC community services map + autonomous, ledger-guarded RLUSD payments on the XRP Ledger",
+  "workspaces": [
+    "api",
+    "xrpl"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev -w api",
+    "start:api": "npm run start -w api",
+    "smoke:api": "npm run smoke -w api",
+    "typecheck": "npm run typecheck -w api && npm run typecheck -w xrpl",
+    "demo": "npm run demo -w xrpl --"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
