@@ -2,6 +2,7 @@
 
 import type { Contract, Payment, SiteDetail } from "@/lib/types";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/risk";
+import { formatEventTime } from "@/lib/format";
 import FollowSiteButton from "./FollowSiteButton";
 
 const usd = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
@@ -25,7 +26,7 @@ export default function SitePanel({ detail, onClose, onNeedSignup }: { detail: S
         {site.next_event && (
           <p className="mt-3 text-sm text-gray-700">
             <span className="font-medium">{site.next_event.title}</span> ·{" "}
-            {new Date(site.next_event.starts_at).toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+            {formatEventTime(site.next_event.starts_at)}
           </p>
         )}
       </div>

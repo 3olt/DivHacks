@@ -15,6 +15,7 @@ export default function Dashboard() {
   const [sites, setSites] = useState<Site[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<SiteDetail | null>(null);
+  const [popupOpen, setPopupOpen] = useState(false);
 
   // Poll so pins update live when the XRPL agent posts a payment.
   useEffect(() => {
@@ -45,8 +46,9 @@ export default function Dashboard() {
   return (
     <div className="flex h-dvh flex-col md:flex-row">
       <div className="relative h-[55dvh] md:h-full md:flex-1">
-        <MapView sites={sites} selectedId={selectedId} onSelect={setSelectedId} />
-        <div className="pointer-events-none absolute left-3 top-3 z-[1000] max-w-xs rounded-lg bg-white/95 p-4 shadow-md">
+        <MapView sites={sites} selectedId={selectedId} onSelect={setSelectedId} onPopupChange={setPopupOpen} />
+        {/* Hidden while a pin popup is open so it doesn't cover it. */}
+        <div className={`pointer-events-none absolute left-3 top-3 z-[1000] max-w-xs rounded-lg bg-white/95 p-4 shadow-md transition-opacity ${popupOpen ? "opacity-0" : "opacity-100"}`}>
           <h1 className="text-base font-semibold text-gray-900">NYC community resources</h1>
           <p className="mt-1 hidden text-xs text-gray-600 md:block">Colored by whether the city money behind each one is on time.</p>
           <ul className="mt-3 space-y-1">

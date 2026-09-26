@@ -43,7 +43,7 @@ Judging weights: Concept 30%, Functionality 30%, Wow Factor 20%, UX/Design 10%, 
    - 🟢 Funded and on track
    - 🟡 Payments running late
    - 🔴 At risk of delay or cancellation
-3. **Click a pin → "Why is this delayed?" panel:**
+3. **Click a pin → small popup on the map** (`SitePopup.tsx`): name, next event, funding status, top reason, and an XRPL payment status placeholder. Its **"See money trail"** button opens the side panel:
    - Money trail: NYC agency → contract → nonprofit → program/event
    - Days late, contract status, the nonprofit's financial health (from its IRS filings)
    - Payment history on XRPL (verified wallet ✅, payment released or held, link to the testnet explorer)
