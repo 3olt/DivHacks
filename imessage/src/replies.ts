@@ -98,6 +98,22 @@ function summaryAnswer(facts: Awaited<ReturnType<typeof siteFacts>>[]): string {
   return facts.map((f) => `${f.name}: ${f.risk_summary}`).join("\n");
 }
 
+// Plain-English refusal reasons for texts (same labels as web/src/lib/format.ts).
+const REFUSAL_LABELS: Record<string, string> = {
+  credential_invalid: "the wallet had no valid City credential",
+  destination_not_registry_wallet: "it wasn't the nonprofit's registered wallet",
+  invoice_already_paid: "the invoice was already paid",
+  contract_amount_exceeded: "it would exceed the contract amount",
+  over_auto_limit_needs_officer: "it's over the auto-pay limit and needs an officer's approval",
+  daily_cap_exceeded_agent: "the agent hit its 24-hour limit",
+  daily_cap_exceeded_payee: "the payee hit its 24-hour limit",
+  payee_excluded: "the payee is on the exclusion list",
+  payee_change_on_hold: "a wallet change is on a 72-hour hold",
+  suspicious_instructions_in_invoice: "the invoice contained hidden instructions",
+  verifier_rejected: "the invoice failed verification",
+  ledger_rejected: "the XRP Ledger itself rejected it",
+};
+
 function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
   return Object.fromEntries(keys.map((k) => [k, obj[k]])) as Pick<T, K>;
 }
@@ -124,7 +140,10 @@ async function siteFacts(id: string) {
       : null,
     recent_payments: trail.payments.slice(-3).map((p) => pick(p, ["source", "amount", "currency", "date", "status"])),
     nonprofit: { name: trail.nonprofit.name, cash_months: trail.nonprofit.financials?.cash_months ?? null },
-    recent_agent_decisions: trail.decisions.slice(0, 2).map((d) => pick(d, ["outcome", "amount", "currency", "refusal_reasons", "enforced_by", "created_at"])),
+    recent_agent_decisions: trail.decisions.slice(0, 2).map((d) => ({
+      ...pick(d, ["outcome", "amount", "currency", "enforced_by", "created_at"]),
+      refused_because: d.refusal_reasons.map((r) => REFUSAL_LABELS[r] ?? r),
+    })),
   };
 }
 

@@ -45,7 +45,12 @@ export default function Landing() {
           <PinDots />
           GlassLedger
         </span>
-        <LaunchButton small />
+        <nav className="flex items-center gap-4">
+          <Link href="/data" className="text-sm font-medium text-gray-700 hover:text-gray-900">
+            Open data
+          </Link>
+          <LaunchButton small />
+        </nav>
       </header>
 
       <main>
@@ -129,6 +134,13 @@ export default function Landing() {
           <div className="mt-6 flex justify-center">
             <LaunchButton />
           </div>
+          <p className="mt-4 text-sm text-gray-600">
+            Or check every record yourself on the{" "}
+            <Link href="/data" className="font-medium text-gray-900 underline">
+              open data page
+            </Link>
+            : every site, contract, payment, and agent decision, plus live XRP Ledger transactions, downloadable as CSV or JSON.
+          </p>
           <p className="mx-auto mt-8 max-w-2xl text-xs text-gray-500">
             Built at DivHacks 2026. The map currently shows demo data: fictional organizations placed at real NYC addresses, and payments on the XRP Ledger Testnet (no real money). Public-record sources are linked wherever they&apos;re used.
           </p>

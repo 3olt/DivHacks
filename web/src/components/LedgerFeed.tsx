@@ -2,6 +2,7 @@
 
 import type { Decision, Site } from "@/lib/contracts";
 import { OUTCOME_BADGES, enforcedByLabel, explorerTxUrl, formatEventTime, formatMoney, refusalLabel } from "@/lib/format";
+import { isRealTxHash } from "@/lib/openData";
 import DemoControls from "./DemoControls";
 
 // Public, live list of every payment decision the agent made: the transparency view.
@@ -62,7 +63,8 @@ export default function LedgerFeed({
                   {formatEventTime(d.created_at)} · {d.invoice_id} · signed by {d.signers.join(" + ")}
                 </p>
                 <div className="mt-1 flex flex-wrap gap-x-3 text-[11px]">
-                  {d.xrpl_tx_hash && (
+                  {/* Only real ledger transactions get a link (fixture hashes would 404 on the explorer). */}
+                  {isRealTxHash(d.xrpl_tx_hash) && (
                     <a href={explorerTxUrl(d.xrpl_tx_hash)} target="_blank" rel="noreferrer" className="text-blue-700 underline">
                       View on XRPL
                     </a>
