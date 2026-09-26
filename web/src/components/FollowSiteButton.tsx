@@ -32,12 +32,19 @@ export default function FollowSiteButton({ siteId, siteName, onNeedSignup }: { s
   }
 
   async function follow() {
-    const res = await fetch("/api/subscribe/follow", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, site_id: siteId, site_name: siteName }),
-    });
-    const data = await res.json();
+    setError("");
+    let res: Response;
+    try {
+      res = await fetch("/api/subscribe/follow", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, site_id: siteId, site_name: siteName }),
+      });
+    } catch {
+      setError("Couldn't reach the server");
+      return;
+    }
+    const data = await res.json().catch(() => ({}));
     if (res.ok) setStatus(data.imessage);
     else setError(data.error ?? "Failed");
   }

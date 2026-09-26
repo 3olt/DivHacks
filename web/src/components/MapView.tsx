@@ -49,6 +49,7 @@ export default function MapView({
   onDismiss: () => void;
 }) {
   const selected = sites.find((s) => s.id === selectedId) ?? null;
+  const markers = useRef(new Map<string, L.Marker>());
 
   return (
     <MapContainer bounds={NYC_BOUNDS} zoomSnap={0.25} closePopupOnClick={false} className="h-full w-full" zoomControl={false}>
@@ -57,7 +58,6 @@ export default function MapView({
         url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <PopupWatcher onChange={onPopupChange} onDismiss={onDismiss} />
-      <FlyToSelection site={selected} />
       {sites.map((site) => {
         const [lng, lat] = site.location.coordinates;
         return (
@@ -65,6 +65,10 @@ export default function MapView({
             key={site.id}
             position={[lat, lng]}
             icon={pinIcon(site.risk.level, site.id === selectedId)}
+            ref={(m) => {
+              if (m) markers.current.set(site.id, m);
+              else markers.current.delete(site.id);
+            }}
             eventHandlers={{ click: () => onSelect(site.id) }}
           >
             <Popup closeButton autoPan={false}>
@@ -73,15 +77,19 @@ export default function MapView({
           </Marker>
         );
       })}
+      {/* After the markers: effects run in order, so the selected marker is on the map before its popup opens. */}
+      <FlyToSelection site={selected} markers={markers} />
     </MapContainer>
   );
 }
 
-// Zooms to the selected site (placed below center so its popup fits), or back to all of NYC when cleared.
-function FlyToSelection({ site }: { site: Site | null }) {
+// Zooms to the selected site (placed below center so its popup fits) and opens its popup, so selecting from
+// the ledger behaves like clicking the pin. Zooms back to all of NYC when cleared.
+function FlyToSelection({ site, markers }: { site: Site | null; markers: React.RefObject<Map<string, L.Marker>> }) {
   const map = useMap();
   const lng = site?.location.coordinates[0];
   const lat = site?.location.coordinates[1];
+  const id = site?.id;
   useEffect(() => {
     if (lat === undefined || lng === undefined) {
       map.closePopup();
@@ -92,20 +100,30 @@ function FlyToSelection({ site }: { site: Site | null }) {
     const offset = Math.min(120, map.getSize().y / 4);
     const target = map.unproject(map.project([lat, lng], zoom).subtract([0, offset]), zoom);
     map.flyTo(target, zoom, { duration: 0.6 });
-  }, [map, lat, lng]);
+    // Next tick: a marker that just mounted (e.g. its type was un-filtered) may be re-created once more.
+    const t = setTimeout(() => {
+      const marker = id ? markers.current.get(id) : undefined;
+      if (marker && !marker.isPopupOpen()) marker.openPopup();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [map, markers, id, lat, lng]);
   return null;
 }
 
-// A popup closing counts as "dismiss" (same as the panel's ✕) unless another popup opened right after,
-// which is what happens when the user clicks a different pin.
+// A popup closing counts as "dismiss" (same as the panel's ✕) unless another popup opened right after
+// (the user clicked a different pin) or its marker was being removed from the map (filtered out, or
+// React re-mounting it), which closes the popup without the user asking.
 function PopupWatcher({ onChange, onDismiss }: { onChange: (open: boolean) => void; onDismiss: () => void }) {
   const opens = useRef(0);
-  useMapEvents({
+  const map = useMapEvents({
     popupopen: () => {
       opens.current++;
       onChange(true);
     },
-    popupclose: () => {
+    popupclose: (e) => {
+      // Leaflet has no public getter for a popup's owner layer; _source is stable across 1.x.
+      const source = (e.popup as unknown as { _source?: L.Layer })._source;
+      if (source && !map.hasLayer(source)) return;
       const seen = opens.current;
       setTimeout(() => {
         if (opens.current !== seen) return;

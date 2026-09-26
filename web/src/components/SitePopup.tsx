@@ -1,10 +1,10 @@
 import type { Site } from "@/lib/contracts";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/risk";
-import { SITE_TYPE_LABELS, formatEventTime } from "@/lib/format";
+import { SITE_TYPE_LABELS, formatEventTime, nextEvent } from "@/lib/format";
 
 // Small summary shown on the map when a pin is clicked. Full details open in the side panel at the same time.
 export default function SitePopup({ site }: { site: Site }) {
-  const next = site.events[0] ?? null;
+  const next = nextEvent(site.events);
   return (
     <div className="w-56 space-y-2 font-sans">
       <div>

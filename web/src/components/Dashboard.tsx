@@ -18,6 +18,7 @@ export default function Dashboard() {
   const [apiError, setApiError] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [trail, setTrail] = useState<Trail | null>(null);
+  const [trailErrorFor, setTrailErrorFor] = useState<string | null>(null);
   const [popupOpen, setPopupOpen] = useState(false);
   const [decisions, setDecisions] = useState<Decision[]>([]);
   const [tab, setTab] = useState<"ledger" | "alerts">("ledger");
@@ -90,10 +91,13 @@ export default function Dashboard() {
     let cancelled = false;
     fetchTrail(selectedId)
       .then((t) => {
-        if (!cancelled) setTrail(t);
+        if (!cancelled) {
+          setTrail(t);
+          setTrailErrorFor(null);
+        }
       })
       .catch(() => {
-        if (!cancelled) setApiError(true);
+        if (!cancelled) setTrailErrorFor(selectedId);
       });
     return () => {
       cancelled = true;
@@ -103,6 +107,19 @@ export default function Dashboard() {
   function closePanel() {
     setSelectedId(null);
     setTrail(null);
+  }
+
+  // Opening a site from the ledger: make sure its type isn't filtered out, so its pin and popup exist.
+  function openSite(id: string) {
+    const type = sites.find((s) => s.id === id)?.type;
+    if (type && hiddenTypes.has(type)) {
+      setHiddenTypes((prev) => {
+        const next = new Set(prev);
+        next.delete(type);
+        return next;
+      });
+    }
+    setSelectedId(id);
   }
 
   function toggleType(type: SiteType) {
@@ -162,7 +179,12 @@ export default function Dashboard() {
 
       <aside className="min-h-0 flex-1 overflow-y-auto border-t border-gray-200 bg-white md:w-[400px] md:flex-none md:border-l md:border-t-0">
         {selectedSite ? (
-          <SitePanel site={selectedSite} trail={trail?.site_id === selectedSite.id ? trail : null} onClose={closePanel} onNeedSignup={() => {
+          <SitePanel
+            key={selectedSite.id}
+            site={selectedSite}
+            trail={trail?.site_id === selectedSite.id ? trail : null}
+            trailError={trailErrorFor === selectedSite.id}
+            onClose={closePanel} onNeedSignup={() => {
               closePanel();
               setTab("alerts");
             }}
@@ -188,7 +210,7 @@ export default function Dashboard() {
               ))}
             </div>
             {tab === "ledger" ? (
-              <LedgerFeed decisions={decisions} sites={sites} onOpenSite={setSelectedId} />
+              <LedgerFeed decisions={decisions} sites={sites} onOpenSite={openSite} />
             ) : (
               <div className="space-y-3">
                 <h2 className="text-lg font-semibold text-gray-900">Get iMessage alerts</h2>

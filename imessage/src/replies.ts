@@ -108,7 +108,7 @@ async function siteFacts(id: string) {
   return {
     name: site.name,
     where: site.address ?? site.borough,
-    next_event: site.events[0] ?? null,
+    next_event: site.events.find((e) => new Date(e.starts_at).getTime() > Date.now()) ?? null,
     status: site.risk.level,
     risk_score: site.risk.score,
     risk_summary: site.risk.summary,

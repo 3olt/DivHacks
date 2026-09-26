@@ -67,3 +67,8 @@ export function enforcedByLabel(d: Decision): string | null {
 }
 
 export const explorerTxUrl = (hash: string) => `https://testnet.xrpl.org/transactions/${hash}`;
+
+// Soonest event that hasn't started yet (events arrive sorted soonest first, but may include past ones).
+export function nextEvent<E extends { starts_at: string }>(events: E[], now = Date.now()): E | null {
+  return events.find((e) => new Date(e.starts_at).getTime() > now) ?? null;
+}

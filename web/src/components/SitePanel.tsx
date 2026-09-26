@@ -3,21 +3,23 @@
 import { useState } from "react";
 import type { Contract, Decision, Payment, Site, Trail } from "@/lib/contracts";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/risk";
-import { OUTCOME_BADGES, enforcedByLabel, formatDate, formatEventTime, formatMoney, refusalLabel } from "@/lib/format";
+import { OUTCOME_BADGES, enforcedByLabel, formatDate, formatEventTime, formatMoney, nextEvent, refusalLabel } from "@/lib/format";
 import FollowSiteButton from "./FollowSiteButton";
 
 export default function SitePanel({
   site,
   trail,
+  trailError,
   onClose,
   onNeedSignup,
 }: {
   site: Site;
   trail: Trail | null;
+  trailError: boolean;
   onClose: () => void;
   onNeedSignup: () => void;
 }) {
-  const next = site.events[0] ?? null;
+  const next = nextEvent(site.events);
 
   return (
     <div className="flex h-full flex-col overflow-y-auto">
@@ -55,7 +57,7 @@ export default function SitePanel({
 
       {!trail ? (
         <Section title="Money trail">
-          <p className="text-sm text-gray-500">Loading…</p>
+          <p className="text-sm text-gray-500">{trailError ? "Couldn't load the money trail. Check that the API is running, then reopen this location." : "Loading…"}</p>
         </Section>
       ) : (
         <>
