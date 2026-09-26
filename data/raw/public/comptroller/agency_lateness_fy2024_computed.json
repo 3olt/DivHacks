@@ -1,0 +1,88 @@
+{
+  "source": "NYC Comptroller, Annual Summary Contracts Report FY2024, Appendix 1 (FY22-24 parent contracts)",
+  "source_url": "https://comptroller.nyc.gov/wp-content/uploads/2025/01/Appendix-1-FY22-24-Parent-Contracts.xlsx",
+  "report_url": "https://comptroller.nyc.gov/reports/annual-summary-contracts-report-for-the-city-of-new-york-fiscal-year-2024/",
+  "registration_fy": 2024,
+  "definition": "late = Registration Delta > 0, i.e. Original Registration Date after Contract Start Date (the Comptroller's 'retroactive' registration). Days = Registration Delta. Excludes DOE award method 32 like the report does.",
+  "citywide_all": {
+    "n_contracts": 9177,
+    "pct_registered_late": 80.7,
+    "avg_days_late_among_late": 230.9,
+    "median_days_late_among_late": 95.0,
+    "avg_registration_delta_all": 182.0,
+    "pct_more_than_1yr_late": 18.8
+  },
+  "citywide_human_services": {
+    "n_contracts": 3527,
+    "pct_registered_late": 90.7,
+    "avg_days_late_among_late": 346.2,
+    "median_days_late_among_late": 318.0,
+    "avg_registration_delta_all": 311.9,
+    "pct_more_than_1yr_late": 39.3
+  },
+  "agencies": {
+    "DSS/HRA": {
+      "doc_dept_cd": [
+        "096"
+      ],
+      "all": {
+        "n_contracts": 329,
+        "pct_registered_late": 90.6,
+        "avg_days_late_among_late": 226.3,
+        "median_days_late_among_late": 140.5,
+        "avg_registration_delta_all": 203.3,
+        "pct_more_than_1yr_late": 19.5
+      },
+      "human_services": {
+        "n_contracts": 222,
+        "pct_registered_late": 87.4,
+        "avg_days_late_among_late": 193.8,
+        "median_days_late_among_late": 94.0,
+        "avg_registration_delta_all": 167.1,
+        "pct_more_than_1yr_late": 17.6
+      }
+    },
+    "DHS": {
+      "doc_dept_cd": [
+        "071"
+      ],
+      "all": {
+        "n_contracts": 163,
+        "pct_registered_late": 85.3,
+        "avg_days_late_among_late": 172.8,
+        "median_days_late_among_late": 171.0,
+        "avg_registration_delta_all": 143.3,
+        "pct_more_than_1yr_late": 7.4
+      },
+      "human_services": {
+        "n_contracts": 133,
+        "pct_registered_late": 85.0,
+        "avg_days_late_among_late": 178.1,
+        "median_days_late_among_late": 178.0,
+        "avg_registration_delta_all": 147.6,
+        "pct_more_than_1yr_late": 7.5
+      }
+    },
+    "DYCD": {
+      "doc_dept_cd": [
+        "260"
+      ],
+      "all": {
+        "n_contracts": 1639,
+        "pct_registered_late": 98.5,
+        "avg_days_late_among_late": 397.8,
+        "median_days_late_among_late": 385.0,
+        "avg_registration_delta_all": 391.5,
+        "pct_more_than_1yr_late": 53.6
+      },
+      "human_services": {
+        "n_contracts": 1596,
+        "pct_registered_late": 98.6,
+        "avg_days_late_among_late": 400.0,
+        "median_days_late_among_late": 390.0,
+        "avg_registration_delta_all": 394.3,
+        "pct_more_than_1yr_late": 54.3
+      }
+    }
+  }
+}

@@ -1,0 +1,817 @@
+{
+  "id" : "2bvn-ky2h",
+  "name" : "Verified Locations for NYC City-Funded Social Service Contracts - Contracts",
+  "assetType" : "dataset",
+  "attribution" : "The Department of Social Services, the Department of Probation, Small Business Services, Mayor's Office of Criminal Justice",
+  "averageRating" : 0,
+  "category" : "City Government",
+  "createdAt" : 1611877762,
+  "description" : "City's contracts for social services.",
+  "diciBackend" : false,
+  "displayType" : "table",
+  "downloadCount" : 3890,
+  "hideFromCatalog" : false,
+  "hideFromDataJson" : false,
+  "locked" : false,
+  "newBackend" : true,
+  "numberOfComments" : 0,
+  "oid" : 36313113,
+  "provenance" : "official",
+  "publicationAppendEnabled" : false,
+  "publicationDate" : 1611878983,
+  "publicationGroup" : 17975887,
+  "publicationStage" : "published",
+  "rowClass" : "",
+  "rowsUpdatedAt" : 1620934635,
+  "tableId" : 17975887,
+  "totalTimesRated" : 0,
+  "viewCount" : 938,
+  "viewLastModified" : 1620934633,
+  "viewType" : "tabular",
+  "approvals" : [ {
+    "reviewedAt" : 1611942293,
+    "reviewedAutomatically" : true,
+    "state" : "approved",
+    "submissionId" : 3173423,
+    "submissionObject" : "public_audience_request",
+    "submissionOutcome" : "change_audience",
+    "submittedAt" : 1611942293,
+    "targetAudience" : "public",
+    "workflowId" : 2285,
+    "submissionDetails" : {
+      "permissionType" : "READ"
+    },
+    "submissionOutcomeApplication" : {
+      "endedAt" : 1611942293,
+      "failureCount" : 0,
+      "startedAt" : 1611942293,
+      "status" : "success"
+    },
+    "submitter" : {
+      "id" : "d5dp-fses",
+      "displayName" : "afinkel"
+    }
+  } ],
+  "clientContext" : {
+    "clientContextVariables" : [ ],
+    "inheritedVariables" : { }
+  },
+  "columns" : [ {
+    "id" : 521608268,
+    "name" : "contract_id",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "contract_id",
+    "position" : 1,
+    "renderTypeName" : "number",
+    "tableColumnId" : 128948522,
+    "cachedContents" : {
+      "non_null" : "4465",
+      "largest" : "10581",
+      "null" : "0",
+      "top" : [ {
+        "item" : "10051",
+        "count" : "1"
+      }, {
+        "item" : "2591",
+        "count" : "1"
+      }, {
+        "item" : "2747",
+        "count" : "1"
+      }, {
+        "item" : "2482",
+        "count" : "1"
+      }, {
+        "item" : "5030",
+        "count" : "1"
+      }, {
+        "item" : "2742",
+        "count" : "1"
+      }, {
+        "item" : "1360",
+        "count" : "1"
+      }, {
+        "item" : "1893",
+        "count" : "1"
+      }, {
+        "item" : "3446",
+        "count" : "1"
+      }, {
+        "item" : "7767",
+        "count" : "1"
+      }, {
+        "item" : "6061",
+        "count" : "1"
+      }, {
+        "item" : "6966",
+        "count" : "1"
+      }, {
+        "item" : "2087",
+        "count" : "1"
+      }, {
+        "item" : "1665",
+        "count" : "1"
+      }, {
+        "item" : "6406",
+        "count" : "1"
+      }, {
+        "item" : "8133",
+        "count" : "1"
+      }, {
+        "item" : "2504",
+        "count" : "1"
+      }, {
+        "item" : "1515",
+        "count" : "1"
+      }, {
+        "item" : "2461",
+        "count" : "1"
+      }, {
+        "item" : "6712",
+        "count" : "1"
+      } ],
+      "smallest" : "2",
+      "count" : "4465",
+      "cardinality" : "4465"
+    },
+    "format" : { }
+  }, {
+    "id" : 521608269,
+    "name" : "contract_number",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "contract_number",
+    "position" : 2,
+    "renderTypeName" : "text",
+    "tableColumnId" : 128948523,
+    "cachedContents" : {
+      "non_null" : "4465",
+      "largest" : "CT181620211402327",
+      "null" : "0",
+      "top" : [ {
+        "item" : "CT112520201404810",
+        "count" : "1"
+      }, {
+        "item" : "CT126020201404341",
+        "count" : "1"
+      }, {
+        "item" : "CT126020160001704",
+        "count" : "1"
+      }, {
+        "item" : "CT126020201404369",
+        "count" : "1"
+      }, {
+        "item" : "CT112520201406378",
+        "count" : "1"
+      }, {
+        "item" : "CT106920200000526",
+        "count" : "1"
+      }, {
+        "item" : "CT126020160001743",
+        "count" : "1"
+      }, {
+        "item" : "CT126020201407261",
+        "count" : "1"
+      }, {
+        "item" : "CT126020211400541",
+        "count" : "1"
+      }, {
+        "item" : "CT181620201410637",
+        "count" : "1"
+      }, {
+        "item" : "CT126020190000308",
+        "count" : "1"
+      }, {
+        "item" : "CT126020201401821",
+        "count" : "1"
+      }, {
+        "item" : "CT107120200000186",
+        "count" : "1"
+      }, {
+        "item" : "CT112520201405403",
+        "count" : "1"
+      }, {
+        "item" : "CT107120181401668",
+        "count" : "1"
+      }, {
+        "item" : "CT126020191428172",
+        "count" : "1"
+      }, {
+        "item" : "CT112520201404809",
+        "count" : "1"
+      }, {
+        "item" : "CT100220201410628",
+        "count" : "1"
+      }, {
+        "item" : "CT106920191419303",
+        "count" : "1"
+      }, {
+        "item" : "CT126020201416705",
+        "count" : "1"
+      } ],
+      "smallest" : "CT100220171406937",
+      "count" : "4465",
+      "cardinality" : "4465"
+    },
+    "format" : { }
+  }, {
+    "id" : 521608267,
+    "name" : "start_date",
+    "dataTypeName" : "calendar_date",
+    "description" : "",
+    "fieldName" : "start_date",
+    "position" : 3,
+    "renderTypeName" : "calendar_date",
+    "tableColumnId" : 128948521,
+    "cachedContents" : {
+      "non_null" : "4465",
+      "largest" : "2021-01-01T00:00:00.000",
+      "null" : "0",
+      "top" : [ {
+        "item" : "2019-07-01T00:00:00.000",
+        "count" : "1639"
+      }, {
+        "item" : "2018-07-01T00:00:00.000",
+        "count" : "967"
+      }, {
+        "item" : "2017-07-01T00:00:00.000",
+        "count" : "310"
+      }, {
+        "item" : "2019-09-01T00:00:00.000",
+        "count" : "210"
+      }, {
+        "item" : "2015-09-01T00:00:00.000",
+        "count" : "200"
+      }, {
+        "item" : "2019-12-01T00:00:00.000",
+        "count" : "199"
+      }, {
+        "item" : "2019-03-11T00:00:00.000",
+        "count" : "151"
+      }, {
+        "item" : "2016-07-01T00:00:00.000",
+        "count" : "102"
+      }, {
+        "item" : "2020-07-01T00:00:00.000",
+        "count" : "77"
+      }, {
+        "item" : "2017-04-01T00:00:00.000",
+        "count" : "61"
+      }, {
+        "item" : "2017-09-01T00:00:00.000",
+        "count" : "59"
+      }, {
+        "item" : "2018-10-01T00:00:00.000",
+        "count" : "50"
+      }, {
+        "item" : "2020-06-01T00:00:00.000",
+        "count" : "38"
+      }, {
+        "item" : "2015-07-01T00:00:00.000",
+        "count" : "36"
+      }, {
+        "item" : "2020-04-01T00:00:00.000",
+        "count" : "33"
+      }, {
+        "item" : "2019-11-01T00:00:00.000",
+        "count" : "28"
+      }, {
+        "item" : "2019-01-01T00:00:00.000",
+        "count" : "20"
+      }, {
+        "item" : "2017-10-01T00:00:00.000",
+        "count" : "19"
+      }, {
+        "item" : "2020-01-01T00:00:00.000",
+        "count" : "17"
+      }, {
+        "item" : "2019-10-01T00:00:00.000",
+        "count" : "16"
+      } ],
+      "smallest" : "1995-06-01T00:00:00.000",
+      "count" : "4465",
+      "cardinality" : "108"
+    },
+    "format" : {
+      "view" : "date"
+    }
+  }, {
+    "id" : 521608307,
+    "name" : "end_date",
+    "dataTypeName" : "calendar_date",
+    "description" : "",
+    "fieldName" : "end_date",
+    "position" : 4,
+    "renderTypeName" : "calendar_date",
+    "tableColumnId" : 128948561,
+    "cachedContents" : {
+      "non_null" : "4465",
+      "largest" : "2050-06-30T00:00:00.000",
+      "null" : "0",
+      "top" : [ {
+        "item" : "2020-06-30T00:00:00.000",
+        "count" : "1804"
+      }, {
+        "item" : "2021-06-30T00:00:00.000",
+        "count" : "1163"
+      }, {
+        "item" : "2022-06-30T00:00:00.000",
+        "count" : "358"
+      }, {
+        "item" : "2020-08-31T00:00:00.000",
+        "count" : "233"
+      }, {
+        "item" : "2019-08-31T00:00:00.000",
+        "count" : "208"
+      }, {
+        "item" : "2022-03-10T00:00:00.000",
+        "count" : "151"
+      }, {
+        "item" : "2020-03-31T00:00:00.000",
+        "count" : "83"
+      }, {
+        "item" : "2023-06-30T00:00:00.000",
+        "count" : "63"
+      }, {
+        "item" : "2024-06-30T00:00:00.000",
+        "count" : "45"
+      }, {
+        "item" : "2020-12-31T00:00:00.000",
+        "count" : "42"
+      }, {
+        "item" : "2027-06-30T00:00:00.000",
+        "count" : "31"
+      }, {
+        "item" : "2023-03-31T00:00:00.000",
+        "count" : "23"
+      }, {
+        "item" : "2028-06-30T00:00:00.000",
+        "count" : "22"
+      }, {
+        "item" : "2020-09-30T00:00:00.000",
+        "count" : "19"
+      }, {
+        "item" : "2021-03-31T00:00:00.000",
+        "count" : "17"
+      }, {
+        "item" : "2025-06-30T00:00:00.000",
+        "count" : "14"
+      }, {
+        "item" : "2021-12-31T00:00:00.000",
+        "count" : "13"
+      }, {
+        "item" : "2021-01-04T00:00:00.000",
+        "count" : "13"
+      }, {
+        "item" : "2019-12-31T00:00:00.000",
+        "count" : "12"
+      }, {
+        "item" : "2019-09-30T00:00:00.000",
+        "count" : "10"
+      } ],
+      "smallest" : "2019-06-30T00:00:00.000",
+      "count" : "4465",
+      "cardinality" : "90"
+    },
+    "format" : {
+      "view" : "date"
+    }
+  }, {
+    "id" : 521608294,
+    "name" : "amount",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "amount",
+    "position" : 5,
+    "renderTypeName" : "number",
+    "tableColumnId" : 128948548,
+    "cachedContents" : {
+      "non_null" : "4465",
+      "largest" : "680497897",
+      "null" : "0",
+      "top" : [ {
+        "item" : "5000",
+        "count" : "166"
+      }, {
+        "item" : "10000",
+        "count" : "136"
+      }, {
+        "item" : "20000",
+        "count" : "54"
+      }, {
+        "item" : "100000",
+        "count" : "44"
+      }, {
+        "item" : "50000",
+        "count" : "42"
+      }, {
+        "item" : "15000",
+        "count" : "35"
+      }, {
+        "item" : "1",
+        "count" : "32"
+      }, {
+        "item" : "25000",
+        "count" : "30"
+      }, {
+        "item" : "75000",
+        "count" : "17"
+      }, {
+        "item" : "30000",
+        "count" : "16"
+      }, {
+        "item" : "7500",
+        "count" : "14"
+      }, {
+        "item" : "8000",
+        "count" : "13"
+      }, {
+        "item" : "77500",
+        "count" : "13"
+      }, {
+        "item" : "40000",
+        "count" : "13"
+      }, {
+        "item" : "450000",
+        "count" : "11"
+      }, {
+        "item" : "35000",
+        "count" : "11"
+      }, {
+        "item" : "360000",
+        "count" : "11"
+      }, {
+        "item" : "60000",
+        "count" : "11"
+      }, {
+        "item" : "140702.64",
+        "count" : "11"
+      }, {
+        "item" : "80000",
+        "count" : "11"
+      } ],
+      "smallest" : "1",
+      "count" : "4465",
+      "cardinality" : "3368"
+    },
+    "format" : { }
+  }, {
+    "id" : 521608302,
+    "name" : "fiscal_year",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "fiscal_year",
+    "position" : 6,
+    "renderTypeName" : "text",
+    "tableColumnId" : 128948556,
+    "cachedContents" : {
+      "non_null" : "4465",
+      "largest" : "FY2021",
+      "null" : "0",
+      "top" : [ {
+        "item" : "FY2020",
+        "count" : "3933"
+      }, {
+        "item" : "FY2021",
+        "count" : "532"
+      } ],
+      "smallest" : "FY2020",
+      "count" : "4465",
+      "cardinality" : "2"
+    },
+    "format" : { }
+  }, {
+    "id" : 521608303,
+    "name" : "purpose",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "purpose",
+    "position" : 7,
+    "renderTypeName" : "text",
+    "tableColumnId" : 128948557,
+    "cachedContents" : {
+      "non_null" : "4465",
+      "largest" : "Youth Workforce Development/ FY16 OSY Workforce Development",
+      "null" : "0",
+      "top" : [ {
+        "item" : "PROVIDE SENIOR CENTER SERVICES TO OLDER ADULTS",
+        "count" : "214"
+      }, {
+        "item" : "To support Community Based SYEP Older Youth",
+        "count" : "50"
+      }, {
+        "item" : "To support Community Based SYEP Younger Youth",
+        "count" : "32"
+      }, {
+        "item" : "DELIVER MEALS TO THE HOMEBOUND ELDERLY",
+        "count" : "28"
+      }, {
+        "item" : "PROVIDE NORC SERVICES TO OLDER ADULTS",
+        "count" : "21"
+      }, {
+        "item" : "PROVIDE CASE MANAGEMENT SERVICES TO OLDER ADULTS",
+        "count" : "20"
+      }, {
+        "item" : "Arches Transformative Mentoring",
+        "count" : "20"
+      }, {
+        "item" : "PROVIDE SENIOR CENTER PROGRAMS TO OLDER ADULTS",
+        "count" : "15"
+      }, {
+        "item" : "Mental Health Services",
+        "count" : "14"
+      }, {
+        "item" : "Anti-Gun Violence Services",
+        "count" : "13"
+      }, {
+        "item" : "Emergency procurement",
+        "count" : "12"
+      }, {
+        "item" : "PROVIDE SUPPORTIVE HOUSING FOR HOMELESS SINGLE ADULTS",
+        "count" : "11"
+      }, {
+        "item" : "Provision of Immigrant Opportunities Initiative Services",
+        "count" : "11"
+      }, {
+        "item" : "Hate Crime Prevention",
+        "count" : "11"
+      }, {
+        "item" : "OST Elementary School Target Zip: Brooklyn",
+        "count" : "11"
+      }, {
+        "item" : "OST Elementary School Target Zip: Queens",
+        "count" : "10"
+      }, {
+        "item" : "Next STEPS - Transformative Mentoring Intervention",
+        "count" : "10"
+      }, {
+        "item" : "Developmental, Psychological and Behavioral Health Services",
+        "count" : "9"
+      }, {
+        "item" : "Provision of Home Care Services for HCSP Clients",
+        "count" : "9"
+      }, {
+        "item" : "Internship program provides 14 weeks of direct services",
+        "count" : "8"
+      } ],
+      "smallest" : "15/15 Scatter Site Housing and Supportive Services",
+      "count" : "4465",
+      "cardinality" : "3512"
+    },
+    "format" : { }
+  }, {
+    "id" : 521608304,
+    "name" : "program_id",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "program_id",
+    "position" : 8,
+    "renderTypeName" : "number",
+    "tableColumnId" : 128948558,
+    "cachedContents" : {
+      "non_null" : "4465",
+      "largest" : "465",
+      "null" : "0",
+      "top" : [ {
+        "item" : "264",
+        "count" : "957"
+      }, {
+        "item" : "279",
+        "count" : "551"
+      }, {
+        "item" : "271",
+        "count" : "429"
+      }, {
+        "item" : "203",
+        "count" : "345"
+      }, {
+        "item" : "464",
+        "count" : "243"
+      }, {
+        "item" : "311",
+        "count" : "134"
+      }, {
+        "item" : "120",
+        "count" : "103"
+      }, {
+        "item" : "263",
+        "count" : "61"
+      }, {
+        "item" : "122",
+        "count" : "58"
+      }, {
+        "item" : "399",
+        "count" : "56"
+      }, {
+        "item" : "300",
+        "count" : "52"
+      }, {
+        "item" : "308",
+        "count" : "47"
+      }, {
+        "item" : "272",
+        "count" : "42"
+      }, {
+        "item" : "132",
+        "count" : "39"
+      }, {
+        "item" : "278",
+        "count" : "38"
+      }, {
+        "item" : "202",
+        "count" : "38"
+      }, {
+        "item" : "281",
+        "count" : "37"
+      }, {
+        "item" : "285",
+        "count" : "35"
+      }, {
+        "item" : "283",
+        "count" : "34"
+      }, {
+        "item" : "269",
+        "count" : "34"
+      } ],
+      "smallest" : "100",
+      "count" : "4465",
+      "cardinality" : "200"
+    },
+    "format" : { }
+  }, {
+    "id" : 521608305,
+    "name" : "provider_id",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "provider_id",
+    "position" : 9,
+    "renderTypeName" : "number",
+    "tableColumnId" : 128948559,
+    "cachedContents" : {
+      "non_null" : "4465",
+      "largest" : "3055",
+      "null" : "0",
+      "top" : [ {
+        "item" : "324",
+        "count" : "91"
+      }, {
+        "item" : "16",
+        "count" : "79"
+      }, {
+        "item" : "31",
+        "count" : "60"
+      }, {
+        "item" : "40",
+        "count" : "59"
+      }, {
+        "item" : "503",
+        "count" : "57"
+      }, {
+        "item" : "99",
+        "count" : "51"
+      }, {
+        "item" : "82",
+        "count" : "42"
+      }, {
+        "item" : "37",
+        "count" : "42"
+      }, {
+        "item" : "218",
+        "count" : "41"
+      }, {
+        "item" : "3",
+        "count" : "38"
+      }, {
+        "item" : "607",
+        "count" : "36"
+      }, {
+        "item" : "197",
+        "count" : "35"
+      }, {
+        "item" : "6",
+        "count" : "34"
+      }, {
+        "item" : "675",
+        "count" : "34"
+      }, {
+        "item" : "329",
+        "count" : "33"
+      }, {
+        "item" : "466",
+        "count" : "32"
+      }, {
+        "item" : "587",
+        "count" : "31"
+      }, {
+        "item" : "152",
+        "count" : "29"
+      }, {
+        "item" : "533",
+        "count" : "29"
+      }, {
+        "item" : "419",
+        "count" : "28"
+      } ],
+      "smallest" : "1",
+      "count" : "4465",
+      "cardinality" : "1216"
+    },
+    "format" : { }
+  }, {
+    "id" : 521608306,
+    "name" : "agency_name",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "agency_name",
+    "position" : 10,
+    "renderTypeName" : "text",
+    "tableColumnId" : 128948560,
+    "cachedContents" : {
+      "non_null" : "4465",
+      "largest" : "SBS",
+      "null" : "0",
+      "top" : [ {
+        "item" : "DYCD",
+        "count" : "2599"
+      }, {
+        "item" : "DSS",
+        "count" : "720"
+      }, {
+        "item" : "DOHMH",
+        "count" : "526"
+      }, {
+        "item" : "DFTA",
+        "count" : "360"
+      }, {
+        "item" : "DOP",
+        "count" : "126"
+      }, {
+        "item" : "MOCJ",
+        "count" : "126"
+      }, {
+        "item" : "SBS",
+        "count" : "8"
+      } ],
+      "smallest" : "DFTA",
+      "count" : "4465",
+      "cardinality" : "7"
+    },
+    "format" : { }
+  } ],
+  "grants" : [ {
+    "inherited" : false,
+    "type" : "viewer",
+    "flags" : [ "public" ]
+  } ],
+  "metadata" : {
+    "rdfSubject" : "0",
+    "rdfClass" : "",
+    "attachments" : [ {
+      "filename" : "Social_Services_Site_Data_Open_Data_Desc_May_2021.docx",
+      "assetId" : "973eb35f-324a-433f-8963-4d60528dd1fb",
+      "name" : "Social_Services_Site_Data_Open_Data_Desc_May_2021.docx"
+    }, {
+      "filename" : "Verified_Locations_for_NYC_data_dictionary_May_2021.xlsx",
+      "assetId" : "82c60b6b-7402-4bc5-a0e4-1727d1d5f381",
+      "name" : "Verified_Locations_for_NYC_data_dictionary_May_2021.xlsx"
+    } ],
+    "custom_fields" : {
+      "Data Collection" : {
+        "Data Collection" : "Verified Locations for NYC City-Funded Social Service Contracts"
+      },
+      "Update" : {
+        "Automation" : "No",
+        "Date Made Public" : "1/29/2021",
+        "Update Frequency" : "As needed"
+      },
+      "Dataset Information" : {
+        "Agency" : "Mayor's Office for Economic Opportunity"
+      }
+    },
+    "availableDisplayTypes" : [ "table", "fatrow", "page" ]
+  },
+  "owner" : {
+    "id" : "5fuc-pqz2",
+    "displayName" : "NYC OpenData",
+    "profileImageUrlLarge" : "/api/users/5fuc-pqz2/profile_images/LARGE",
+    "profileImageUrlMedium" : "/api/users/5fuc-pqz2/profile_images/THUMB",
+    "profileImageUrlSmall" : "/api/users/5fuc-pqz2/profile_images/TINY",
+    "screenName" : "NYC OpenData",
+    "type" : "interactive",
+    "flags" : [ "acceptedEula", "mayBeStoriesCoOwner" ]
+  },
+  "query" : { },
+  "rights" : [ "read" ],
+  "tableAuthor" : {
+    "id" : "5fuc-pqz2",
+    "displayName" : "NYC OpenData",
+    "profileImageUrlLarge" : "/api/users/5fuc-pqz2/profile_images/LARGE",
+    "profileImageUrlMedium" : "/api/users/5fuc-pqz2/profile_images/THUMB",
+    "profileImageUrlSmall" : "/api/users/5fuc-pqz2/profile_images/TINY",
+    "screenName" : "NYC OpenData",
+    "type" : "interactive",
+    "flags" : [ "acceptedEula", "mayBeStoriesCoOwner" ]
+  },
+  "tags" : [ "health and human services", "geographic", "location" ],
+  "flags" : [ "default", "ownerMayBeContacted", "restorable", "restorePossibleForType" ]
+}

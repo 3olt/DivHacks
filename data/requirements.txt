@@ -2,3 +2,4 @@ requests>=2.32
 python-dotenv>=1.0
 # IRS TEOS 990 XML zips use Deflate64, which the stdlib zipfile cannot decode
 inflate64>=1.0
+openpyxl>=3.1

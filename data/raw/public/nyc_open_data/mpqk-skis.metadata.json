@@ -1,0 +1,382 @@
+{
+  "id" : "mpqk-skis",
+  "name" : "Community Food Connection (Quarterly Report)",
+  "assetType" : "dataset",
+  "attribution" : "Department of Social Services (DSS)",
+  "averageRating" : 0,
+  "category" : "Social Services",
+  "createdAt" : 1368810811,
+  "description" : "Data contains the number of ‘individuals served’ at food pantries and the number of ‘meals served’ at soup kitchens.  Both counts reflect the duplicated persons served by CFC-funded programs.",
+  "diciBackend" : false,
+  "displayType" : "table",
+  "downloadCount" : 4533,
+  "hideFromCatalog" : false,
+  "hideFromDataJson" : false,
+  "locked" : false,
+  "newBackend" : true,
+  "numberOfComments" : 0,
+  "oid" : 37347067,
+  "provenance" : "official",
+  "publicationAppendEnabled" : false,
+  "publicationDate" : 1624305245,
+  "publicationGroup" : 863325,
+  "publicationStage" : "published",
+  "rowClass" : "",
+  "rowsUpdatedAt" : 1786542715,
+  "rowsUpdatedBy" : "d5dp-fses",
+  "tableId" : 18361582,
+  "totalTimesRated" : 0,
+  "viewCount" : 7928,
+  "viewLastModified" : 1786542715,
+  "viewType" : "tabular",
+  "approvals" : [ {
+    "reviewedAt" : 1369140159,
+    "reviewedAutomatically" : true,
+    "state" : "approved",
+    "submissionId" : 3750022,
+    "submissionObject" : "public_audience_request",
+    "submissionOutcome" : "change_audience",
+    "submittedAt" : 1369140159,
+    "targetAudience" : "public",
+    "workflowId" : 2285,
+    "submissionDetails" : {
+      "permissionType" : "READ"
+    },
+    "submissionOutcomeApplication" : {
+      "failureCount" : 0,
+      "status" : "success"
+    },
+    "submitter" : {
+      "id" : "5fuc-pqz2",
+      "displayName" : "NYC OpenData"
+    }
+  } ],
+  "clientContext" : {
+    "clientContextVariables" : [ ],
+    "inheritedVariables" : { }
+  },
+  "columns" : [ {
+    "id" : 543008956,
+    "name" : "Facility",
+    "dataTypeName" : "text",
+    "description" : "Food Pantries or Soup Kitchens",
+    "fieldName" : "facility",
+    "position" : 1,
+    "renderTypeName" : "text",
+    "tableColumnId" : 10510152,
+    "width" : 196,
+    "cachedContents" : {
+      "non_null" : "118",
+      "largest" : "Soup Kitchens ( meals served)",
+      "null" : "0",
+      "top" : [ {
+        "item" : "Soup Kitchens ( meals served)",
+        "count" : "59"
+      }, {
+        "item" : "Food Pantries (Individuals Served)",
+        "count" : "59"
+      } ],
+      "smallest" : "Food Pantries (Individuals Served)",
+      "count" : "118",
+      "cardinality" : "118"
+    },
+    "format" : { }
+  }, {
+    "id" : 543008960,
+    "name" : "Report Start Date",
+    "dataTypeName" : "calendar_date",
+    "description" : "Start of report period",
+    "fieldName" : "report_start_date",
+    "position" : 2,
+    "renderTypeName" : "calendar_date",
+    "tableColumnId" : 138442885,
+    "cachedContents" : {
+      "non_null" : "118",
+      "largest" : "2026-04-01T00:00:00.000",
+      "null" : "0",
+      "top" : [ {
+        "item" : "2023-04-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2020-07-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2014-07-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2020-10-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2012-10-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2024-04-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2016-10-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2018-07-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2025-04-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2013-01-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2015-10-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2013-04-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2017-04-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2025-10-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2017-10-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2019-10-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2021-07-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2013-07-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2020-04-01T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2026-04-01T00:00:00.000",
+        "count" : "2"
+      } ],
+      "smallest" : "2011-10-01T00:00:00.000",
+      "count" : "118",
+      "cardinality" : "118"
+    },
+    "format" : {
+      "view" : "date"
+    }
+  }, {
+    "id" : 543008959,
+    "name" : "Report End Date",
+    "dataTypeName" : "calendar_date",
+    "description" : "End of report period",
+    "fieldName" : "report_end_date",
+    "position" : 3,
+    "renderTypeName" : "calendar_date",
+    "tableColumnId" : 138442884,
+    "cachedContents" : {
+      "non_null" : "118",
+      "largest" : "2026-06-30T00:00:00.000",
+      "null" : "0",
+      "top" : [ {
+        "item" : "2022-03-31T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2017-06-30T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2025-06-30T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2016-09-30T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2024-06-30T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2015-06-30T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2012-03-31T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2015-09-30T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2025-12-31T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2021-12-31T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2012-12-31T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2016-12-31T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2021-09-30T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2016-06-30T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2026-03-31T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2013-12-31T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2024-09-30T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2019-12-31T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2024-12-31T00:00:00.000",
+        "count" : "2"
+      }, {
+        "item" : "2022-09-30T00:00:00.000",
+        "count" : "2"
+      } ],
+      "smallest" : "2011-12-31T00:00:00.000",
+      "count" : "118",
+      "cardinality" : "118"
+    },
+    "format" : {
+      "view" : "date"
+    }
+  }, {
+    "id" : 543008958,
+    "name" : "Number",
+    "dataTypeName" : "text",
+    "description" : "Total of individuals served (food pantries) or meals served (soup kitchens) per report period (duplicated)",
+    "fieldName" : "number",
+    "position" : 4,
+    "renderTypeName" : "text",
+    "tableColumnId" : 119642970,
+    "cachedContents" : {
+      "non_null" : "118",
+      "largest" : "N/A",
+      "null" : "0",
+      "top" : [ {
+        "item" : "N/A",
+        "count" : "8"
+      }, {
+        "item" : "2,494,783",
+        "count" : "1"
+      }, {
+        "item" : "608,178",
+        "count" : "1"
+      }, {
+        "item" : "806,035",
+        "count" : "1"
+      }, {
+        "item" : "3,320,905",
+        "count" : "1"
+      }, {
+        "item" : "2,652,314",
+        "count" : "1"
+      }, {
+        "item" : "838,315",
+        "count" : "1"
+      }, {
+        "item" : "2,590,762",
+        "count" : "1"
+      }, {
+        "item" : "3,162,624",
+        "count" : "1"
+      }, {
+        "item" : "795,751",
+        "count" : "1"
+      }, {
+        "item" : "7,745,824",
+        "count" : "1"
+      }, {
+        "item" : "8,400,008",
+        "count" : "1"
+      }, {
+        "item" : "7,827,649",
+        "count" : "1"
+      }, {
+        "item" : "884,091",
+        "count" : "1"
+      }, {
+        "item" : "6,569,071",
+        "count" : "1"
+      }, {
+        "item" : "2,732,983",
+        "count" : "1"
+      }, {
+        "item" : "858,335",
+        "count" : "1"
+      }, {
+        "item" : "603,371",
+        "count" : "1"
+      }, {
+        "item" : "2,587,785",
+        "count" : "1"
+      }, {
+        "item" : "607,111",
+        "count" : "1"
+      } ],
+      "smallest" : "2,235,270",
+      "count" : "118",
+      "cardinality" : "118"
+    },
+    "format" : { }
+  } ],
+  "grants" : [ {
+    "inherited" : false,
+    "type" : "viewer",
+    "flags" : [ "public" ]
+  } ],
+  "metadata" : {
+    "rdfSubject" : "0",
+    "rdfClass" : "",
+    "attachments" : [ {
+      "filename" : "Community_Food_Connection_Data_Dictionary.xlsx",
+      "assetId" : "a15df634-5358-4e9a-a4e9-bd50d952e579",
+      "name" : "Community_Food_Connection_Data_Dictionary.xlsx"
+    } ],
+    "custom_fields" : {
+      "Update" : {
+        "Automation" : "No",
+        "Date Made Public" : "5/21/2013",
+        "Update Frequency" : "Quarterly",
+        "Data Change Frequency" : "Quarterly"
+      },
+      "Dataset Information" : {
+        "Agency" : "Human Resources Administration (HRA)"
+      }
+    },
+    "rowLabel" : "count of individuals served (food pantries) or meals served (soup kitchens) per quarter",
+    "availableDisplayTypes" : [ "table", "fatrow", "page" ],
+    "renderTypeConfig" : {
+      "visible" : {
+        "table" : true
+      }
+    }
+  },
+  "owner" : {
+    "id" : "5fuc-pqz2",
+    "displayName" : "NYC OpenData",
+    "profileImageUrlLarge" : "/api/users/5fuc-pqz2/profile_images/LARGE",
+    "profileImageUrlMedium" : "/api/users/5fuc-pqz2/profile_images/THUMB",
+    "profileImageUrlSmall" : "/api/users/5fuc-pqz2/profile_images/TINY",
+    "screenName" : "NYC OpenData",
+    "type" : "interactive",
+    "flags" : [ "acceptedEula", "mayBeStoriesCoOwner" ]
+  },
+  "query" : { },
+  "rights" : [ "read" ],
+  "tableAuthor" : {
+    "id" : "5fuc-pqz2",
+    "displayName" : "NYC OpenData",
+    "profileImageUrlLarge" : "/api/users/5fuc-pqz2/profile_images/LARGE",
+    "profileImageUrlMedium" : "/api/users/5fuc-pqz2/profile_images/THUMB",
+    "profileImageUrlSmall" : "/api/users/5fuc-pqz2/profile_images/TINY",
+    "screenName" : "NYC OpenData",
+    "type" : "interactive",
+    "flags" : [ "acceptedEula", "mayBeStoriesCoOwner" ]
+  },
+  "tags" : [ "cfc", "community food connection", "emergency food assistance program (quarterly report)", "hra", "human resources", "reporting", "food", "services" ],
+  "flags" : [ "default", "ownerMayBeContacted", "restorable", "restorePossibleForType" ]
+}

@@ -6,6 +6,8 @@ The fix layer is an AI payment agent. It pays nonprofits' verified invoices in *
 
 Project context and pitch: [`context.md`](context.md). API contract for the frontend: [`docs/API.md`](docs/API.md).
 
+**Where things stand:** [`docs/STATUS.md`](docs/STATUS.md): what's built, the guardrails with real Testnet evidence, what's real vs demo, and what's next. Raw public data: [`data/raw/public/`](data/raw/public/README.md).
+
 ## Layout
 
 | Path | What | Owner |

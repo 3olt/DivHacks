@@ -1,0 +1,2710 @@
+{
+  "id" : "y9si-s7ab",
+  "name" : "Verified Locations for NYC City-Funded Social Service Contracts - Sites",
+  "assetType" : "dataset",
+  "attribution" : "The Department of Social Services, the Department of Probation, Small Business Services, Mayor's Office of Criminal Justice, Department of Youth and Community Development, Department of Aging, Department of Health and Mental Hygiene",
+  "averageRating" : 0,
+  "category" : "City Government",
+  "createdAt" : 1611887933,
+  "description" : "Service delivery location.",
+  "diciBackend" : false,
+  "displayType" : "table",
+  "downloadCount" : 8097,
+  "hideFromCatalog" : false,
+  "hideFromDataJson" : false,
+  "locked" : false,
+  "newBackend" : true,
+  "numberOfComments" : 0,
+  "oid" : 36316141,
+  "provenance" : "official",
+  "publicationAppendEnabled" : false,
+  "publicationDate" : 1611889746,
+  "publicationGroup" : 17977863,
+  "publicationStage" : "published",
+  "rowClass" : "",
+  "rowsUpdatedAt" : 1620934423,
+  "tableId" : 17977863,
+  "totalTimesRated" : 0,
+  "viewCount" : 1073,
+  "viewLastModified" : 1620934417,
+  "viewType" : "tabular",
+  "approvals" : [ {
+    "reviewedAt" : 1611942314,
+    "reviewedAutomatically" : true,
+    "state" : "approved",
+    "submissionId" : 3173426,
+    "submissionObject" : "public_audience_request",
+    "submissionOutcome" : "change_audience",
+    "submittedAt" : 1611942314,
+    "targetAudience" : "public",
+    "workflowId" : 2285,
+    "submissionDetails" : {
+      "permissionType" : "READ"
+    },
+    "submissionOutcomeApplication" : {
+      "endedAt" : 1611942314,
+      "failureCount" : 0,
+      "startedAt" : 1611942314,
+      "status" : "success"
+    },
+    "submitter" : {
+      "id" : "d5dp-fses",
+      "displayName" : "afinkel"
+    }
+  } ],
+  "clientContext" : {
+    "clientContextVariables" : [ ],
+    "inheritedVariables" : { }
+  },
+  "columns" : [ {
+    "id" : 521701575,
+    "name" : "site_id",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "site_id",
+    "position" : 1,
+    "renderTypeName" : "number",
+    "tableColumnId" : 129014789,
+    "cachedContents" : {
+      "non_null" : "5635",
+      "largest" : "6123",
+      "null" : "0",
+      "top" : [ {
+        "item" : "4773",
+        "count" : "1"
+      }, {
+        "item" : "4743",
+        "count" : "1"
+      }, {
+        "item" : "2591",
+        "count" : "1"
+      }, {
+        "item" : "5325",
+        "count" : "1"
+      }, {
+        "item" : "2747",
+        "count" : "1"
+      }, {
+        "item" : "2482",
+        "count" : "1"
+      }, {
+        "item" : "5030",
+        "count" : "1"
+      }, {
+        "item" : "2742",
+        "count" : "1"
+      }, {
+        "item" : "1360",
+        "count" : "1"
+      }, {
+        "item" : "4042",
+        "count" : "1"
+      }, {
+        "item" : "1893",
+        "count" : "1"
+      }, {
+        "item" : "3633",
+        "count" : "1"
+      }, {
+        "item" : "3635",
+        "count" : "1"
+      }, {
+        "item" : "3446",
+        "count" : "1"
+      }, {
+        "item" : "6061",
+        "count" : "1"
+      }, {
+        "item" : "5831",
+        "count" : "1"
+      }, {
+        "item" : "4392",
+        "count" : "1"
+      }, {
+        "item" : "5912",
+        "count" : "1"
+      }, {
+        "item" : "4402",
+        "count" : "1"
+      }, {
+        "item" : "204",
+        "count" : "1"
+      } ],
+      "smallest" : "26",
+      "count" : "5635",
+      "cardinality" : "5635"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701550,
+    "name" : "provider_id",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "provider_id",
+    "position" : 2,
+    "renderTypeName" : "number",
+    "tableColumnId" : 129014764,
+    "cachedContents" : {
+      "non_null" : "5635",
+      "largest" : "3055",
+      "null" : "0",
+      "top" : [ {
+        "item" : "324",
+        "count" : "149"
+      }, {
+        "item" : "16",
+        "count" : "141"
+      }, {
+        "item" : "607",
+        "count" : "121"
+      }, {
+        "item" : "99",
+        "count" : "72"
+      }, {
+        "item" : "503",
+        "count" : "72"
+      }, {
+        "item" : "40",
+        "count" : "67"
+      }, {
+        "item" : "6",
+        "count" : "66"
+      }, {
+        "item" : "31",
+        "count" : "62"
+      }, {
+        "item" : "218",
+        "count" : "56"
+      }, {
+        "item" : "587",
+        "count" : "54"
+      }, {
+        "item" : "37",
+        "count" : "53"
+      }, {
+        "item" : "675",
+        "count" : "53"
+      }, {
+        "item" : "466",
+        "count" : "49"
+      }, {
+        "item" : "329",
+        "count" : "49"
+      }, {
+        "item" : "152",
+        "count" : "46"
+      }, {
+        "item" : "157",
+        "count" : "45"
+      }, {
+        "item" : "361",
+        "count" : "45"
+      }, {
+        "item" : "533",
+        "count" : "43"
+      }, {
+        "item" : "82",
+        "count" : "43"
+      }, {
+        "item" : "409",
+        "count" : "42"
+      } ],
+      "smallest" : "1",
+      "count" : "5635",
+      "cardinality" : "1125"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701586,
+    "name" : "program_id",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "program_id",
+    "position" : 3,
+    "renderTypeName" : "number",
+    "tableColumnId" : 129014800,
+    "cachedContents" : {
+      "non_null" : "5635",
+      "largest" : "465",
+      "null" : "0",
+      "top" : [ {
+        "item" : "264",
+        "count" : "1470"
+      }, {
+        "item" : "279",
+        "count" : "817"
+      }, {
+        "item" : "271",
+        "count" : "594"
+      }, {
+        "item" : "464",
+        "count" : "244"
+      }, {
+        "item" : "311",
+        "count" : "157"
+      }, {
+        "item" : "399",
+        "count" : "119"
+      }, {
+        "item" : "272",
+        "count" : "102"
+      }, {
+        "item" : "281",
+        "count" : "94"
+      }, {
+        "item" : "263",
+        "count" : "90"
+      }, {
+        "item" : "102",
+        "count" : "85"
+      }, {
+        "item" : "115",
+        "count" : "71"
+      }, {
+        "item" : "300",
+        "count" : "62"
+      }, {
+        "item" : "274",
+        "count" : "52"
+      }, {
+        "item" : "308",
+        "count" : "50"
+      }, {
+        "item" : "122",
+        "count" : "48"
+      }, {
+        "item" : "107",
+        "count" : "46"
+      }, {
+        "item" : "278",
+        "count" : "42"
+      }, {
+        "item" : "273",
+        "count" : "41"
+      }, {
+        "item" : "285",
+        "count" : "38"
+      }, {
+        "item" : "181",
+        "count" : "37"
+      } ],
+      "smallest" : "100",
+      "count" : "5635",
+      "cardinality" : "190"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701552,
+    "name" : "contract_id",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "contract_id",
+    "position" : 4,
+    "renderTypeName" : "number",
+    "tableColumnId" : 129014766,
+    "cachedContents" : {
+      "non_null" : "5635",
+      "largest" : "10581",
+      "null" : "0",
+      "top" : [ {
+        "item" : "4740",
+        "count" : "71"
+      }, {
+        "item" : "9008",
+        "count" : "23"
+      }, {
+        "item" : "3179",
+        "count" : "21"
+      }, {
+        "item" : "3396",
+        "count" : "18"
+      }, {
+        "item" : "500",
+        "count" : "16"
+      }, {
+        "item" : "5676",
+        "count" : "16"
+      }, {
+        "item" : "4003",
+        "count" : "15"
+      }, {
+        "item" : "5674",
+        "count" : "14"
+      }, {
+        "item" : "10286",
+        "count" : "13"
+      }, {
+        "item" : "3258",
+        "count" : "13"
+      }, {
+        "item" : "3256",
+        "count" : "12"
+      }, {
+        "item" : "5622",
+        "count" : "11"
+      }, {
+        "item" : "10216",
+        "count" : "10"
+      }, {
+        "item" : "8328",
+        "count" : "10"
+      }, {
+        "item" : "5185",
+        "count" : "10"
+      }, {
+        "item" : "6807",
+        "count" : "10"
+      }, {
+        "item" : "5679",
+        "count" : "9"
+      }, {
+        "item" : "629",
+        "count" : "9"
+      }, {
+        "item" : "4520",
+        "count" : "9"
+      }, {
+        "item" : "1499",
+        "count" : "9"
+      } ],
+      "smallest" : "2",
+      "count" : "5635",
+      "cardinality" : "3805"
+    },
+    "format" : {
+      "noCommas" : "true"
+    }
+  }, {
+    "id" : 521701556,
+    "name" : "agency_name",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "agency_name",
+    "position" : 5,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014770,
+    "cachedContents" : {
+      "non_null" : "5635",
+      "largest" : "SBS",
+      "null" : "0",
+      "top" : [ {
+        "item" : "DYCD",
+        "count" : "3837"
+      }, {
+        "item" : "DOHMH",
+        "count" : "764"
+      }, {
+        "item" : "MOCJ",
+        "count" : "420"
+      }, {
+        "item" : "DFTA",
+        "count" : "358"
+      }, {
+        "item" : "DSS",
+        "count" : "156"
+      }, {
+        "item" : "DOP",
+        "count" : "78"
+      }, {
+        "item" : "SBS",
+        "count" : "22"
+      } ],
+      "smallest" : "DFTA",
+      "count" : "5635",
+      "cardinality" : "7"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701563,
+    "name" : "bbl",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "bbl",
+    "position" : 6,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014777,
+    "cachedContents" : {
+      "non_null" : "5412",
+      "largest" : "undefinedundefinedundefined",
+      "null" : "223",
+      "top" : [ {
+        "item" : "undefinedundefinedundefined",
+        "count" : "43"
+      }, {
+        "item" : "1011160024",
+        "count" : "20"
+      }, {
+        "item" : "1019300030",
+        "count" : "19"
+      }, {
+        "item" : "3033440016",
+        "count" : "16"
+      }, {
+        "item" : "4002390049",
+        "count" : "15"
+      }, {
+        "item" : "2024620042",
+        "count" : "15"
+      }, {
+        "item" : "4021590002",
+        "count" : "14"
+      }, {
+        "item" : "3001727501",
+        "count" : "14"
+      }, {
+        "item" : "1021440003",
+        "count" : "13"
+      }, {
+        "item" : "1006170047",
+        "count" : "13"
+      }, {
+        "item" : "4004700100",
+        "count" : "13"
+      }, {
+        "item" : "3062640030",
+        "count" : "12"
+      }, {
+        "item" : "3030160001",
+        "count" : "12"
+      }, {
+        "item" : "5000080070",
+        "count" : "12"
+      }, {
+        "item" : "3067350044",
+        "count" : "11"
+      }, {
+        "item" : "4001910005",
+        "count" : "11"
+      }, {
+        "item" : "4096530001",
+        "count" : "10"
+      }, {
+        "item" : "2022910012",
+        "count" : "10"
+      }, {
+        "item" : "3001520006",
+        "count" : "10"
+      }, {
+        "item" : "1000557501",
+        "count" : "9"
+      } ],
+      "smallest" : "1000010010",
+      "count" : "5635",
+      "cardinality" : "2646"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701553,
+    "name" : "bin",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "bin",
+    "position" : 7,
+    "renderTypeName" : "number",
+    "tableColumnId" : 129014767,
+    "cachedContents" : {
+      "non_null" : "5369",
+      "largest" : "5172050",
+      "null" : "266",
+      "top" : [ {
+        "item" : "3000000",
+        "count" : "26"
+      }, {
+        "item" : "1027468",
+        "count" : "20"
+      }, {
+        "item" : "1058640",
+        "count" : "19"
+      }, {
+        "item" : "3387654",
+        "count" : "16"
+      }, {
+        "item" : "4003410",
+        "count" : "15"
+      }, {
+        "item" : "2002833",
+        "count" : "15"
+      }, {
+        "item" : "3000556",
+        "count" : "14"
+      }, {
+        "item" : "1067571",
+        "count" : "13"
+      }, {
+        "item" : "4433386",
+        "count" : "13"
+      }, {
+        "item" : "1089928",
+        "count" : "13"
+      }, {
+        "item" : "3162352",
+        "count" : "12"
+      }, {
+        "item" : "3325733",
+        "count" : "12"
+      }, {
+        "item" : "5000085",
+        "count" : "12"
+      }, {
+        "item" : "3406670",
+        "count" : "11"
+      }, {
+        "item" : "4432108",
+        "count" : "11"
+      }, {
+        "item" : "4000000",
+        "count" : "11"
+      }, {
+        "item" : "4436677",
+        "count" : "10"
+      }, {
+        "item" : "2000506",
+        "count" : "10"
+      }, {
+        "item" : "3000404",
+        "count" : "10"
+      }, {
+        "item" : "1001162",
+        "count" : "9"
+      } ],
+      "smallest" : "1000000",
+      "count" : "5635",
+      "cardinality" : "2668"
+    },
+    "format" : {
+      "noCommas" : "true"
+    }
+  }, {
+    "id" : 521701574,
+    "name" : "community_board",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "community_district",
+    "position" : 8,
+    "renderTypeName" : "number",
+    "tableColumnId" : 129014788,
+    "cachedContents" : {
+      "non_null" : "5412",
+      "largest" : "503",
+      "null" : "223",
+      "top" : [ {
+        "item" : "103",
+        "count" : "198"
+      }, {
+        "item" : "302",
+        "count" : "184"
+      }, {
+        "item" : "501",
+        "count" : "171"
+      }, {
+        "item" : "201",
+        "count" : "170"
+      }, {
+        "item" : "111",
+        "count" : "170"
+      }, {
+        "item" : "112",
+        "count" : "166"
+      }, {
+        "item" : "101",
+        "count" : "164"
+      }, {
+        "item" : "412",
+        "count" : "152"
+      }, {
+        "item" : "303",
+        "count" : "149"
+      }, {
+        "item" : "110",
+        "count" : "148"
+      }, {
+        "item" : "204",
+        "count" : "143"
+      }, {
+        "item" : "305",
+        "count" : "134"
+      }, {
+        "item" : "401",
+        "count" : "130"
+      }, {
+        "item" : "301",
+        "count" : "127"
+      }, {
+        "item" : "203",
+        "count" : "118"
+      }, {
+        "item" : "105",
+        "count" : "115"
+      }, {
+        "item" : "316",
+        "count" : "112"
+      }, {
+        "item" : "107",
+        "count" : "106"
+      }, {
+        "item" : "206",
+        "count" : "96"
+      }, {
+        "item" : "314",
+        "count" : "94"
+      } ],
+      "smallest" : "101",
+      "count" : "5635",
+      "cardinality" : "62"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701572,
+    "name" : "council_district",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "council_district",
+    "position" : 9,
+    "renderTypeName" : "number",
+    "tableColumnId" : 129014786,
+    "cachedContents" : {
+      "non_null" : "5412",
+      "largest" : "51",
+      "null" : "223",
+      "top" : [ {
+        "item" : "1",
+        "count" : "297"
+      }, {
+        "item" : "17",
+        "count" : "243"
+      }, {
+        "item" : "8",
+        "count" : "241"
+      }, {
+        "item" : "33",
+        "count" : "207"
+      }, {
+        "item" : "3",
+        "count" : "202"
+      }, {
+        "item" : "9",
+        "count" : "202"
+      }, {
+        "item" : "16",
+        "count" : "173"
+      }, {
+        "item" : "49",
+        "count" : "170"
+      }, {
+        "item" : "10",
+        "count" : "157"
+      }, {
+        "item" : "36",
+        "count" : "142"
+      }, {
+        "item" : "26",
+        "count" : "134"
+      }, {
+        "item" : "41",
+        "count" : "133"
+      }, {
+        "item" : "2",
+        "count" : "130"
+      }, {
+        "item" : "35",
+        "count" : "125"
+      }, {
+        "item" : "38",
+        "count" : "124"
+      }, {
+        "item" : "37",
+        "count" : "121"
+      }, {
+        "item" : "42",
+        "count" : "120"
+      }, {
+        "item" : "15",
+        "count" : "118"
+      }, {
+        "item" : "14",
+        "count" : "102"
+      }, {
+        "item" : "24",
+        "count" : "100"
+      } ],
+      "smallest" : "1",
+      "count" : "5635",
+      "cardinality" : "51"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701589,
+    "name" : "latitude",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "latitude",
+    "position" : 10,
+    "renderTypeName" : "number",
+    "tableColumnId" : 129014803,
+    "cachedContents" : {
+      "non_null" : "5412",
+      "largest" : "40.906225",
+      "null" : "223",
+      "top" : [ {
+        "item" : "40.770697",
+        "count" : "20"
+      }, {
+        "item" : "40.808638",
+        "count" : "19"
+      }, {
+        "item" : "40.697788",
+        "count" : "16"
+      }, {
+        "item" : "40.750432",
+        "count" : "15"
+      }, {
+        "item" : "40.687196",
+        "count" : "14"
+      }, {
+        "item" : "40.832759",
+        "count" : "14"
+      }, {
+        "item" : "40.846186",
+        "count" : "13"
+      }, {
+        "item" : "40.755361",
+        "count" : "13"
+      }, {
+        "item" : "40.738052",
+        "count" : "12"
+      }, {
+        "item" : "40.606369",
+        "count" : "12"
+      }, {
+        "item" : "40.712184",
+        "count" : "12"
+      }, {
+        "item" : "40.618079",
+        "count" : "11"
+      }, {
+        "item" : "40.691506",
+        "count" : "10"
+      }, {
+        "item" : "40.74547",
+        "count" : "10"
+      }, {
+        "item" : "40.736006",
+        "count" : "10"
+      }, {
+        "item" : "40.708356",
+        "count" : "9"
+      }, {
+        "item" : "40.882727",
+        "count" : "9"
+      }, {
+        "item" : "40.866001",
+        "count" : "9"
+      }, {
+        "item" : "40.70727",
+        "count" : "9"
+      }, {
+        "item" : "40.64607",
+        "count" : "9"
+      } ],
+      "smallest" : "40.50563",
+      "count" : "5635",
+      "cardinality" : "2807"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701559,
+    "name" : "longitude",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "longitude",
+    "position" : 11,
+    "renderTypeName" : "number",
+    "tableColumnId" : 129014773,
+    "cachedContents" : {
+      "non_null" : "5412",
+      "largest" : "-73.709845",
+      "null" : "223",
+      "top" : [ {
+        "item" : "-73.980486",
+        "count" : "20"
+      }, {
+        "item" : "-73.948582",
+        "count" : "19"
+      }, {
+        "item" : "-73.913906",
+        "count" : "16"
+      }, {
+        "item" : "-73.981921",
+        "count" : "15"
+      }, {
+        "item" : "-73.935323",
+        "count" : "15"
+      }, {
+        "item" : "-73.919296",
+        "count" : "14"
+      }, {
+        "item" : "-73.937623",
+        "count" : "13"
+      }, {
+        "item" : "-73.945068",
+        "count" : "13"
+      }, {
+        "item" : "-73.939722",
+        "count" : "12"
+      }, {
+        "item" : "-73.989235",
+        "count" : "12"
+      }, {
+        "item" : "-74.000646",
+        "count" : "12"
+      }, {
+        "item" : "-73.959427",
+        "count" : "11"
+      }, {
+        "item" : "-73.986297",
+        "count" : "10"
+      }, {
+        "item" : "-73.849901",
+        "count" : "10"
+      }, {
+        "item" : "-73.925851",
+        "count" : "10"
+      }, {
+        "item" : "-74.014814",
+        "count" : "9"
+      }, {
+        "item" : "-73.946279",
+        "count" : "9"
+      }, {
+        "item" : "-73.998544",
+        "count" : "9"
+      }, {
+        "item" : "-73.924777",
+        "count" : "9"
+      }, {
+        "item" : "-74.004314",
+        "count" : "9"
+      } ],
+      "smallest" : "-74.253196",
+      "count" : "5635",
+      "cardinality" : "2807"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701562,
+    "name" : "nta",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "nta",
+    "position" : 12,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014776,
+    "cachedContents" : {
+      "non_null" : "5412",
+      "largest" : "SI54",
+      "null" : "223",
+      "top" : [ {
+        "item" : "MN25",
+        "count" : "119"
+      }, {
+        "item" : "BK38",
+        "count" : "104"
+      }, {
+        "item" : "MN28",
+        "count" : "98"
+      }, {
+        "item" : "MN27",
+        "count" : "89"
+      }, {
+        "item" : "BK81",
+        "count" : "87"
+      }, {
+        "item" : "MN34",
+        "count" : "86"
+      }, {
+        "item" : "BX39",
+        "count" : "85"
+      }, {
+        "item" : "MN11",
+        "count" : "83"
+      }, {
+        "item" : "BX34",
+        "count" : "83"
+      }, {
+        "item" : "MN13",
+        "count" : "80"
+      }, {
+        "item" : "BX14",
+        "count" : "80"
+      }, {
+        "item" : "MN33",
+        "count" : "79"
+      }, {
+        "item" : "MN17",
+        "count" : "77"
+      }, {
+        "item" : "BK61",
+        "count" : "74"
+      }, {
+        "item" : "QN31",
+        "count" : "73"
+      }, {
+        "item" : "BK82",
+        "count" : "72"
+      }, {
+        "item" : "MN36",
+        "count" : "70"
+      }, {
+        "item" : "SI22",
+        "count" : "69"
+      }, {
+        "item" : "BK78",
+        "count" : "69"
+      }, {
+        "item" : "MN03",
+        "count" : "68"
+      } ],
+      "smallest" : "BK09",
+      "count" : "5635",
+      "cardinality" : "191"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701573,
+    "name" : "census_tract",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "census_tract",
+    "position" : 13,
+    "renderTypeName" : "number",
+    "tableColumnId" : 129014787,
+    "cachedContents" : {
+      "non_null" : "5412",
+      "largest" : "157902",
+      "null" : "223",
+      "top" : [ {
+        "item" : "9",
+        "count" : "55"
+      }, {
+        "item" : "43",
+        "count" : "44"
+      }, {
+        "item" : "222",
+        "count" : "42"
+      }, {
+        "item" : "3",
+        "count" : "40"
+      }, {
+        "item" : "7",
+        "count" : "39"
+      }, {
+        "item" : "18",
+        "count" : "38"
+      }, {
+        "item" : "77",
+        "count" : "36"
+      }, {
+        "item" : "41",
+        "count" : "35"
+      }, {
+        "item" : "13",
+        "count" : "35"
+      }, {
+        "item" : "171",
+        "count" : "32"
+      }, {
+        "item" : "25",
+        "count" : "32"
+      }, {
+        "item" : "29",
+        "count" : "32"
+      }, {
+        "item" : "196",
+        "count" : "30"
+      }, {
+        "item" : "37",
+        "count" : "30"
+      }, {
+        "item" : "21",
+        "count" : "28"
+      }, {
+        "item" : "11",
+        "count" : "27"
+      }, {
+        "item" : "1502",
+        "count" : "27"
+      }, {
+        "item" : "149",
+        "count" : "27"
+      }, {
+        "item" : "431",
+        "count" : "27"
+      }, {
+        "item" : "67",
+        "count" : "27"
+      } ],
+      "smallest" : "1",
+      "count" : "5635",
+      "cardinality" : "895"
+    },
+    "format" : {
+      "noCommas" : "true"
+    }
+  }, {
+    "id" : 521701567,
+    "name" : "catchment_type",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "catchment_type",
+    "position" : 14,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014781,
+    "cachedContents" : {
+      "non_null" : "5104",
+      "largest" : "other",
+      "null" : "531",
+      "top" : [ {
+        "item" : "community district",
+        "count" : "4654"
+      }, {
+        "item" : "entire city",
+        "count" : "275"
+      }, {
+        "item" : "other",
+        "count" : "119"
+      }, {
+        "item" : "borough",
+        "count" : "52"
+      }, {
+        "item" : "citywide",
+        "count" : "4"
+      } ],
+      "smallest" : "borough",
+      "count" : "5635",
+      "cardinality" : "5"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701579,
+    "name" : "catchment_zone",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "catchment_zone",
+    "position" : 15,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014793,
+    "cachedContents" : {
+      "non_null" : "4981",
+      "largest" : "[\"staten island\"]",
+      "null" : "654",
+      "top" : [ {
+        "item" : "[\"all boroughs\"]",
+        "count" : "275"
+      }, {
+        "item" : "[\"mn03\"]",
+        "count" : "181"
+      }, {
+        "item" : "[\"mn12\"]",
+        "count" : "147"
+      }, {
+        "item" : "[\"mn11\"]",
+        "count" : "147"
+      }, {
+        "item" : "[\"bk03\"]",
+        "count" : "135"
+      }, {
+        "item" : "[\"bx01\"]",
+        "count" : "135"
+      }, {
+        "item" : "[\"bk02\"]",
+        "count" : "131"
+      }, {
+        "item" : "[\"si01\"]",
+        "count" : "126"
+      }, {
+        "item" : "[\"qn12\"]",
+        "count" : "118"
+      }, {
+        "item" : "[\"bx04\"]",
+        "count" : "117"
+      }, {
+        "item" : "[\"bk05\"]",
+        "count" : "114"
+      }, {
+        "item" : "[\"mn10\"]",
+        "count" : "114"
+      }, {
+        "item" : "[\"qn01\"]",
+        "count" : "112"
+      }, {
+        "item" : "[\"bk01\"]",
+        "count" : "109"
+      }, {
+        "item" : "[\"bx03\"]",
+        "count" : "105"
+      }, {
+        "item" : "[\"mn07\"]",
+        "count" : "99"
+      }, {
+        "item" : "[\"bk16\"]",
+        "count" : "96"
+      }, {
+        "item" : "[\"mn05\"]",
+        "count" : "93"
+      }, {
+        "item" : "[\"mn01\"]",
+        "count" : "91"
+      }, {
+        "item" : "[\"bx06\"]",
+        "count" : "87"
+      } ],
+      "smallest" : "[\"all boroughs\"]",
+      "count" : "5635",
+      "cardinality" : "94"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701551,
+    "name" : "catchment_intersection_1",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "catchment_intersection_1",
+    "position" : 16,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014765,
+    "cachedContents" : {
+      "non_null" : "2",
+      "largest" : "Rikers Island",
+      "null" : "5633",
+      "top" : [ {
+        "item" : "270 Main St, Yorker, NY 10701",
+        "count" : "1"
+      }, {
+        "item" : "Rikers Island",
+        "count" : "1"
+      } ],
+      "smallest" : "270 Main St, Yorker, NY 10701",
+      "count" : "5635",
+      "cardinality" : "2"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701582,
+    "name" : "catchment_intersection_2",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "catchment_intersection_2",
+    "position" : 17,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014796,
+    "cachedContents" : {
+      "non_null" : "0",
+      "null" : "5635",
+      "count" : "5635",
+      "cardinality" : "0"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701560,
+    "name" : "fixed_address",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "fixed_address",
+    "position" : 18,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014774,
+    "cachedContents" : {
+      "non_null" : "5635",
+      "largest" : "true",
+      "null" : "0",
+      "top" : [ {
+        "item" : "true",
+        "count" : "5423"
+      }, {
+        "item" : "false",
+        "count" : "212"
+      } ],
+      "smallest" : "false",
+      "count" : "5635",
+      "cardinality" : "2"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701568,
+    "name" : "address_1",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "address_1",
+    "position" : 19,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014782,
+    "cachedContents" : {
+      "non_null" : "5464",
+      "largest" : "Silver Lake Park",
+      "null" : "171",
+      "top" : [ {
+        "item" : "5 West 63rd Street",
+        "count" : "20"
+      }, {
+        "item" : "1474 Gates Avenue",
+        "count" : "16"
+      }, {
+        "item" : "1130 Grand Concourse",
+        "count" : "14"
+      }, {
+        "item" : "29-76 Northern Boulevard",
+        "count" : "13"
+      }, {
+        "item" : "50 Nevins St.",
+        "count" : "13"
+      }, {
+        "item" : "7802 Bay Parkway",
+        "count" : "12"
+      }, {
+        "item" : "850 Grand Street",
+        "count" : "12"
+      }, {
+        "item" : "10-25 41 Avenue",
+        "count" : "12"
+      }, {
+        "item" : "1523 Avenue M",
+        "count" : "11"
+      }, {
+        "item" : "45 Wadsworth Avenue",
+        "count" : "10"
+      }, {
+        "item" : "3512 Dekalb Avenue",
+        "count" : "9"
+      }, {
+        "item" : "108-25 62 DRIVE",
+        "count" : "9"
+      }, {
+        "item" : "651 Academy Street",
+        "count" : "9"
+      }, {
+        "item" : "177-01 BAISLEY BLVD",
+        "count" : "8"
+      }, {
+        "item" : "3750 BAYCHESTER AVENUE",
+        "count" : "8"
+      }, {
+        "item" : "953 Southern Boulevard",
+        "count" : "8"
+      }, {
+        "item" : "80 Pitt Street",
+        "count" : "8"
+      }, {
+        "item" : "54 Nagle Avenue",
+        "count" : "7"
+      }, {
+        "item" : "650 HOLLYWOOD AVENUE",
+        "count" : "7"
+      }, {
+        "item" : "165 Eldridge Street",
+        "count" : "7"
+      } ],
+      "smallest" : "100-00 Beach Channel Drive",
+      "count" : "5635",
+      "cardinality" : "3096"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701581,
+    "name" : "address_2",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "address_2",
+    "position" : 20,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014795,
+    "cachedContents" : {
+      "non_null" : "677",
+      "largest" : "WS 19-170",
+      "null" : "4958",
+      "top" : [ {
+        "item" : "3rd Floor",
+        "count" : "67"
+      }, {
+        "item" : "2nd Floor",
+        "count" : "63"
+      }, {
+        "item" : "4th Floor",
+        "count" : "39"
+      }, {
+        "item" : "5th Floor",
+        "count" : "31"
+      }, {
+        "item" : "6th Floor",
+        "count" : "28"
+      }, {
+        "item" : "9th Floor",
+        "count" : "21"
+      }, {
+        "item" : "Ground Floor",
+        "count" : "17"
+      }, {
+        "item" : "2nd floor",
+        "count" : "13"
+      }, {
+        "item" : "7th Floor",
+        "count" : "11"
+      }, {
+        "item" : "Lower Level",
+        "count" : "11"
+      }, {
+        "item" : "First Floor",
+        "count" : "9"
+      }, {
+        "item" : "8th Floor",
+        "count" : "8"
+      }, {
+        "item" : "19th Floor",
+        "count" : "7"
+      }, {
+        "item" : "10th Floor",
+        "count" : "5"
+      }, {
+        "item" : "17th Floor",
+        "count" : "5"
+      }, {
+        "item" : "13th Floor",
+        "count" : "5"
+      }, {
+        "item" : "New York",
+        "count" : "5"
+      }, {
+        "item" : "1st floor",
+        "count" : "5"
+      }, {
+        "item" : "B100",
+        "count" : "5"
+      }, {
+        "item" : "3rd floor",
+        "count" : "5"
+      } ],
+      "smallest" : "#1",
+      "count" : "5635",
+      "cardinality" : "260"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701577,
+    "name" : "borough",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "borough",
+    "position" : 21,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014791,
+    "cachedContents" : {
+      "non_null" : "5412",
+      "largest" : "staten is",
+      "null" : "223",
+      "top" : [ {
+        "item" : "brooklyn",
+        "count" : "1647"
+      }, {
+        "item" : "manhattan",
+        "count" : "1404"
+      }, {
+        "item" : "bronx",
+        "count" : "1086"
+      }, {
+        "item" : "queens",
+        "count" : "997"
+      }, {
+        "item" : "staten is",
+        "count" : "278"
+      } ],
+      "smallest" : "bronx",
+      "count" : "5635",
+      "cardinality" : "5"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701570,
+    "name" : "city",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "city",
+    "position" : 22,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014784,
+    "cachedContents" : {
+      "non_null" : "5412",
+      "largest" : "woodside",
+      "null" : "223",
+      "top" : [ {
+        "item" : "brooklyn",
+        "count" : "1647"
+      }, {
+        "item" : "new york",
+        "count" : "1404"
+      }, {
+        "item" : "bronx",
+        "count" : "1086"
+      }, {
+        "item" : "staten island",
+        "count" : "278"
+      }, {
+        "item" : "jamaica",
+        "count" : "147"
+      }, {
+        "item" : "flushing",
+        "count" : "100"
+      }, {
+        "item" : "long island city",
+        "count" : "77"
+      }, {
+        "item" : "astoria",
+        "count" : "68"
+      }, {
+        "item" : "far rockaway",
+        "count" : "67"
+      }, {
+        "item" : "forest hills",
+        "count" : "52"
+      }, {
+        "item" : "jackson heights",
+        "count" : "44"
+      }, {
+        "item" : "ridgewood",
+        "count" : "38"
+      }, {
+        "item" : "elmhurst",
+        "count" : "35"
+      }, {
+        "item" : "woodside",
+        "count" : "31"
+      }, {
+        "item" : "fresh meadows",
+        "count" : "27"
+      }, {
+        "item" : "springfield gardens",
+        "count" : "22"
+      }, {
+        "item" : "corona",
+        "count" : "20"
+      }, {
+        "item" : "sunnyside",
+        "count" : "19"
+      }, {
+        "item" : "bayside",
+        "count" : "16"
+      }, {
+        "item" : "ozone park",
+        "count" : "15"
+      } ],
+      "smallest" : "arverne",
+      "count" : "5635",
+      "cardinality" : "42"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701561,
+    "name" : "state",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "state",
+    "position" : 23,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014775,
+    "cachedContents" : {
+      "non_null" : "5412",
+      "largest" : "NY",
+      "null" : "223",
+      "top" : [ {
+        "item" : "NY",
+        "count" : "5412"
+      } ],
+      "smallest" : "NY",
+      "count" : "5635",
+      "cardinality" : "1"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701564,
+    "name" : "postcode",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "zip",
+    "position" : 24,
+    "renderTypeName" : "number",
+    "tableColumnId" : 129014778,
+    "cachedContents" : {
+      "non_null" : "5464",
+      "largest" : "18439",
+      "null" : "171",
+      "top" : [ {
+        "item" : "10002",
+        "count" : "129"
+      }, {
+        "item" : "11201",
+        "count" : "114"
+      }, {
+        "item" : "10456",
+        "count" : "111"
+      }, {
+        "item" : "10027",
+        "count" : "108"
+      }, {
+        "item" : "10029",
+        "count" : "101"
+      }, {
+        "item" : "11212",
+        "count" : "98"
+      }, {
+        "item" : "11206",
+        "count" : "89"
+      }, {
+        "item" : "10457",
+        "count" : "89"
+      }, {
+        "item" : "10455",
+        "count" : "84"
+      }, {
+        "item" : "10301",
+        "count" : "83"
+      }, {
+        "item" : "10451",
+        "count" : "81"
+      }, {
+        "item" : "10467",
+        "count" : "79"
+      }, {
+        "item" : "11207",
+        "count" : "78"
+      }, {
+        "item" : "11101",
+        "count" : "76"
+      }, {
+        "item" : "10035",
+        "count" : "68"
+      }, {
+        "item" : "10001",
+        "count" : "63"
+      }, {
+        "item" : "11233",
+        "count" : "61"
+      }, {
+        "item" : "10452",
+        "count" : "60"
+      }, {
+        "item" : "10453",
+        "count" : "57"
+      }, {
+        "item" : "11217",
+        "count" : "57"
+      } ],
+      "smallest" : "10001",
+      "count" : "5635",
+      "cardinality" : "194"
+    },
+    "format" : {
+      "noCommas" : "true"
+    }
+  }, {
+    "id" : 521701587,
+    "name" : "site_name",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "site_name",
+    "position" : 25,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014801,
+    "cachedContents" : {
+      "non_null" : "5635",
+      "largest" : "ZMI Foundation, Inc.",
+      "null" : "0",
+      "top" : [ {
+        "item" : "City Council Autism Awareness Initiative",
+        "count" : "33"
+      }, {
+        "item" : "Main Site",
+        "count" : "22"
+      }, {
+        "item" : "Chinese American Planning Council",
+        "count" : "21"
+      }, {
+        "item" : "NYC",
+        "count" : "18"
+      }, {
+        "item" : "Recreational and Socialization Services for Individuals with Autism Spectrum Disorders",
+        "count" : "18"
+      }, {
+        "item" : "City Council Initiative",
+        "count" : "17"
+      }, {
+        "item" : "Manhattan",
+        "count" : "17"
+      }, {
+        "item" : "YMCA Central Office",
+        "count" : "16"
+      }, {
+        "item" : "Geriatric M.H. Initiative",
+        "count" : "15"
+      }, {
+        "item" : "Brooklyn",
+        "count" : "14"
+      }, {
+        "item" : "Provider office",
+        "count" : "14"
+      }, {
+        "item" : "Bronx",
+        "count" : "13"
+      }, {
+        "item" : "Assertive Community Treatment",
+        "count" : "12"
+      }, {
+        "item" : "City Council - Court Involved Youth Mental Health Initiative",
+        "count" : "11"
+      }, {
+        "item" : "Medically Supervised Outpatient",
+        "count" : "11"
+      }, {
+        "item" : "Staten Island",
+        "count" : "9"
+      }, {
+        "item" : "Ridgewood Bushwick Youth Center",
+        "count" : "9"
+      }, {
+        "item" : "City Council - Opioid Prevention and Treatment",
+        "count" : "9"
+      }, {
+        "item" : "BETH ISRAEL MEDICAL CENTER_Manhattan",
+        "count" : "9"
+      }, {
+        "item" : "Queens",
+        "count" : "9"
+      } ],
+      "smallest" : "109th Precinct Community Council, Inc",
+      "count" : "5635",
+      "cardinality" : "4057"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701584,
+    "name" : "site_budget",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "site_budget",
+    "position" : 26,
+    "renderTypeName" : "number",
+    "tableColumnId" : 129014798,
+    "cachedContents" : {
+      "non_null" : "58",
+      "largest" : "6749253.66",
+      "null" : "5577",
+      "top" : [ {
+        "item" : "0",
+        "count" : "22"
+      }, {
+        "item" : "5000",
+        "count" : "2"
+      }, {
+        "item" : "129400",
+        "count" : "2"
+      }, {
+        "item" : "143905",
+        "count" : "1"
+      }, {
+        "item" : "10000",
+        "count" : "1"
+      }, {
+        "item" : "238135.62",
+        "count" : "1"
+      }, {
+        "item" : "1731915",
+        "count" : "1"
+      }, {
+        "item" : "1756489.35",
+        "count" : "1"
+      }, {
+        "item" : "4592302.56",
+        "count" : "1"
+      }, {
+        "item" : "556736.48",
+        "count" : "1"
+      }, {
+        "item" : "1234155.81",
+        "count" : "1"
+      }, {
+        "item" : "320489.27",
+        "count" : "1"
+      }, {
+        "item" : "4964641.7",
+        "count" : "1"
+      }, {
+        "item" : "626170.36",
+        "count" : "1"
+      }, {
+        "item" : "4299024.43",
+        "count" : "1"
+      }, {
+        "item" : "3090094.24",
+        "count" : "1"
+      }, {
+        "item" : "7000",
+        "count" : "1"
+      }, {
+        "item" : "535402.74",
+        "count" : "1"
+      }, {
+        "item" : "2786303.17",
+        "count" : "1"
+      }, {
+        "item" : "250000",
+        "count" : "1"
+      } ],
+      "smallest" : "0",
+      "count" : "5635",
+      "cardinality" : "35"
+    },
+    "format" : {
+      "precision" : "2"
+    }
+  }, {
+    "id" : 521701588,
+    "name" : "notes",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "notes",
+    "position" : 27,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014802,
+    "cachedContents" : {
+      "non_null" : "4225",
+      "largest" : "ZMI Foundation, Inc.",
+      "null" : "1410",
+      "top" : [ {
+        "item" : "Ages 16-24 participants",
+        "count" : "85"
+      }, {
+        "item" : "SONYC Round 3",
+        "count" : "37"
+      }, {
+        "item" : "Sports Leagues",
+        "count" : "36"
+      }, {
+        "item" : "SYEP CareerReady",
+        "count" : "28"
+      }, {
+        "item" : "Relocation",
+        "count" : "25"
+      }, {
+        "item" : "School Conflict Mediation",
+        "count" : "24"
+      }, {
+        "item" : "COVID-19 Social Distancing Enhancer Services",
+        "count" : "23"
+      }, {
+        "item" : "Main Site",
+        "count" : "22"
+      }, {
+        "item" : "Chinese American Planning Council",
+        "count" : "18"
+      }, {
+        "item" : "YMCA Central Office",
+        "count" : "16"
+      }, {
+        "item" : "NStat subcontract",
+        "count" : "15"
+      }, {
+        "item" : "Mobile Trauma Unit",
+        "count" : "12"
+      }, {
+        "item" : "4896 Contacts",
+        "count" : "10"
+      }, {
+        "item" : "7320 Days",
+        "count" : "9"
+      }, {
+        "item" : "21960 Days",
+        "count" : "9"
+      }, {
+        "item" : "10980 Days",
+        "count" : "8"
+      }, {
+        "item" : "5490 Days",
+        "count" : "8"
+      }, {
+        "item" : "Full Program Restoration-Pending",
+        "count" : "8"
+      }, {
+        "item" : "5856 Days",
+        "count" : "7"
+      }, {
+        "item" : "9150 Days",
+        "count" : "7"
+      } ],
+      "smallest" : "10000 Visits",
+      "count" : "5635",
+      "cardinality" : "2816"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701555,
+    "name" : "accepts_dropins",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "accepts_dropins",
+    "position" : 28,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014769,
+    "cachedContents" : {
+      "non_null" : "5635",
+      "largest" : "true",
+      "null" : "0",
+      "top" : [ {
+        "item" : "false",
+        "count" : "5264"
+      }, {
+        "item" : "true",
+        "count" : "371"
+      } ],
+      "smallest" : "false",
+      "count" : "5635",
+      "cardinality" : "2"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701585,
+    "name" : "language_taxonomy",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "language_taxonomy",
+    "position" : 29,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014799,
+    "cachedContents" : {
+      "non_null" : "737",
+      "largest" : "[\"yiddish\"]",
+      "null" : "4898",
+      "top" : [ {
+        "item" : "[\"english\",\"spanish\"]",
+        "count" : "292"
+      }, {
+        "item" : "[\"english\"]",
+        "count" : "194"
+      }, {
+        "item" : "[\"english\",\"spanish\",\"chinese-cantonese\",\"chinese-mandarin\"]",
+        "count" : "21"
+      }, {
+        "item" : "[\"english\",\"hebrew\",\"polish\",\"russian\",\"spanish\",\"haitian creole\"]",
+        "count" : "20"
+      }, {
+        "item" : "[\"english\",\"french\",\"spanish\"]",
+        "count" : "17"
+      }, {
+        "item" : "[\"english\",\"russian\",\"spanish\"]",
+        "count" : "15"
+      }, {
+        "item" : "[\"spanish\"]",
+        "count" : "14"
+      }, {
+        "item" : "[\"english\",\"spanish\",\"haitian creole\"]",
+        "count" : "12"
+      }, {
+        "item" : "[\"english\",\"french\",\"spanish\",\"haitian creole\"]",
+        "count" : "12"
+      }, {
+        "item" : "[\"english\",\"chinese-cantonese\",\"chinese-mandarin\"]",
+        "count" : "11"
+      }, {
+        "item" : "[\"english\",\"spanish\",\"arabic\",\"chinese-cantonese\",\"chinese-mandarin\"]",
+        "count" : "10"
+      }, {
+        "item" : "[\"english\",\"arabic\",\"chinese-cantonese\",\"chinese-mandarin\",\"haitian creole\",\"korean\",\"russian\",\"spanish\"]",
+        "count" : "9"
+      }, {
+        "item" : "[\"french\",\"spanish\"]",
+        "count" : "8"
+      }, {
+        "item" : "[\"english\",\"korean\",\"spanish\",\"arabic\"]",
+        "count" : "4"
+      }, {
+        "item" : "[\"english\",\"yiddish\"]",
+        "count" : "4"
+      }, {
+        "item" : "[\"english\",\"french\",\"spanish\",\"chinese-cantonese\",\"chinese-mandarin\"]",
+        "count" : "4"
+      }, {
+        "item" : "[\"english\",\"korean\",\"chinese-cantonese\",\"chinese-mandarin\"]",
+        "count" : "4"
+      }, {
+        "item" : "[\"english\",\"portuguese\",\"spanish\"]",
+        "count" : "3"
+      }, {
+        "item" : "[\"english\",\"italian\",\"spanish\"]",
+        "count" : "3"
+      }, {
+        "item" : "[\"spanish\",\"arabic\"]",
+        "count" : "3"
+      } ],
+      "smallest" : "[\"albanian\",\"spanish\"]",
+      "count" : "5635",
+      "cardinality" : "80"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701576,
+    "name" : "service_taxonomy",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "service_taxonomy",
+    "position" : 30,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014790,
+    "cachedContents" : {
+      "non_null" : "890",
+      "largest" : "[\"unspecified\",\"mental health services\"]",
+      "null" : "4745",
+      "top" : [ {
+        "item" : "[\"life skills\"]",
+        "count" : "145"
+      }, {
+        "item" : "[\"food services\"]",
+        "count" : "77"
+      }, {
+        "item" : "[\"unspecified\"]",
+        "count" : "77"
+      }, {
+        "item" : "[\"athletic leagues\"]",
+        "count" : "51"
+      }, {
+        "item" : "[\"unspecified\",\"life skills\"]",
+        "count" : "41"
+      }, {
+        "item" : "[\"alternative justice management\"]",
+        "count" : "39"
+      }, {
+        "item" : "[\"outreach\",\"conflict resolution/mediation\",\"client referrals\",\"counseling\",\"mentoring\",\"leadership development\",\"recreational services\"]",
+        "count" : "24"
+      }, {
+        "item" : "[\"outreach\",\"conflict resolution/mediation\",\"crisis intervention/management\",\"emergency preparedness and response\",\"preventive services\",\"client evaluation/assessment\",\"client referrals\",\"counseling\",\"mentoring\",\"academic supports\",\"work readiness\",\"service/care planning\",\"leadership development\",\"discharge/re-entry\",\"recreational services\",\"community engagement\",\"community advocacy\"]",
+        "count" : "23"
+      }, {
+        "item" : "[\"conflict resolution/mediation\",\"crisis intervention/management\",\"disease control\",\"disease prevention\",\"health education and supports\"]",
+        "count" : "23"
+      }, {
+        "item" : "[\"discharge/re-entry\",\"housing and shelter services\"]",
+        "count" : "21"
+      }, {
+        "item" : "[\"preventive services\"]",
+        "count" : "18"
+      }, {
+        "item" : "[\"life skills\",\"mental health services\"]",
+        "count" : "17"
+      }, {
+        "item" : "[\"outreach\",\"conflict resolution/mediation\",\"crisis intervention/management\",\"emergency preparedness and response\",\"preventive services\",\"mental health services\",\"client evaluation/assessment\",\"client referrals\",\"counseling\",\"mentoring\",\"service/care planning\",\"recreational services\",\"community engagement\",\"community advocacy\"]",
+        "count" : "16"
+      }, {
+        "item" : "[\"civic engagement\",\"community engagement\",\"community advocacy\",\"outreach\",\"client referrals\",\"volunteering\",\"training\",\"leadership development\",\"case conferencing\",\"conference\",\"crisis intervention/management\",\"career exploration\",\"enrollment and recruitment\",\"entrepreneurial training\",\"job/vocational training\",\"materials design and development\",\"mentoring\",\"preventive services\",\"project based learning\",\"recreational services\",\"resource directory guides\",\"resource fairs\",\"street outreach\",\"symposia\",\"team-based coaching\",\"toolkits\",\"training delivery\",\"training materials development\",\"needs assessment\",\"client evaluation/assessment\",\"emergency preparedness and response\",\"case management\",\"meal delivery\"]",
+        "count" : "15"
+      }, {
+        "item" : "[\"outreach\",\"community advocacy\",\"training\",\"supportive services\"]",
+        "count" : "15"
+      }, {
+        "item" : "[\"case management\",\"individual advocacy\",\"individual client outreach\"]",
+        "count" : "15"
+      }, {
+        "item" : "[\"recreational services\",\"arts and culture\",\"mentoring\"]",
+        "count" : "15"
+      }, {
+        "item" : "[\"case management\",\"individual advocacy\"]",
+        "count" : "14"
+      }, {
+        "item" : "[\"legal representation\"]",
+        "count" : "14"
+      }, {
+        "item" : "[\"discharge/re-entry\"]",
+        "count" : "13"
+      } ],
+      "smallest" : "[\"academic engagement\",\"academic supports\",\"behavioral counseling\",\"clinical counseling\"]",
+      "count" : "5635",
+      "cardinality" : "88"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701566,
+    "name" : "population_taxonomy",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "population_taxonomy",
+    "position" : 31,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014780,
+    "cachedContents" : {
+      "non_null" : "44",
+      "largest" : "[\"young adults\",\"females\",\"males\"]",
+      "null" : "5591",
+      "top" : [ {
+        "item" : "[\"adults\",\"children\",\"individuals with disabilities\"]",
+        "count" : "12"
+      }, {
+        "item" : "[\"victims/survivors of domestic violence\"]",
+        "count" : "6"
+      }, {
+        "item" : "[\"females\",\"males\",\"food stamps recipients\",\"low income individuals\"]",
+        "count" : "4"
+      }, {
+        "item" : "[\"young adults\",\"females\",\"males\"]",
+        "count" : "2"
+      }, {
+        "item" : "[\"adults\",\"aging\",\"court involved\",\"low income individuals\"]",
+        "count" : "2"
+      }, {
+        "item" : "[\"females\",\"males\",\"young adults\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"victims/survivors of domestic violence\",\"individuals with behavioral disabilities\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"victims/survivors of domestic violence\",\"lgbtq individuals\",\"transgender individuals\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"court appointed advocate required/assigned\",\"adults\",\"aging\",\"individuals with disabilities\",\"ssd recipients\",\"ssi recipients\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"court involved\",\"adults\",\"aging\",\"individuals with disabilities\",\"ssd recipients\",\"ssi recipients\",\"low income individuals\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"housing court involved\",\"aging\",\"adults\",\"individuals with disabilities\",\"ssd recipients\",\"ssi recipients\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"housing court involved\",\"adults\",\"aging\",\"individuals with disabilities\",\"ssd recipients\",\"ssi recipients\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"adults\",\"housing court involved\",\"individuals with disabilities\",\"aging\",\"ssd recipients\",\"ssi recipients\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"victims/survivors of sexual abuse/exploitation\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"young adults\",\"females\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"court appointed advocate required/assigned\",\"housing court involved\",\"adults\",\"individuals with disabilities\",\"ssd recipients\",\"ssi recipients\",\"aging\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"court involved\",\"court appointed advocate required/assigned\",\"individuals with behavioral disabilities\",\"adults\",\"individuals with disabilities\",\"ssi recipients\",\"aging\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"adults\",\"aging\",\"children\",\"individuals with disabilities\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"court involved\",\"adults\",\"housing court involved\",\"aging\",\"individuals with disabilities\",\"ssd recipients\",\"ssi recipients\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"victims/survivors of domestic violence\",\"documented immigrants\",\"individuals with disabilities\"]",
+        "count" : "1"
+      } ],
+      "smallest" : "[\"adults\",\"aging\",\"children\",\"individuals with disabilities\"]",
+      "count" : "5635",
+      "cardinality" : "23"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701569,
+    "name" : "service_setting_taxonomy",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "service_setting_taxonomy",
+    "position" : 32,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014783,
+    "cachedContents" : {
+      "non_null" : "1289",
+      "largest" : "[\"unspecified\"]",
+      "null" : "4346",
+      "top" : [ {
+        "item" : "[\"school\"]",
+        "count" : "888"
+      }, {
+        "item" : "[\"community center\"]",
+        "count" : "344"
+      }, {
+        "item" : "[\"office\"]",
+        "count" : "19"
+      }, {
+        "item" : "[\"home\"]",
+        "count" : "14"
+      }, {
+        "item" : "[\"clinical - outpatient\"]",
+        "count" : "9"
+      }, {
+        "item" : "[\"unspecified\"]",
+        "count" : "6"
+      }, {
+        "item" : "[\"home\",\"court\"]",
+        "count" : "5"
+      }, {
+        "item" : "[\"court\",\"home\"]",
+        "count" : "4"
+      } ],
+      "smallest" : "[\"clinical - outpatient\"]",
+      "count" : "5635",
+      "cardinality" : "8"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701583,
+    "name" : "bp_category",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "bp_category",
+    "position" : 33,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014797,
+    "cachedContents" : {
+      "non_null" : "47",
+      "largest" : "[\"people with disabilities\",\"housing\",\"cash & expenses\"]",
+      "null" : "5588",
+      "top" : [ {
+        "item" : "[\"enrichment\",\"people with disabilities\",\"health\"]",
+        "count" : "12"
+      }, {
+        "item" : "[\"housing\"]",
+        "count" : "7"
+      }, {
+        "item" : "[\"family services\"]",
+        "count" : "5"
+      }, {
+        "item" : "[\"housing\",\"people with disabilities\"]",
+        "count" : "4"
+      }, {
+        "item" : "[\"food\"]",
+        "count" : "4"
+      }, {
+        "item" : "[\"education\"]",
+        "count" : "3"
+      }, {
+        "item" : "[\"people with disabilities\",\"housing\",\"cash & expenses\"]",
+        "count" : "2"
+      }, {
+        "item" : "[\"people with disabilities\",\"housing\"]",
+        "count" : "2"
+      }, {
+        "item" : "[\"education\",\"health\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"people with disabilities\",\"health\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"education\",\"family services\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"people with disabilities\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"people with disabilities\",\"health\",\"enrichment\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"housing\",\"people with disabilities\",\"cash & expenses\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"people with disabilities\",\"family services\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"enrichment\"]",
+        "count" : "1"
+      } ],
+      "smallest" : "[\"education\"]",
+      "count" : "5635",
+      "cardinality" : "16"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701578,
+    "name" : "bp_population",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "bp_population",
+    "position" : 34,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014792,
+    "cachedContents" : {
+      "non_null" : "42",
+      "largest" : "[\"youth (10+)\",\"students\"]",
+      "null" : "5593",
+      "top" : [ {
+        "item" : "[\"seniors\"]",
+        "count" : "9"
+      }, {
+        "item" : "[\"veterans\",\"nycha residents\",\"seniors\",\"children (0-13)\"]",
+        "count" : "8"
+      }, {
+        "item" : "[\"everyone\"]",
+        "count" : "5"
+      }, {
+        "item" : "[\"families\"]",
+        "count" : "3"
+      }, {
+        "item" : "[\"students\"]",
+        "count" : "3"
+      }, {
+        "item" : "[\"seniors\",\"nycha residents\"]",
+        "count" : "2"
+      }, {
+        "item" : "[\"immigrants\",\"families\"]",
+        "count" : "2"
+      }, {
+        "item" : "[\"nycha residents\",\"seniors\",\"families\",\"children (0-13)\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"seniors\",\"people with disabilities\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"seniors\",\"nycha residents\",\"veterans\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"families\",\"immigrants\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"veterans\",\"nycha residents\",\"families\",\"seniors\",\"children (0-13)\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"immigrants\",\"nycha residents\",\"seniors\",\"children (0-13)\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"people with disabilities\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"veterans\",\"nycha residents\",\"seniors\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"youth (10+)\",\"students\"]",
+        "count" : "1"
+      }, {
+        "item" : "[\"nycha residents\",\"seniors\",\"families\",\"veterans\"]",
+        "count" : "1"
+      } ],
+      "smallest" : "[\"everyone\"]",
+      "count" : "5635",
+      "cardinality" : "17"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701558,
+    "name" : "capacity",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "capacity",
+    "position" : 35,
+    "renderTypeName" : "number",
+    "tableColumnId" : 129014772,
+    "cachedContents" : {
+      "non_null" : "1869",
+      "largest" : "700",
+      "null" : "3766",
+      "top" : [ {
+        "item" : "100",
+        "count" : "140"
+      }, {
+        "item" : "90",
+        "count" : "115"
+      }, {
+        "item" : "120",
+        "count" : "107"
+      }, {
+        "item" : "50",
+        "count" : "106"
+      }, {
+        "item" : "150",
+        "count" : "105"
+      }, {
+        "item" : "300",
+        "count" : "92"
+      }, {
+        "item" : "60",
+        "count" : "79"
+      }, {
+        "item" : "75",
+        "count" : "72"
+      }, {
+        "item" : "91",
+        "count" : "50"
+      }, {
+        "item" : "30",
+        "count" : "42"
+      }, {
+        "item" : "40",
+        "count" : "34"
+      }, {
+        "item" : "157",
+        "count" : "33"
+      }, {
+        "item" : "80",
+        "count" : "30"
+      }, {
+        "item" : "115",
+        "count" : "26"
+      }, {
+        "item" : "140",
+        "count" : "25"
+      }, {
+        "item" : "21",
+        "count" : "23"
+      }, {
+        "item" : "105",
+        "count" : "23"
+      }, {
+        "item" : "45",
+        "count" : "23"
+      }, {
+        "item" : "160",
+        "count" : "19"
+      }, {
+        "item" : "110",
+        "count" : "17"
+      } ],
+      "smallest" : "7",
+      "count" : "5635",
+      "cardinality" : "232"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701554,
+    "name" : "capacity_units",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "capacity_units",
+    "position" : 36,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014768,
+    "cachedContents" : {
+      "non_null" : "3863",
+      "largest" : "seats",
+      "null" : "1772",
+      "top" : [ {
+        "item" : "seats",
+        "count" : "3838"
+      }, {
+        "item" : "people",
+        "count" : "25"
+      } ],
+      "smallest" : "people",
+      "count" : "5635",
+      "cardinality" : "2"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701580,
+    "name" : "serves_food",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "serves_food",
+    "position" : 37,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014794,
+    "cachedContents" : {
+      "non_null" : "5635",
+      "largest" : "true",
+      "null" : "0",
+      "top" : [ {
+        "item" : "false",
+        "count" : "5360"
+      }, {
+        "item" : "true",
+        "count" : "275"
+      } ],
+      "smallest" : "false",
+      "count" : "5635",
+      "cardinality" : "2"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701557,
+    "name" : "catchment_description",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "catchment_description",
+    "position" : 38,
+    "renderTypeName" : "text",
+    "tableColumnId" : 129014771,
+    "cachedContents" : {
+      "non_null" : "3959",
+      "largest" : "Van Cortlandt Park, Bronx",
+      "null" : "1676",
+      "top" : [ {
+        "item" : "Manhattan CD 003",
+        "count" : "147"
+      }, {
+        "item" : "Manhattan CD 012",
+        "count" : "133"
+      }, {
+        "item" : "Brooklyn CD 003",
+        "count" : "121"
+      }, {
+        "item" : "Bronx CD 001",
+        "count" : "109"
+      }, {
+        "item" : "Brooklyn CD 001",
+        "count" : "104"
+      }, {
+        "item" : "Richmond CD 001",
+        "count" : "103"
+      }, {
+        "item" : "Queens CD 012",
+        "count" : "102"
+      }, {
+        "item" : "Manhattan CD 011",
+        "count" : "102"
+      }, {
+        "item" : "Brooklyn CD 005",
+        "count" : "101"
+      }, {
+        "item" : "Queens CD 001",
+        "count" : "101"
+      }, {
+        "item" : "Bronx CD 004",
+        "count" : "97"
+      }, {
+        "item" : "Brooklyn CD 002",
+        "count" : "86"
+      }, {
+        "item" : "Manhattan CD 010",
+        "count" : "82"
+      }, {
+        "item" : "Manhattan CD 007",
+        "count" : "80"
+      }, {
+        "item" : "Brooklyn CD 007",
+        "count" : "79"
+      }, {
+        "item" : "Bronx CD 003",
+        "count" : "78"
+      }, {
+        "item" : "Brooklyn CD 016",
+        "count" : "76"
+      }, {
+        "item" : "Manhattan CD 001",
+        "count" : "72"
+      }, {
+        "item" : "Brooklyn CD 006",
+        "count" : "71"
+      }, {
+        "item" : "Queens CD 007",
+        "count" : "70"
+      } ],
+      "smallest" : "105",
+      "count" : "5635",
+      "cardinality" : "155"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701571,
+    "name" : "state_senate_district",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "state_senate_district",
+    "position" : 39,
+    "renderTypeName" : "number",
+    "tableColumnId" : 129014785,
+    "cachedContents" : {
+      "non_null" : "5412",
+      "largest" : "36",
+      "null" : "223",
+      "top" : [ {
+        "item" : "26",
+        "count" : "439"
+      }, {
+        "item" : "25",
+        "count" : "399"
+      }, {
+        "item" : "32",
+        "count" : "336"
+      }, {
+        "item" : "30",
+        "count" : "335"
+      }, {
+        "item" : "29",
+        "count" : "295"
+      }, {
+        "item" : "27",
+        "count" : "273"
+      }, {
+        "item" : "31",
+        "count" : "262"
+      }, {
+        "item" : "18",
+        "count" : "241"
+      }, {
+        "item" : "23",
+        "count" : "239"
+      }, {
+        "item" : "33",
+        "count" : "224"
+      }, {
+        "item" : "20",
+        "count" : "207"
+      }, {
+        "item" : "19",
+        "count" : "201"
+      }, {
+        "item" : "12",
+        "count" : "195"
+      }, {
+        "item" : "34",
+        "count" : "184"
+      }, {
+        "item" : "14",
+        "count" : "182"
+      }, {
+        "item" : "16",
+        "count" : "157"
+      }, {
+        "item" : "10",
+        "count" : "148"
+      }, {
+        "item" : "17",
+        "count" : "145"
+      }, {
+        "item" : "21",
+        "count" : "139"
+      }, {
+        "item" : "22",
+        "count" : "137"
+      } ],
+      "smallest" : "10",
+      "count" : "5635",
+      "cardinality" : "26"
+    },
+    "format" : { }
+  }, {
+    "id" : 521701565,
+    "name" : "state_assembly_district",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "state_assembly_district",
+    "position" : 40,
+    "renderTypeName" : "number",
+    "tableColumnId" : 129014779,
+    "cachedContents" : {
+      "non_null" : "5412",
+      "largest" : "87",
+      "null" : "223",
+      "top" : [ {
+        "item" : "65",
+        "count" : "268"
+      }, {
+        "item" : "79",
+        "count" : "209"
+      }, {
+        "item" : "75",
+        "count" : "197"
+      }, {
+        "item" : "52",
+        "count" : "192"
+      }, {
+        "item" : "68",
+        "count" : "181"
+      }, {
+        "item" : "84",
+        "count" : "177"
+      }, {
+        "item" : "70",
+        "count" : "165"
+      }, {
+        "item" : "61",
+        "count" : "158"
+      }, {
+        "item" : "55",
+        "count" : "148"
+      }, {
+        "item" : "72",
+        "count" : "140"
+      }, {
+        "item" : "53",
+        "count" : "134"
+      }, {
+        "item" : "37",
+        "count" : "123"
+      }, {
+        "item" : "77",
+        "count" : "110"
+      }, {
+        "item" : "57",
+        "count" : "109"
+      }, {
+        "item" : "51",
+        "count" : "108"
+      }, {
+        "item" : "56",
+        "count" : "106"
+      }, {
+        "item" : "60",
+        "count" : "104"
+      }, {
+        "item" : "85",
+        "count" : "100"
+      }, {
+        "item" : "66",
+        "count" : "98"
+      }, {
+        "item" : "86",
+        "count" : "97"
+      } ],
+      "smallest" : "23",
+      "count" : "5635",
+      "cardinality" : "65"
+    },
+    "format" : { }
+  } ],
+  "grants" : [ {
+    "inherited" : false,
+    "type" : "viewer",
+    "flags" : [ "public" ]
+  } ],
+  "metadata" : {
+    "rdfSubject" : "0",
+    "rdfClass" : "",
+    "attachments" : [ {
+      "filename" : "Social_Services_Site_Data_Open_Data_Desc_May_2021.docx",
+      "assetId" : "d3eeada0-b746-4002-b5a8-0aee0ca23e40",
+      "name" : "Social_Services_Site_Data_Open_Data_Desc_May_2021.docx"
+    }, {
+      "filename" : "Verified_Locations_for_NYC_data_dictionary_May_2021.xlsx",
+      "assetId" : "980db61c-e095-4b86-9381-987dd946f723",
+      "name" : "Verified_Locations_for_NYC_data_dictionary_May_2021.xlsx"
+    } ],
+    "custom_fields" : {
+      "Data Collection" : {
+        "Data Collection" : "Verified Locations for NYC City-Funded Social Service Contracts"
+      },
+      "Update" : {
+        "Automation" : "No",
+        "Date Made Public" : "1/29/2021",
+        "Update Frequency" : "Annually"
+      },
+      "Dataset Information" : {
+        "Agency" : "Mayor's Office for Economic Opportunity"
+      }
+    },
+    "availableDisplayTypes" : [ "table", "fatrow", "page" ]
+  },
+  "owner" : {
+    "id" : "5fuc-pqz2",
+    "displayName" : "NYC OpenData",
+    "profileImageUrlLarge" : "/api/users/5fuc-pqz2/profile_images/LARGE",
+    "profileImageUrlMedium" : "/api/users/5fuc-pqz2/profile_images/THUMB",
+    "profileImageUrlSmall" : "/api/users/5fuc-pqz2/profile_images/TINY",
+    "screenName" : "NYC OpenData",
+    "type" : "interactive",
+    "flags" : [ "acceptedEula", "mayBeStoriesCoOwner" ]
+  },
+  "query" : { },
+  "rights" : [ "read" ],
+  "tableAuthor" : {
+    "id" : "5fuc-pqz2",
+    "displayName" : "NYC OpenData",
+    "profileImageUrlLarge" : "/api/users/5fuc-pqz2/profile_images/LARGE",
+    "profileImageUrlMedium" : "/api/users/5fuc-pqz2/profile_images/THUMB",
+    "profileImageUrlSmall" : "/api/users/5fuc-pqz2/profile_images/TINY",
+    "screenName" : "NYC OpenData",
+    "type" : "interactive",
+    "flags" : [ "acceptedEula", "mayBeStoriesCoOwner" ]
+  },
+  "tags" : [ "health and human services", "geographic", "location" ],
+  "flags" : [ "default", "ownerMayBeContacted", "restorable", "restorePossibleForType" ]
+}

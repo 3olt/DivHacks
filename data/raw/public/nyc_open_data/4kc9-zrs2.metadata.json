@@ -1,0 +1,804 @@
+{
+  "id" : "4kc9-zrs2",
+  "name" : "Emergency Food Supply Gap",
+  "assetType" : "dataset",
+  "attribution" : "Mayor's Office of Food Policy (MOFP)",
+  "attributionLink" : "https://www.nyc.gov/site/foodpolicy/reports-and-data/supply-gap.page",
+  "averageRating" : 0,
+  "category" : "City Government",
+  "createdAt" : 1730311276,
+  "description" : "The Supply Gap Map is a robust metric that tracks neighborhood-by-neighborhood levels of unmet food need, alongside the various supplies of food going into each neighborhood. Data is analyzed by Neighborhood Tabulation Area (NTA).\nhttps://www.nyc.gov/site/foodpolicy/reports-and-data/supply-gap.page",
+  "diciBackend" : false,
+  "displayType" : "table",
+  "downloadCount" : 1883,
+  "hideFromCatalog" : false,
+  "hideFromDataJson" : false,
+  "locked" : false,
+  "newBackend" : true,
+  "numberOfComments" : 0,
+  "oid" : 40931663,
+  "provenance" : "official",
+  "publicationAppendEnabled" : false,
+  "publicationDate" : 1730312103,
+  "publicationGroup" : 19678154,
+  "publicationStage" : "published",
+  "rowsUpdatedAt" : 1767377981,
+  "rowsUpdatedBy" : "d5dp-fses",
+  "tableId" : 19678154,
+  "totalTimesRated" : 0,
+  "viewCount" : 6256,
+  "viewLastModified" : 1767377980,
+  "viewType" : "tabular",
+  "approvals" : [ {
+    "reviewedAt" : 1736373331,
+    "reviewedAutomatically" : false,
+    "state" : "approved",
+    "submissionId" : 6675111,
+    "submissionObject" : "public_audience_request",
+    "submissionOutcome" : "change_audience",
+    "submittedAt" : 1736373315,
+    "targetAudience" : "public",
+    "workflowId" : 2285,
+    "reviewer" : {
+      "id" : "d5dp-fses",
+      "displayName" : "afinkel"
+    },
+    "submissionDetails" : {
+      "permissionType" : "read"
+    },
+    "submissionOutcomeApplication" : {
+      "endedAt" : 1736373331,
+      "failureCount" : 0,
+      "startedAt" : 1736373331,
+      "status" : "success"
+    },
+    "submitter" : {
+      "id" : "d5dp-fses",
+      "displayName" : "afinkel"
+    }
+  } ],
+  "clientContext" : {
+    "clientContextVariables" : [ ],
+    "inheritedVariables" : { }
+  },
+  "columns" : [ {
+    "id" : 601082310,
+    "name" : "Year",
+    "dataTypeName" : "number",
+    "description" : "Analysis year",
+    "fieldName" : "year",
+    "position" : 1,
+    "renderTypeName" : "number",
+    "tableColumnId" : 155349670,
+    "cachedContents" : {
+      "non_null" : "786",
+      "largest" : "2025",
+      "null" : "0",
+      "top" : [ {
+        "item" : "2023",
+        "count" : "197"
+      }, {
+        "item" : "2024",
+        "count" : "197"
+      }, {
+        "item" : "2025",
+        "count" : "197"
+      }, {
+        "item" : "2022",
+        "count" : "195"
+      } ],
+      "smallest" : "2022",
+      "count" : "786",
+      "cardinality" : "786"
+    },
+    "format" : {
+      "decimalSeparator" : ".",
+      "noCommas" : "true"
+    }
+  }, {
+    "id" : 601082309,
+    "name" : "Neighborhood Tabulation Area NTA)",
+    "dataTypeName" : "text",
+    "description" : "Neighborhood tabulation area code",
+    "fieldName" : "nta",
+    "position" : 2,
+    "renderTypeName" : "text",
+    "tableColumnId" : 155349669,
+    "cachedContents" : {
+      "non_null" : "786",
+      "largest" : "SI99",
+      "null" : "0",
+      "top" : [ {
+        "item" : "QN0701",
+        "count" : "3"
+      }, {
+        "item" : "BK1201",
+        "count" : "3"
+      }, {
+        "item" : "SI0101",
+        "count" : "3"
+      }, {
+        "item" : "BK0701",
+        "count" : "3"
+      }, {
+        "item" : "QN1001",
+        "count" : "3"
+      }, {
+        "item" : "BK0102",
+        "count" : "3"
+      }, {
+        "item" : "BK0802",
+        "count" : "3"
+      }, {
+        "item" : "QN1305",
+        "count" : "3"
+      }, {
+        "item" : "QN1304",
+        "count" : "3"
+      }, {
+        "item" : "SI0103",
+        "count" : "3"
+      }, {
+        "item" : "BX0904",
+        "count" : "3"
+      }, {
+        "item" : "BX0102",
+        "count" : "3"
+      }, {
+        "item" : "BK1001",
+        "count" : "3"
+      }, {
+        "item" : "QN0102",
+        "count" : "3"
+      }, {
+        "item" : "QN0104",
+        "count" : "3"
+      }, {
+        "item" : "BK1704",
+        "count" : "3"
+      }, {
+        "item" : "BK0302",
+        "count" : "3"
+      }, {
+        "item" : "QN1301",
+        "count" : "3"
+      }, {
+        "item" : "QN0902",
+        "count" : "3"
+      }, {
+        "item" : "BK1102",
+        "count" : "3"
+      } ],
+      "smallest" : "BK0101",
+      "count" : "786",
+      "cardinality" : "786"
+    },
+    "format" : { }
+  }, {
+    "id" : 601082308,
+    "name" : "Neighborhood Tabulation Area (NTA) Name",
+    "dataTypeName" : "text",
+    "description" : "Name of the NYC neighborhood",
+    "fieldName" : "nta_name",
+    "position" : 3,
+    "renderTypeName" : "text",
+    "tableColumnId" : 155349668,
+    "cachedContents" : {
+      "non_null" : "786",
+      "largest" : "Yorkville",
+      "null" : "0",
+      "top" : [ {
+        "item" : "Richmond Hill",
+        "count" : "4"
+      }, {
+        "item" : "Flatbush",
+        "count" : "4"
+      }, {
+        "item" : "Woodside",
+        "count" : "4"
+      }, {
+        "item" : "Middle Village",
+        "count" : "4"
+      }, {
+        "item" : "Bath Beach",
+        "count" : "4"
+      }, {
+        "item" : "East Flushing",
+        "count" : "4"
+      }, {
+        "item" : "Ridgewood",
+        "count" : "4"
+      }, {
+        "item" : "Forest Hills",
+        "count" : "4"
+      }, {
+        "item" : "East Williamsburg",
+        "count" : "4"
+      }, {
+        "item" : "Norwood",
+        "count" : "4"
+      }, {
+        "item" : "West Village",
+        "count" : "4"
+      }, {
+        "item" : "Glendale",
+        "count" : "4"
+      }, {
+        "item" : "Rego Park",
+        "count" : "4"
+      }, {
+        "item" : "East Village",
+        "count" : "4"
+      }, {
+        "item" : "Pelham Bay-Country Club-City Island",
+        "count" : "4"
+      }, {
+        "item" : "Prospect Heights",
+        "count" : "4"
+      }, {
+        "item" : "Ocean Hill",
+        "count" : "4"
+      }, {
+        "item" : "Jackson Heights",
+        "count" : "4"
+      }, {
+        "item" : "Bellerose",
+        "count" : "4"
+      }, {
+        "item" : "Canarsie",
+        "count" : "4"
+      } ],
+      "smallest" : "Airport",
+      "count" : "786",
+      "cardinality" : "786"
+    },
+    "format" : { }
+  }, {
+    "id" : 601082307,
+    "name" : "Supply Gap (lbs.)",
+    "dataTypeName" : "number",
+    "description" : "The difference between estimated pounds of emergency food needed and pounds of food supplied by NTA",
+    "fieldName" : "supply_gap_lbs",
+    "position" : 4,
+    "renderTypeName" : "number",
+    "tableColumnId" : 155349667,
+    "cachedContents" : {
+      "non_null" : "786",
+      "largest" : "3722441.29073862",
+      "null" : "0",
+      "top" : [ {
+        "item" : "0",
+        "count" : "2"
+      }, {
+        "item" : "380626.519733415",
+        "count" : "1"
+      }, {
+        "item" : "289640.305216841",
+        "count" : "1"
+      }, {
+        "item" : "241188.404180193",
+        "count" : "1"
+      }, {
+        "item" : "170505.968828928",
+        "count" : "1"
+      }, {
+        "item" : "-151097.67421373",
+        "count" : "1"
+      }, {
+        "item" : "891419.3725",
+        "count" : "1"
+      }, {
+        "item" : "839986.799227597",
+        "count" : "1"
+      }, {
+        "item" : "-3105687.07074551",
+        "count" : "1"
+      }, {
+        "item" : "-114405.2212",
+        "count" : "1"
+      }, {
+        "item" : "708798.961012008",
+        "count" : "1"
+      }, {
+        "item" : "1144882.03469098",
+        "count" : "1"
+      }, {
+        "item" : "-2063224.47525637",
+        "count" : "1"
+      }, {
+        "item" : "636282.0614",
+        "count" : "1"
+      }, {
+        "item" : "-1377497.33009831",
+        "count" : "1"
+      }, {
+        "item" : "72641.3346878265",
+        "count" : "1"
+      }, {
+        "item" : "78887.370869814",
+        "count" : "1"
+      }, {
+        "item" : "350310.2462",
+        "count" : "1"
+      }, {
+        "item" : "1659544.94380941",
+        "count" : "1"
+      }, {
+        "item" : "2177846.46289592",
+        "count" : "1"
+      } ],
+      "smallest" : "-7441650.69841794",
+      "count" : "786",
+      "cardinality" : "786"
+    },
+    "format" : {
+      "decimalSeparator" : ".",
+      "groupSeparator" : ","
+    }
+  }, {
+    "id" : 601082311,
+    "name" : "Food Insecure Percentage",
+    "dataTypeName" : "number",
+    "description" : "Estimated percentage of the population that is food insecure.",
+    "fieldName" : "food_insecure_percentage",
+    "position" : 5,
+    "renderTypeName" : "number",
+    "tableColumnId" : 155349671,
+    "cachedContents" : {
+      "non_null" : "591",
+      "largest" : "0.35990579601977",
+      "null" : "195",
+      "top" : [ {
+        "item" : "0.143370695572905",
+        "count" : "1"
+      }, {
+        "item" : "0.108991420144983",
+        "count" : "1"
+      }, {
+        "item" : "0.281788760552973",
+        "count" : "1"
+      }, {
+        "item" : "0.262888860837351",
+        "count" : "1"
+      }, {
+        "item" : "0.203687592947209",
+        "count" : "1"
+      }, {
+        "item" : "0.145711592819209",
+        "count" : "1"
+      }, {
+        "item" : "0.127383760392784",
+        "count" : "1"
+      }, {
+        "item" : "0.279724602073538",
+        "count" : "1"
+      }, {
+        "item" : "0.15034965034965",
+        "count" : "1"
+      }, {
+        "item" : "0.309174976203475",
+        "count" : "1"
+      }, {
+        "item" : "0.136381371249065",
+        "count" : "1"
+      }, {
+        "item" : "0.209679129021316",
+        "count" : "1"
+      }, {
+        "item" : "0.21012943017957",
+        "count" : "1"
+      }, {
+        "item" : "0.244219272757895",
+        "count" : "1"
+      }, {
+        "item" : "0.0750585065639374",
+        "count" : "1"
+      }, {
+        "item" : "0.152269823034626",
+        "count" : "1"
+      }, {
+        "item" : "0.0826731013073182",
+        "count" : "1"
+      }, {
+        "item" : "0.117021772598745",
+        "count" : "1"
+      }, {
+        "item" : "0.221782402002057",
+        "count" : "1"
+      }, {
+        "item" : "0.0829700464069751",
+        "count" : "1"
+      } ],
+      "smallest" : "0.0291904789988594",
+      "count" : "786",
+      "cardinality" : "786"
+    },
+    "format" : {
+      "precisionStyle" : "percentage",
+      "percentScale" : "1",
+      "precision" : "2"
+    }
+  }, {
+    "id" : 601082305,
+    "name" : "Unemployment Rate",
+    "dataTypeName" : "number",
+    "description" : "Unemployment rate by NTA. Uses ACS 5-year estimates.",
+    "fieldName" : "unemployment_rate",
+    "position" : 6,
+    "renderTypeName" : "number",
+    "tableColumnId" : 155349665,
+    "cachedContents" : {
+      "non_null" : "786",
+      "largest" : "0.180920590693146",
+      "null" : "0",
+      "top" : [ {
+        "item" : "1E-8",
+        "count" : "2"
+      }, {
+        "item" : "0.000807401177460051",
+        "count" : "1"
+      }, {
+        "item" : "0.000839569264464318",
+        "count" : "1"
+      }, {
+        "item" : "0.00050372169957614",
+        "count" : "1"
+      }, {
+        "item" : "0.0553170956893985",
+        "count" : "1"
+      }, {
+        "item" : "0.000362007977722586",
+        "count" : "1"
+      }, {
+        "item" : "0.00100583515681984",
+        "count" : "1"
+      }, {
+        "item" : "0.00054917474902161",
+        "count" : "1"
+      }, {
+        "item" : "0.000548497001100188",
+        "count" : "1"
+      }, {
+        "item" : "0.000615978615978616",
+        "count" : "1"
+      }, {
+        "item" : "0.000752066422031951",
+        "count" : "1"
+      }, {
+        "item" : "0.0909850967629759",
+        "count" : "1"
+      }, {
+        "item" : "0.000506851408486577",
+        "count" : "1"
+      }, {
+        "item" : "0.0574423456520575",
+        "count" : "1"
+      }, {
+        "item" : "0.094396734620599",
+        "count" : "1"
+      }, {
+        "item" : "0.000649630320867131",
+        "count" : "1"
+      }, {
+        "item" : "0.00055781227332076",
+        "count" : "1"
+      }, {
+        "item" : "0.0818857977257864",
+        "count" : "1"
+      }, {
+        "item" : "0.0749387152223434",
+        "count" : "1"
+      }, {
+        "item" : "0.000415624202195558",
+        "count" : "1"
+      } ],
+      "smallest" : "1E-8",
+      "count" : "786",
+      "cardinality" : "786"
+    },
+    "format" : {
+      "precisionStyle" : "percentage",
+      "percentScale" : "1",
+      "decimalSeparator" : ".",
+      "noCommas" : "true",
+      "precision" : "2"
+    }
+  }, {
+    "id" : 601082313,
+    "name" : "Vulnerable Population Score",
+    "dataTypeName" : "number",
+    "description" : "A score that represents the presence of citizens that are 65+, under 18, foreign born non-citizens, or veterans. Uses ACS 5-year estimates.",
+    "fieldName" : "vulnerable_population",
+    "position" : 7,
+    "renderTypeName" : "number",
+    "tableColumnId" : 155349673,
+    "cachedContents" : {
+      "non_null" : "591",
+      "largest" : "0.805084532238152",
+      "null" : "195",
+      "top" : [ {
+        "item" : "0.154563125207415",
+        "count" : "1"
+      }, {
+        "item" : "0.134637881527172",
+        "count" : "1"
+      }, {
+        "item" : "0.174951755072237",
+        "count" : "1"
+      }, {
+        "item" : "0.136326682981459",
+        "count" : "1"
+      }, {
+        "item" : "0.082640856153604",
+        "count" : "1"
+      }, {
+        "item" : "0.143801772734688",
+        "count" : "1"
+      }, {
+        "item" : "0.141734329327704",
+        "count" : "1"
+      }, {
+        "item" : "0.152712374235038",
+        "count" : "1"
+      }, {
+        "item" : "0.240671550552127",
+        "count" : "1"
+      }, {
+        "item" : "0.324009915203951",
+        "count" : "1"
+      }, {
+        "item" : "0.12153494789932",
+        "count" : "1"
+      }, {
+        "item" : "0.618879069348003",
+        "count" : "1"
+      }, {
+        "item" : "0.153451581273507",
+        "count" : "1"
+      }, {
+        "item" : "0.512864533791151",
+        "count" : "1"
+      }, {
+        "item" : "0.542113083600532",
+        "count" : "1"
+      }, {
+        "item" : "0.0852997183854097",
+        "count" : "1"
+      }, {
+        "item" : "0.165086305597052",
+        "count" : "1"
+      }, {
+        "item" : "0.178278229195853",
+        "count" : "1"
+      }, {
+        "item" : "0.344902073732719",
+        "count" : "1"
+      }, {
+        "item" : "0.203907295576954",
+        "count" : "1"
+      } ],
+      "smallest" : "0.0643342027224981",
+      "count" : "786",
+      "cardinality" : "786"
+    },
+    "format" : {
+      "precisionStyle" : "standard",
+      "percentScale" : "1",
+      "noCommas" : "false",
+      "precision" : "2"
+    }
+  }, {
+    "id" : 601082312,
+    "name" : "Weighted Score",
+    "dataTypeName" : "number",
+    "description" : "Weighted score of supply gap, demographic, and need variables by NTA. ",
+    "fieldName" : "weighted_score",
+    "position" : 8,
+    "renderTypeName" : "number",
+    "tableColumnId" : 155349672,
+    "cachedContents" : {
+      "non_null" : "779",
+      "largest" : "8.91946054012885",
+      "null" : "7",
+      "top" : [ {
+        "item" : "6.481",
+        "count" : "2"
+      }, {
+        "item" : "6.1205",
+        "count" : "2"
+      }, {
+        "item" : "6.60175",
+        "count" : "2"
+      }, {
+        "item" : "6.5755",
+        "count" : "2"
+      }, {
+        "item" : "6.79900641012328",
+        "count" : "1"
+      }, {
+        "item" : "5.45725",
+        "count" : "1"
+      }, {
+        "item" : "6.57491123294319",
+        "count" : "1"
+      }, {
+        "item" : "6.35145310965015",
+        "count" : "1"
+      }, {
+        "item" : "6.44435379122101",
+        "count" : "1"
+      }, {
+        "item" : "5.25160213127945",
+        "count" : "1"
+      }, {
+        "item" : "5.95175",
+        "count" : "1"
+      }, {
+        "item" : "6.733",
+        "count" : "1"
+      }, {
+        "item" : "6.0284673128878",
+        "count" : "1"
+      }, {
+        "item" : "5.23390308917025",
+        "count" : "1"
+      }, {
+        "item" : "5.71196328534263",
+        "count" : "1"
+      }, {
+        "item" : "6.35115193958113",
+        "count" : "1"
+      }, {
+        "item" : "3.9966453999894",
+        "count" : "1"
+      }, {
+        "item" : "5.59280619013973",
+        "count" : "1"
+      }, {
+        "item" : "6.0381110756269",
+        "count" : "1"
+      }, {
+        "item" : "5.94634601468439",
+        "count" : "1"
+      } ],
+      "smallest" : "1.41129491603146",
+      "count" : "786",
+      "cardinality" : "786"
+    },
+    "format" : {
+      "decimalSeparator" : ".",
+      "noCommas" : "false"
+    }
+  }, {
+    "id" : 601082306,
+    "name" : "Rank",
+    "dataTypeName" : "number",
+    "description" : "Rankings of weighted scores",
+    "fieldName" : "rank",
+    "position" : 9,
+    "renderTypeName" : "number",
+    "tableColumnId" : 155349666,
+    "cachedContents" : {
+      "non_null" : "779",
+      "largest" : "197",
+      "null" : "7",
+      "top" : [ {
+        "item" : "145",
+        "count" : "5"
+      }, {
+        "item" : "88",
+        "count" : "5"
+      }, {
+        "item" : "117",
+        "count" : "4"
+      }, {
+        "item" : "29",
+        "count" : "4"
+      }, {
+        "item" : "124",
+        "count" : "4"
+      }, {
+        "item" : "14",
+        "count" : "4"
+      }, {
+        "item" : "74",
+        "count" : "4"
+      }, {
+        "item" : "169",
+        "count" : "4"
+      }, {
+        "item" : "91",
+        "count" : "4"
+      }, {
+        "item" : "64",
+        "count" : "4"
+      }, {
+        "item" : "3",
+        "count" : "4"
+      }, {
+        "item" : "174",
+        "count" : "4"
+      }, {
+        "item" : "52",
+        "count" : "4"
+      }, {
+        "item" : "37",
+        "count" : "4"
+      }, {
+        "item" : "77",
+        "count" : "4"
+      }, {
+        "item" : "179",
+        "count" : "4"
+      }, {
+        "item" : "82",
+        "count" : "4"
+      }, {
+        "item" : "84",
+        "count" : "4"
+      }, {
+        "item" : "166",
+        "count" : "4"
+      }, {
+        "item" : "172",
+        "count" : "4"
+      } ],
+      "smallest" : "1",
+      "count" : "786",
+      "cardinality" : "786"
+    },
+    "format" : {
+      "decimalSeparator" : ".",
+      "groupSeparator" : ","
+    }
+  } ],
+  "grants" : [ {
+    "inherited" : false,
+    "type" : "viewer",
+    "flags" : [ "public" ]
+  } ],
+  "metadata" : {
+    "attachments" : [ {
+      "filename" : "Supply Gap Open Data Data Dictionary.xlsx",
+      "assetId" : "6af88f62-f5f5-4717-a160-c1531b01958d",
+      "name" : "Supply Gap Open Data Data Dictionary.xlsx"
+    } ],
+    "custom_fields" : {
+      "Update" : {
+        "Automation" : "No",
+        "Date Made Public" : "1/8/2025",
+        "Update Frequency" : "Annually",
+        "Data Change Frequency" : "Annually"
+      },
+      "Dataset Information" : {
+        "Agency" : "Mayor's Office of Food Policy (MOFP)"
+      }
+    },
+    "rowLabel" : "Neighborhood Tabulation Area per reporting period",
+    "availableDisplayTypes" : [ "table", "fatrow", "page" ]
+  },
+  "owner" : {
+    "id" : "5fuc-pqz2",
+    "displayName" : "NYC OpenData",
+    "profileImageUrlLarge" : "/api/users/5fuc-pqz2/profile_images/LARGE",
+    "profileImageUrlMedium" : "/api/users/5fuc-pqz2/profile_images/THUMB",
+    "profileImageUrlSmall" : "/api/users/5fuc-pqz2/profile_images/TINY",
+    "screenName" : "NYC OpenData",
+    "type" : "interactive",
+    "flags" : [ "acceptedEula", "mayBeStoriesCoOwner" ]
+  },
+  "query" : { },
+  "rights" : [ "read" ],
+  "tableAuthor" : {
+    "id" : "5fuc-pqz2",
+    "displayName" : "NYC OpenData",
+    "profileImageUrlLarge" : "/api/users/5fuc-pqz2/profile_images/LARGE",
+    "profileImageUrlMedium" : "/api/users/5fuc-pqz2/profile_images/THUMB",
+    "profileImageUrlSmall" : "/api/users/5fuc-pqz2/profile_images/TINY",
+    "screenName" : "NYC OpenData",
+    "type" : "interactive",
+    "flags" : [ "acceptedEula", "mayBeStoriesCoOwner" ]
+  },
+  "tags" : [ "supply gap", "food", "emergency food", "food needs" ],
+  "flags" : [ "default", "ownerMayBeContacted", "restorable", "restorePossibleForType" ]
+}
