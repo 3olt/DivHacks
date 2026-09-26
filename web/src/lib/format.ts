@@ -72,7 +72,8 @@ export function enforcedByLabel(d: Decision): string | null {
     case "hold":
       return "Stopped by the 72-hour wallet-change hold";
     default:
-      return null;
+      // A refusal with no enforcer: the agent's own policy stopped it before anything was signed (e.g. Grok flagged an injection).
+      return d.outcome === "refused" ? "Stopped by the agent's own policy (nothing was signed)" : null;
   }
 }
 
