@@ -2,10 +2,11 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import { fetchSites, fetchTrail } from "@/lib/api";
-import type { Site, Trail } from "@/lib/contracts";
+import { fetchDecisions, fetchSites, fetchTrail } from "@/lib/api";
+import type { Decision, Site, Trail } from "@/lib/contracts";
 import { connectLive } from "@/lib/live";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/risk";
+import LedgerFeed from "./LedgerFeed";
 import SitePanel from "./SitePanel";
 import SignupForm from "./SignupForm";
 
@@ -17,6 +18,8 @@ export default function Dashboard() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [trail, setTrail] = useState<Trail | null>(null);
   const [popupOpen, setPopupOpen] = useState(false);
+  const [decisions, setDecisions] = useState<Decision[]>([]);
+  const [tab, setTab] = useState<"ledger" | "alerts">("ledger");
 
   // Read inside WS callbacks without reconnecting when the selection changes.
   const selectedRef = useRef<string | null>(null);
@@ -40,6 +43,14 @@ export default function Dashboard() {
         if (!cancelled) setApiError(true);
       }
     }
+    async function loadDecisions() {
+      try {
+        const data = await fetchDecisions(50);
+        if (!cancelled) setDecisions(data);
+      } catch {
+        // the map error banner already covers an unreachable API
+      }
+    }
     async function reloadTrail(id: string) {
       try {
         const t = await fetchTrail(id);
@@ -49,15 +60,18 @@ export default function Dashboard() {
       }
     }
     loadSites();
+    loadDecisions();
     const stop = connectLive((msg) => {
       const open = selectedRef.current;
       if (msg.type === "hello") {
         loadSites();
+        loadDecisions();
         if (open) reloadTrail(open);
       } else if (msg.type === "site_updated") {
         setSites((s) => s.map((x) => (x.id === msg.site_id ? { ...x, risk: msg.risk } : x)));
         if (open === msg.site_id) reloadTrail(open);
       } else if (msg.type === "decision") {
+        setDecisions((f) => [msg.decision, ...f.filter((d) => d.decision_id !== msg.decision.decision_id)]);
         const site = sitesRef.current.find((x) => x.id === open);
         if (open && site?.contract_ids.includes(msg.decision.contract_id)) reloadTrail(open);
       }
@@ -116,16 +130,40 @@ export default function Dashboard() {
 
       <aside className="min-h-0 flex-1 overflow-y-auto border-t border-gray-200 bg-white md:w-[400px] md:flex-none md:border-l md:border-t-0">
         {selectedSite ? (
-          <SitePanel site={selectedSite} trail={trail?.site_id === selectedSite.id ? trail : null} onClose={closePanel} onNeedSignup={closePanel} />
+          <SitePanel site={selectedSite} trail={trail?.site_id === selectedSite.id ? trail : null} onClose={closePanel} onNeedSignup={() => {
+              closePanel();
+              setTab("alerts");
+            }}
+          />
         ) : (
-          <div className="space-y-4 p-5">
-            <h2 className="text-lg font-semibold text-gray-900">Select a location</h2>
-            <p className="text-sm text-gray-600">Click a pin to see the money trail behind it: which city agency funds it, how its payments are going, and what the XRPL payment agent did.</p>
-            <div>
-              <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">Get iMessage alerts</h3>
-              <p className="mb-3 text-xs text-gray-600">Sign up to hear about free food and events you qualify for, texted through Photon.</p>
-              <SignupForm />
+          <div className="p-5">
+            <div className="mb-4 flex gap-1 rounded-md bg-gray-100 p-1 text-sm" role="tablist">
+              {(
+                [
+                  ["ledger", "Live ledger"],
+                  ["alerts", "Get alerts"],
+                ] as const
+              ).map(([key, label]) => (
+                <button
+                  key={key}
+                  role="tab"
+                  aria-selected={tab === key}
+                  onClick={() => setTab(key)}
+                  className={`flex-1 rounded px-3 py-1.5 font-medium ${tab === key ? "bg-white text-gray-900 shadow-sm" : "text-gray-600"}`}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
+            {tab === "ledger" ? (
+              <LedgerFeed decisions={decisions} sites={sites} onOpenSite={setSelectedId} />
+            ) : (
+              <div className="space-y-3">
+                <h2 className="text-lg font-semibold text-gray-900">Get iMessage alerts</h2>
+                <p className="text-sm text-gray-600">Sign up to hear about free food and events you qualify for, texted through Photon.</p>
+                <SignupForm />
+              </div>
+            )}
           </div>
         )}
       </aside>

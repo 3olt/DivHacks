@@ -2,8 +2,8 @@ import type { Site } from "@/lib/contracts";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/risk";
 import { SITE_TYPE_LABELS, formatEventTime } from "@/lib/format";
 
-// Small summary shown on the map when a pin is clicked. Full details open in the side panel.
-export default function SitePopup({ site, onOpenDetails }: { site: Site; onOpenDetails: () => void }) {
+// Small summary shown on the map when a pin is clicked. Full details open in the side panel at the same time.
+export default function SitePopup({ site }: { site: Site }) {
   const next = site.events[0] ?? null;
   return (
     <div className="w-56 space-y-2 font-sans">
@@ -25,9 +25,6 @@ export default function SitePopup({ site, onOpenDetails }: { site: Site; onOpenD
         <span className="font-medium text-gray-900">{RISK_LABELS[site.risk.level]}</span>
       </div>
       <p className="text-xs text-gray-600">{site.risk.summary}</p>
-      <button onClick={onOpenDetails} className="w-full rounded-md bg-gray-900 px-2 py-1.5 text-xs font-medium text-white">
-        See money trail
-      </button>
     </div>
   );
 }

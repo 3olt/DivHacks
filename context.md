@@ -9,6 +9,10 @@ Project name: TBD. This file is the project context and pitch. **The technical s
 - Target: backup demo video and Devpost draft by ~8:30 AM EDT.
 - Expo judging: ~3 min pitch + ~2 min Q&A per judge. Prepare a short slide deck.
 
+## Main selling point: transparency
+
+Every step of the money is visible to anyone: which agency funds a service, how late its contract and payments are, and every payment the AI agent attempted (paid, blocked, or waiting), with the reason, who signed, and a link to the XRP Ledger. Lead with this in the pitch, the UI, and the Devpost write-up.
+
 ## One-liner
 
 A live map of NYC community services (food pantries, shelters, youth programs) colored by how stuck the city money behind each one is. An AI agent pays nonprofits' verified invoices in **RLUSD on the XRP Ledger**, where the ledger itself enforces the guardrails. Residents can sign up for iMessage alerts (via **Photon**) about events they qualify for.
@@ -43,13 +47,15 @@ Judging weights: Concept 30%, Functionality 30%, Wow Factor 20%, UX/Design 10%, 
 ### 1. Money map (shows delays)
 1. **Landing page:** a map of NYC with pins for food pantries, grocery giveaways, shelters, youth programs, and events.
 2. **Pin color = funding health** (from the API's risk score): 🟢 0–39 funded, on track · 🟡 40–69 payments running late · 🔴 70–100 at risk of delay.
-3. **Click a pin → small popup** (`SitePopup.tsx`): name, next event, status, one-line risk summary, **"See money trail"** button.
+3. **Click a pin →** the map zooms to it, a small popup opens (`SitePopup.tsx`: name, next event, status, one-line risk summary), and the side panel shows that location. The panel's **✕** closes both and zooms back out to all of NYC.
 4. **Side panel** (`SitePanel.tsx`), from `GET /sites/:id/trail`:
    - Funding status: score, summary, reasons (the numbers behind the score)
    - Money trail: **agency → contracts → payments → nonprofit**, with source links (Comptroller, Checkbook NYC, IRS 990)
    - Nonprofit: 990 financials, XRPL wallet credential status, Nessie bank check
    - Payment agent (XRPL): each decision with outcome (Paid / Blocked / Needs approval), refusal reason, what stopped it (co-signer / ledger / 72h hold), signers, and an audit expander with all 8 checks
 5. **Live:** when the agent releases a payment, the API broadcasts over WebSocket and the pin recolors instantly (e.g. 🟡→🟢).
+6. **Live ledger** (sidebar default tab, `LedgerFeed.tsx`): every agent decision, newest first, from `GET /decisions` + WebSocket. Shows totals (paid / blocked / needs approval), each decision's outcome, site, reason, what stopped it, signers, XRPL link and audit hash. Clicking the site opens its panel. **Demo controls** (`DemoControls.tsx`) trigger `POST /demo/:scenario` and reset.
+7. Pins are HTML markers (`.map-pin` in `globals.css`): a 36px click area around a smaller dot, which grows smoothly on hover and gets a dark ring when selected.
 
 ### 2. Event alerts sign-up (for individuals)
 Separate from the map. Individuals sign up so they can get notified about events and benefits **they qualify for**.
@@ -146,7 +152,15 @@ The agent **executes payments on its own**; the guardrails are enforced somewher
 
 **Pitch demo must include** the leaked-key / `tefBAD_QUORUM` moment: it proves the ledger does the enforcing.
 
-**Not in the demo:** escrow. RLUSD escrow fails on Testnet (`tecNO_PERMISSION`, the RLUSD issuer doesn't allow trust-line locking). Exclusions are a seeded SAM.gov-style list, not a live SAM.gov integration. No destination tags (each nonprofit has its own credentialed wallet).
+### Escrow: simulated
+RLUSD escrow fails on Testnet (`tecNO_PERMISSION`: the RLUSD issuer doesn't allow trust-line locking). **We simulate it** so milestone payments can be shown:
+- Proven on Testnet (`docs/RISK_CHECKS.md` #3b): escrow of a **city-issued test token** with a PREIMAGE-SHA-256 condition + `CancelAfter`, released by `EscrowFinish`.
+- Flow: agent locks the milestone amount (`held_escrow`) → co-signer confirms the milestone and fulfills the condition → funds release (`released`); if not confirmed by `CancelAfter`, funds return to the city.
+- Always label it **"simulated escrow (test token, not RLUSD)"** in the UI, pitch, and Devpost. The frontend already shows `held_escrow` as "In escrow (simulated)".
+- Owner: backend (`xrpl/` + a `POST /demo/escrow` scenario in `api/`). Not built yet.
+- Note: escrow is **not** what qualifies us for Ripple. The requirement is an autonomous on-chain payment within guardrails, which the RLUSD multisig payment already meets. Escrow is an extra.
+
+**Other limits:** Exclusions are a seeded SAM.gov-style list, not a live SAM.gov integration. No destination tags (each nonprofit has its own credentialed wallet).
 
 **Amounts are testnet-scale** (RLUSD supply is limited on Testnet). Never present testnet RLUSD as real dollars.
 
@@ -182,12 +196,13 @@ The API currently serves **fixture data** (15 sites, all fictional, `is_demo_dat
 - [x] Pin popup + side panel with the full money trail and agent decisions
 - [x] Live pin flip over WebSocket (`/demo/happy`)
 - [x] iMessage sign-up + "follow this location" via Photon (tested on a real phone)
+- [x] Live ledger feed + demo buttons (`POST /demo/:scenario`)
+- [x] Bigger pin click targets
 
 **In progress / next:**
 - [ ] XRPL agent + co-signer on Testnet (backend)
 - [ ] Real data (Checkbook, Comptroller, 990) in Mongo (backend)
-- [ ] Demo buttons in the UI calling `POST /demo/:scenario`
-- [ ] Live decisions feed ("Fixes / live ledger") from `GET /decisions` + WS
+- [ ] Simulated escrow scenario (backend) + escrow timeline in the UI
 - [ ] "Why?" iMessage answers and "funded ✅" alerts
 - [ ] Profile field on the API's `Subscriber` (see sign-up section)
 
@@ -197,7 +212,7 @@ The API currently serves **fixture data** (15 sites, all fictional, `is_demo_dat
 
 ## Pitch outline (~3 min)
 
-1. **Hook (20s):** "NYC owes nonprofits over $1 billion in unpaid invoices. The food pantry on your block might not open Saturday, and you'd never know why."
+1. **Hook (20s):** "NYC owes nonprofits over $1 billion in unpaid invoices. The food pantry on your block might not open Saturday, and you'd never know why. We make every dollar's path visible."
 2. **Demo (90s):** map → yellow pin → money trail → agent pays a verified invoice on XRPL autonomously → pin turns green live → then an injected invoice is blocked by the co-signer, and the agent's key alone is rejected by the ledger (`tefBAD_QUORUM`).
 3. **How it works (40s):** public data → explainable risk score; agent + independent co-signer + ledger multisig; XLS-70 credentials; Nessie bank check; Grok never touches addresses.
 4. **Impact (30s):** residents see where services are at risk and get alerts they qualify for; nonprofits get paid fast and safely; auditors get a verifiable trail (invoice id + decision hash on-chain).

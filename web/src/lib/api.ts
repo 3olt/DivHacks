@@ -14,3 +14,15 @@ export const fetchSite = (id: string) => get<Site>(`/sites/${encodeURIComponent(
 export const fetchTrail = (id: string) => get<Trail>(`/sites/${encodeURIComponent(id)}/trail`);
 export const fetchDecisions = (limit = 50) => get<Decision[]>(`/decisions?limit=${limit}`);
 export const fetchAgencyStats = (code: string) => get<AgencyStats>(`/agencies/${encodeURIComponent(code)}/stats`);
+
+export const DEMO_SCENARIOS = ["happy", "injection", "duplicate", "over-contract", "address-swap", "over-limit", "kill-switch"] as const;
+export type DemoScenario = (typeof DEMO_SCENARIOS)[number];
+
+export async function runDemo(scenario: DemoScenario): Promise<void> {
+  const res = await fetch(`${API_URL}/demo/${scenario}`, { method: "POST" });
+  if (!res.ok) throw new Error(`Demo ${scenario} failed: ${res.status}`);
+}
+
+export async function resetDemo(): Promise<void> {
+  await fetch(`${API_URL}/dev/reset`, { method: "POST" });
+}

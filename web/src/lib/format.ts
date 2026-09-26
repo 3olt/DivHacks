@@ -50,7 +50,7 @@ export const OUTCOME_BADGES: Record<Decision["outcome"], { label: string; classN
   released: { label: "Paid", className: "bg-green-100 text-green-800" },
   pending_approval: { label: "Needs approval", className: "bg-amber-100 text-amber-800" },
   refused: { label: "Blocked", className: "bg-red-100 text-red-800" },
-  held_escrow: { label: "In escrow", className: "bg-blue-100 text-blue-800" },
+  held_escrow: { label: "In escrow (simulated)", className: "bg-blue-100 text-blue-800" },
 };
 
 export function enforcedByLabel(d: Decision): string | null {
@@ -65,3 +65,5 @@ export function enforcedByLabel(d: Decision): string | null {
       return null;
   }
 }
+
+export const explorerTxUrl = (hash: string) => `https://testnet.xrpl.org/transactions/${hash}`;
