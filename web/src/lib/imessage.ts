@@ -1,5 +1,5 @@
 // Client for the iMessage service in /imessage (Photon Spectrum).
-const IMESSAGE_SERVICE_URL = process.env.IMESSAGE_SERVICE_URL ?? "http://localhost:4000";
+const IMESSAGE_SERVICE_URL = process.env.IMESSAGE_SERVICE_URL ?? "http://localhost:4003";
 
 export type IMessageStatus = "live" | "dry-run" | "not_allowed" | "offline";
 
