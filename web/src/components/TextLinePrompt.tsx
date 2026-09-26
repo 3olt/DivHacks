@@ -10,7 +10,7 @@ export default function TextLinePrompt() {
         <a href={`sms:${IMESSAGE_LINE}`} className="font-medium text-gray-900 underline">
           {IMESSAGE_LINE_DISPLAY}
         </a>{" "}
-        from your phone. We can only message you after you&apos;ve texted us once.
+        from your phone. We&apos;ll reply with free food and events near your ZIP, and you can ask questions anytime. We can only message you after you&apos;ve texted us once.
       </p>
     </div>
   );

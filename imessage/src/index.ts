@@ -1,5 +1,6 @@
 // iMessage service built on Photon Spectrum (https://photon.codes/docs/spectrum-ts/introduction).
 // - POST /notify { phone, text }  -> sends an iMessage (called by the web app)
+// - POST /welcome { phone, first_name? } -> sends a welcome with Grok's picks near the subscriber
 // - GET  /health                  -> { mode: "live" | "dry-run" }
 // - Inbound iMessages: "STOP" unsubscribes; anything else is answered by Grok from the money trail (see replies.ts).
 // - "Funded ✅" alerts: texts a site's followers when it turns green (see fundedAlerts.ts).
@@ -8,7 +9,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { Spectrum } from "spectrum-ts";
 import { imessage } from "spectrum-ts/providers/imessage";
 import { startFundedAlerts } from "./fundedAlerts";
-import { replyTo } from "./replies";
+import { replyTo, welcomeFor } from "./replies";
 
 const PORT = Number(process.env.PORT ?? 4003);
 const projectId = process.env.SPECTRUM_PROJECT_ID;
@@ -73,6 +74,14 @@ createServer(async (req, res) => {
         return json(res, 400, { error: "Expected { phone: E.164 string, text: string }" });
       }
       await sendIMessage(phone, text);
+      return json(res, 200, { ok: true, mode: live ? "live" : "dry-run" });
+    }
+    if (req.method === "POST" && req.url === "/welcome") {
+      const { phone, first_name } = await readJson(req);
+      if (typeof phone !== "string" || !/^\+\d{10,15}$/.test(phone)) {
+        return json(res, 400, { error: "Expected { phone: E.164 string, first_name?: string }" });
+      }
+      await sendIMessage(phone, await welcomeFor(phone, typeof first_name === "string" ? first_name.slice(0, 40) : ""));
       return json(res, 200, { ok: true, mode: live ? "live" : "dry-run" });
     }
     json(res, 404, { error: "Not found" });

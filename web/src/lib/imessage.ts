@@ -3,12 +3,21 @@ const IMESSAGE_SERVICE_URL = process.env.IMESSAGE_SERVICE_URL ?? "http://localho
 
 export type IMessageStatus = "live" | "dry-run" | "not_allowed" | "offline";
 
-export async function sendIMessage(phone: string, text: string): Promise<IMessageStatus> {
+export function sendIMessage(phone: string, text: string): Promise<IMessageStatus> {
+  return post("/notify", { phone, text });
+}
+
+// Welcome text with Grok's picks near the subscriber (built by the iMessage service from the API).
+export function sendWelcome(phone: string, firstName: string): Promise<IMessageStatus> {
+  return post("/welcome", { phone, first_name: firstName });
+}
+
+async function post(path: string, body: object): Promise<IMessageStatus> {
   try {
-    const res = await fetch(`${IMESSAGE_SERVICE_URL}/notify`, {
+    const res = await fetch(`${IMESSAGE_SERVICE_URL}${path}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, text }),
+      body: JSON.stringify(body),
     });
     if (res.status === 403) return "not_allowed";
     if (!res.ok) return "offline";

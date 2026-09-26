@@ -1,4 +1,4 @@
-import { sendIMessage, toE164 } from "@/lib/imessage";
+import { sendWelcome, toE164 } from "@/lib/imessage";
 import { getProfile, saveProfile } from "@/lib/store";
 import { upsertApiSubscriber } from "@/lib/subscribers";
 import type { SiteType } from "@/lib/contracts";
@@ -44,10 +44,7 @@ export async function POST(req: Request) {
   };
   saveProfile(profile);
 
-  const name = profile.first_name ? `, ${profile.first_name}` : "";
-  const imessage = await sendIMessage(
-    phone,
-    `Hi${name}! You're signed up for GlassLedger alerts. We'll text you about free food and events near you, and when their funding is running late.`,
-  );
+  // Greeting + Grok's picks near their ZIP that match their interests.
+  const imessage = await sendWelcome(phone, profile.first_name);
   return Response.json({ phone, imessage }, { status: existing ? 200 : 201 });
 }

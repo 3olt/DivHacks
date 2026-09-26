@@ -128,9 +128,11 @@ Without keys the service runs in **dry-run** mode: it logs messages instead of s
 | Method | Path | Purpose |
 |---|---|---|
 | POST | `/notify` | `{ phone: "+12125551234", text }` → sends an iMessage (403 `not_allowed` if the number isn't enrolled) |
+| POST | `/welcome` | `{ phone, first_name? }` → sends a greeting plus Grok's nearby picks (used by the web sign-up) |
 | GET | `/health` | `{ mode: "live" \| "dry-run" }` |
 
 **Placeholders to fill in later:**
+- **Nearby recommendations (Grok, per the subscriber's selections):** the welcome after web sign-up (`POST /welcome` on the iMessage service) and every reply include up to 3 places near the subscriber's ZIP that match their interests (same ZIP first, then same borough from the ZIP prefix), with the next event time and funding status as 🟢 / 🟡 / 🔴. Texting a ZIP (`10453` or `JOIN 10453`) subscribes by ZIP (`channel: "imessage"`) with no website needed; non-NYC ZIPs are rejected without calling Grok, and when nothing is nearby the reply skips Grok.
 - Inbound replies: **built** in `imessage/src/replies.ts`. "STOP" unsubscribes (`DELETE /subscribers/:phone`). Anything else (e.g. "why?") is answered by **Grok** (`grok-4.3`, `reasoning_effort: none`, ~1 s) using only facts from the API for the sites the sender follows (`/subscribers`, `/sites/:id`, `/sites/:id/trail`). The prompt forbids wallet addresses and treats the user's text as untrusted (tested against a prompt injection). Needs `XAI_API_KEY` in `imessage/.env` (never commit it).
 - **Grok budget (~$5 of credit):** ~900 tokens per call (compact facts, max 150 output tokens, max 3 sites). Same question + unchanged data is cached for 30 min. Limits: 5 Grok answers per phone per hour, 150 per day overall (`GROK_PER_PHONE_PER_HOUR`, `GROK_DAILY_CAP`). Past a limit, or if Grok errors, the reply is the free risk summary from the API. Every call logs its token count (`[grok] call N/150 today, X tokens`).
 - "Funded ✅" alerts: **built** in `imessage/src/fundedAlerts.ts`. The service listens to WS `/live`; when a site changes to green it texts everyone from `GET /subscribers?site_id=` ("✅ <site> is funded. <risk summary>"). Numbers not on the Photon Users list are skipped and logged. Set `API_URL` in `imessage/.env` if the API isn't on :4000.
