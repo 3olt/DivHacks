@@ -4,6 +4,8 @@
 
 Project name: **GlassLedger**. This file is the project context and pitch. **The technical source of truth is the backend spec:** [`docs/API.md`](docs/API.md) (API contract) and [`shared/contracts.ts`](shared/contracts.ts) (data types). Where this file and the spec disagree, the spec wins. Backend status, proof links and what's real vs demo: [`docs/STATUS.md`](docs/STATUS.md). [`docs/CONFLICTS.md`](docs/CONFLICTS.md) is the Phase 0 conflict list (mostly resolved).
 
+> ⚠️ **Only Gagan runs `npm run setup:xrpl`.** On any other laptop it would create brand-new XRPL accounts and keys and break the shared demo setup (wallets, credentials, signer list, the Mongo registry). To run the `/demo` buttons elsewhere, copy Gagan's key files instead: see [Running the /demo buttons from another laptop](#running-the-demo-buttons-from-another-laptop).
+
 **Last full sync: Sat 2026-09-26 ~21:00 EDT.** Backend Phases 0-3 are done; the frontend has the landing page, map, site report, /demo and /data; the text interface is iMessage-only. The plan to the deadline is in [Goals & plan to the deadline](#goals--plan-to-the-deadline).
 
 ## Deadline & submission
@@ -109,7 +111,27 @@ Ports: api 4000 · xrpl service 4001 · co-signer 4002 · imessage 4003 · offic
 - Frontend: `cd web && npm install && npm run dev` → http://localhost:3000 (landing) and http://localhost:3000/map
 - iMessage: `cd imessage && npm install && npm run dev` → http://localhost:4003 (dry-run until Photon keys are set)
 
-**Real XRPL demo (Testnet):** `npm run demo all` runs every scenario (26 steps; auto-starts the co-signer, xrpl service and officer). Judged demo: `npm run cosigner`, `npm run xrpl:service` and `npm run officer` in their own terminals, then `npm run demo <scenario> no-spawn`. Rehearse with `DEMO_AMOUNT=1.00` (the rolling 24 h caps count rehearsals). `npm run agent:status` shows the signer list; `npm run setup:xrpl` tops up the agent's RLUSD.
+**Real XRPL demo (Testnet):** `npm run demo all` runs every scenario (26 steps; auto-starts the co-signer, xrpl service and officer). Judged demo: `npm run cosigner`, `npm run xrpl:service` and `npm run officer` in their own terminals, then `npm run demo <scenario> no-spawn`. Rehearse with `DEMO_AMOUNT=1.00` (the rolling 24 h caps count rehearsals). `npm run agent:status` shows the signer list; `npm run setup:xrpl` tops up the agent's RLUSD (**Gagan's laptop only**, see below).
+
+### Running the /demo buttons from another laptop
+
+**Decision (Sun 2026-09-27): the live demo runs on Gagan's laptop.** He has the keys, so no keys are shared. For the full demo there he pulls `main` and runs the API (mongo mode) and `web/` (`cd web && npm install && npm run dev`). The iMessage service can stay on Noel's laptop: its answers read the same MongoDB, but live "funded ✅" alerts only follow the API on the same laptop (`imessage/` listens to `API_URL`, default `localhost:4000`).
+
+Status: **Noel's laptop runs everything except the Run buttons.** `localhost` works (map, site reports, `/demo` with every past result), but each Run fails within a second: `AGENT_SEED missing` (see `GET /demo/runs` → `log_tail`). The XRPL keys exist only on Gagan's laptop; the `/demo` page shows "This computer doesn't have the XRPL keys".
+
+> ⚠️ **Don't run `npm run setup:xrpl` on Noel's laptop (or any laptop but Gagan's).** Without Gagan's key files it creates brand-new accounts and keys, which breaks the shared setup: the demo wallets, their on-ledger credentials, the signer list and the Mongo registry all point at Gagan's accounts.
+
+Only if we ever need the buttons on a second laptop, what Gagan sends (privately):
+1. **Three key files from `xrpl/`** (gitignored, made by `npm run setup:xrpl` on his laptop): `xrpl/.env.agent` (`AGENT_SEED`), `xrpl/.env.cosigner` (`COSIGNER_SEED`), `xrpl/.env.officer` (`OFFICER_SEED` + `OFFICER_CLICK_TOKEN`).
+2. **The settings from his root `.env`**: Noel's root `.env` only has `MONGODB_URI`. The XRPL code also reads `XAI_API_KEY` (Grok verifier), `RLUSD_ISSUER`, `RLUSD_CURRENCY_HEX`, `XRPL_WS`, `AUTO_LIMIT`, `DAILY_CAP`, `PAYEE_DAILY_CAP`, `HOLD_HOURS` and the service URLs. Easiest: send the whole root `.env`; Noel keeps his own `MONGODB_URI` line.
+
+How to send: a private DM, AirDrop, or a one-time link (Bitwarden Send / 1Password). **Never** GitHub, git or a group chat. They're Testnet keys (no real money), but whoever has them can pay from or lock the team's demo account.
+
+Then: put the three files in `xrpl/`, merge the settings into the root `.env`, restart the API. A run starts the co-signer and officer by itself if they aren't running (`xrpl/README.md`, "Missing services are auto-spawned").
+
+Cautions:
+- **Run scenarios from one laptop at a time.** Both laptops use the same accounts, and the one-run lock is per machine; overlapping runs can collide.
+- **Each run calls Grok 1-4 times**, spending the credits of the `XAI_API_KEY` in the root `.env`.
 
 ## Frontend ↔ API
 
@@ -118,7 +140,7 @@ Ports: api 4000 · xrpl service 4001 · co-signer 4002 · imessage 4003 · offic
 - WebSocket `/live`: `hello` → refetch; `site_updated` → recolor that pin (and refetch the open trail); `decision` → refetch the open trail if it's for that site.
 - `web/` has **no API routes** anymore: it only reads the backend API. No mock data remains in `web/`.
 - The frontend never computes or overrides risk; it renders what the API sends.
-- Test a pin flip: `curl -X POST http://localhost:4000/demo/happy` (golden site `site_001` goes yellow → green). Reset: `curl -X POST http://localhost:4000/dev/reset`.
+- Test a pin flip: `curl -X POST http://localhost:4000/demo/happy` (golden site `site_fbnyc`, Food Bank For NYC; its pin moves when paid). Reset: `curl -X POST http://localhost:4000/dev/reset`.
 
 ## iMessage via Photon (`imessage/`)
 
