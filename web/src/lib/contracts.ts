@@ -23,8 +23,32 @@ export interface Site {
   agency_code: "HRA" | "DHS" | "DYCD" | string;
   contract_ids: string[];
   events: { title: string; starts_at: string; is_demo_data: boolean }[];
-  risk: { level: RiskLevel; score: number; reasons: string[]; summary: string; computed_at: string };
+  risk: SiteRisk;
   is_demo_data: boolean;
+  /** Phase 5 (additive, mongo mode): true on the golden demo site (site_fbnyc, Food Bank For NYC). */
+  is_golden?: boolean;
+  /** Phase 5 (additive, mongo mode): why a demo site exists (the 4 fictional demo nonprofits np_1..np_4). */
+  demo_note?: string;
+}
+
+/** Site.risk. The first five fields are the original contract; the rest are ADDITIVE (Phase 4/5, mongo mode, from
+ *  data/risk.py) and may be absent (fixture mode and the demo sites carry only the first five + rule_version). */
+export interface SiteRisk {
+  level: RiskLevel;
+  score: number;
+  reasons: string[];
+  summary: string;
+  computed_at: string;
+  /** Points per factor (null = data not loaded, factor excluded). */
+  components?: { payment_pace: number | null; registration: number | null; agency: number | null; cash: number | null };
+  components_max?: { payment_pace: number; registration: number; agency: number; cash: number };
+  factors_used?: number;
+  rescaled?: boolean;
+  summary_source?: string;
+  as_of?: string;
+  rule_version?: string;
+  /** Golden site only (Option B, disclosed demo scale): the XRPL Testnet RLUSD counted toward "paid". */
+  xrpl_counted?: { rlusd: string; usd_at_demo_scale: number; scale_usd_per_rlusd: number | null; payments: number; scored: boolean; note: string } | null;
 }
 
 export interface Nonprofit {
@@ -33,7 +57,17 @@ export interface Nonprofit {
   address: string;
   service_types: string[];
   financials?: { fiscal_year: number; revenue: number; expenses: number; net_assets: number; cash_months: number; source_url: string };
-  wallet?: { address: string; credential_status: "valid" | "expired" | "none"; credential_expires?: string; bank_verified: boolean };
+  wallet?: {
+    address: string;
+    credential_status: "valid" | "expired" | "none";
+    credential_expires?: string;
+    bank_verified: boolean;
+    /** Additive (mongo mode): set on a DEMO wallet of a REAL organization (the golden, np_5): "demo wallet on XRPL
+     *  Testnet; the real organization has not onboarded". Show it next to the wallet, with a demo badge. */
+    label?: string;
+    /** Additive (mongo mode): true on XRPL Testnet demo wallets. */
+    is_demo_data?: boolean;
+  };
 }
 
 export interface Contract {
@@ -44,11 +78,25 @@ export interface Contract {
   start_date: string;
   end_date: string;
   registered_date: string | null;
-  spent_to_date: string;
+  /** Changed in Phase 5: `null` = NOT LOADED (37 of the 42 real contracts in mongo mode; see spent_to_date_note).
+   *  Show "not loaded", never "0" or "$0". Fixture contracts always have a string. */
+  spent_to_date: string | null;
   /** Extension (not in the original spec): Checkbook NYC "purpose" text. */
   purpose?: string;
   source: string;
   source_url: string;
+  // ---- additive (Phase 5, mongo mode) ----
+  /** Why spent_to_date is what it is (e.g. "not loaded"). */
+  spent_to_date_note?: string;
+  /** true only on the golden contract: the co-signer's active-term check uses a DISCLOSED demo end date
+   *  (`end_date_demo_assumed`, 2027-06-30). The API serves the REAL end in `end_date` (= `end_date_loaded`). */
+  end_date_assumed?: boolean;
+  /** The real end date from the public record (= `end_date` as served). */
+  end_date_loaded?: string;
+  /** Only with end_date_assumed: the disclosed demo end date the co-signer's contract_not_active check uses. */
+  end_date_demo_assumed?: string;
+  end_date_note?: string;
+  is_demo_data?: boolean;
 }
 
 export interface Invoice {
@@ -90,6 +138,10 @@ export interface Decision {
   signers: string[];
   source_tag: number;
   created_at: string;
+  /** Added in Phase 5 (additive, mongo mode): on an officer-approved over-limit execution, the pending decision it
+   *  executed. Its `decision_hash` is that pending decision's hash (the on-ledger memo commits to what the officer
+   *  approved), so verify it against the pending decision, not against this record's own fields. */
+  approved_from?: string;
 }
 
 export interface Payment {
@@ -151,7 +203,30 @@ export interface Trail {
 export type LiveMessage =
   | { type: "hello"; mode: "fixtures" | "mongo"; server_time: string }
   | { type: "site_updated"; site_id: string; risk: Site["risk"] }
-  | { type: "decision"; decision: Decision };
+  | { type: "decision"; decision: Decision }
+  // Added in Phase 5 (additive, mongo mode only): a real XRPL Testnet demo run started / finished.
+  | { type: "demo_run"; run_id: string; scenario: string; status: DemoRunStatus };
+
+/** "unknown" (additive): the run did not exit within RUN_LOCK_MAX_MS (default 10 min), so the API released its
+ *  one-run lock without killing the child; a later exit still updates it to succeeded / failed. */
+export type DemoRunStatus = "running" | "succeeded" | "failed" | "unknown";
+
+/** GET /demo/runs/:run_id (Phase 5, mongo mode): one real Testnet demo run started by POST /demo/:scenario. */
+export interface DemoRun {
+  run_id: string;
+  /** The API scenario name that was posted (e.g. "happy"). */
+  scenario: string;
+  /** The xrpl demo CLI scenario it runs (happy -> "golden"). */
+  cli_scenario: string;
+  status: DemoRunStatus;
+  exit_code: number | null;
+  started_at: string;
+  finished_at: string | null;
+  /** Decisions this run produced, in the order they arrived. */
+  decision_ids: string[];
+  /** Last lines of the demo CLI output (secrets scrubbed). */
+  log_tail: string[];
+}
 
 /** The co-signer's independent checks (Phase 2). `Check.name` uses these ids. */
 export const CHECK_NAMES = [

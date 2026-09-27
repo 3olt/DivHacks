@@ -161,8 +161,7 @@ export default function SiteReport({ id }: { id: string }) {
                 ))}
               </tbody>
             </table>
-            {/* PLACEHOLDER: per-factor points need `risk.components` from the API; render them here as a stacked bar when available. */}
-            <p className="mt-2 text-xs text-gray-500">Per-factor points will show here once the API publishes them.</p>
+            <ComponentsBar risk={site.risk} />
           </div>
         </div>
       </Section>
@@ -201,7 +200,11 @@ export default function SiteReport({ id }: { id: string }) {
           )}
           <PipelineStep
             title="City payments"
-            detail={`${trail.payments.filter((p) => p.source === "checkbook").length} payments from ${trail.agency.name}, latest ${lastDate(trail.payments.filter((p) => p.source === "checkbook"))}.`}
+            detail={
+              trail.payments.some((p) => p.source === "checkbook")
+                ? `${trail.payments.filter((p) => p.source === "checkbook").length} payments from ${trail.agency.name}, latest ${lastDate(trail.payments.filter((p) => p.source === "checkbook"))}.`
+                : "Payment records for this organization aren't loaded yet."
+            }
             source="Checkbook NYC"
             href={contract?.source_url ?? "https://www.checkbooknyc.com/"}
             demo={trail.payments.some((p) => p.source === "checkbook" && p.is_demo_data)}
@@ -236,7 +239,7 @@ export default function SiteReport({ id }: { id: string }) {
           />
           <PipelineStep
             title="Payment agent on the XRP Ledger"
-            detail={`${trail.decisions.length} payment decisions. Each one is checked by an independent co-signer (8 checks) and needs 2 of 3 signing keys; the ledger rejects the agent acting alone.`}
+            detail={`${trail.decisions.length} payment decisions. Each one is checked by an independent co-signer (8 checks) and needs signature weight 3: agent 1 + co-signer 2 (+ officer 1 over the auto-pay limit). The ledger rejects the agent acting alone.`}
             source="XRP Ledger Testnet"
             href="https://testnet.xrpl.org/"
             demo={trail.decisions.some(isFixtureDecision)}
@@ -256,9 +259,10 @@ export default function SiteReport({ id }: { id: string }) {
           </ul>
         )}
         <p className="mt-3 text-xs text-gray-500">
-          How to check a fingerprint: take the decision record without its <code>decision_hash</code>, sort all keys, remove whitespace, and SHA-256 it
-          (the code is in <code>shared/hash.ts</code>). The result must equal <code>decision_hash</code>, and for payments that reached the ledger, the memo&apos;s{" "}
-          <code>dh</code> field.
+          How to check a fingerprint: take only the decision&apos;s pre-signing fields (<code>decision_id, invoice_id, contract_id, payee_ein, amount, currency,
+          agent_reasoning, rule_version, source_tag, created_at</code>), write them as JSON with keys sorted and no whitespace, and SHA-256 it (the code is{" "}
+          <code>DECISION_HASH_FIELDS</code> in <code>shared/hash.ts</code>). The result must equal <code>decision_hash</code>, and for payments that reached the
+          ledger, the on-ledger memo&apos;s <code>dh</code> field. An officer-approved payment carries the hash of the pending decision the officer approved.
         </p>
       </Section>
     </Shell>
@@ -322,6 +326,34 @@ function ScoreMeter({ score }: { score: number }) {
       <p className="mt-1 text-sm">
         Score <strong>{score}</strong> / 100
       </p>
+    </div>
+  );
+}
+
+// Per-factor points from the API (risk.components, Phase 4). Factors with no data are excluded, never invented.
+function ComponentsBar({ risk }: { risk: Site["risk"] }) {
+  const c = risk.components;
+  const max = risk.components_max;
+  if (!c || !max) return <p className="mt-2 text-xs text-gray-500">Per-factor points aren&apos;t available for this site.</p>;
+  const parts = [
+    { key: "payment_pace", label: "Payment pace", points: c.payment_pace, max: max.payment_pace },
+    { key: "registration", label: "Registration", points: c.registration, max: max.registration },
+    { key: "agency", label: "Agency", points: c.agency, max: max.agency },
+    { key: "cash", label: "Cash cushion", points: c.cash, max: max.cash },
+  ];
+  return (
+    <div className="mt-3 space-y-1.5">
+      <p className="text-xs font-semibold text-gray-700">This site&apos;s points</p>
+      {parts.map((p) => (
+        <div key={p.key} className="flex items-center gap-2 text-xs">
+          <span className="w-24 shrink-0 text-gray-700">{p.label}</span>
+          <div className="h-2.5 flex-1 overflow-hidden rounded bg-gray-100">
+            {p.points !== null && <div className="h-full rounded bg-gray-700" style={{ width: `${(p.points / p.max) * 100}%` }} />}
+          </div>
+          <span className="w-16 shrink-0 text-right tabular-nums text-gray-900">{p.points === null ? "no data" : `${p.points} / ${p.max}`}</span>
+        </div>
+      ))}
+      {risk.rescaled && <p className="text-[11px] text-gray-500">Some factors had no data, so the score was rescaled over the factors used.</p>}
     </div>
   );
 }

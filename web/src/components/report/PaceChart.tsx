@@ -29,23 +29,27 @@ export default function PaceChart({ contract, payments }: { contract: Contract; 
     const city = payments
       .filter((p) => p.source === "checkbook" && p.status === "released" && p.contract_id === contract.contract_id)
       .sort((a, b) => t(a.date) - t(b.date));
+    // spent_to_date can include payments older than the loaded checks (e.g. the golden: 19 FY2026 checks vs all-years
+    // spent). Count that difference as already paid at the start, so the line matches spent_to_date.
+    const loaded = city.reduce((sum, p) => sum + Number(p.amount), 0);
+    const baseline = contract.spent_to_date !== null ? Math.max(0, Number(contract.spent_to_date) - loaded) : 0;
     const steps = city.reduce<{ at: number; total: number; payment: Payment }[]>(
-      (acc, p) => [...acc, { at: t(p.date), total: (acc.at(-1)?.total ?? 0) + Number(p.amount), payment: p }],
+      (acc, p) => [...acc, { at: t(p.date), total: (acc.at(-1)?.total ?? baseline) + Number(p.amount), payment: p }],
       [],
     );
     const agent = payments.filter((p) => p.source === "xrpl" && p.contract_id === contract.contract_id);
     const x = (ms: number) => PAD.left + ((ms - start) / (end - start)) * PLOT_W;
     const y = (v: number) => PAD.top + PLOT_H - (v / total) * PLOT_H;
     const expectedAt = (ms: number) => total * Math.min(1, Math.max(0, (ms - start) / (end - start)));
-    const paidAt = (ms: number) => steps.filter((s) => s.at <= ms).at(-1)?.total ?? 0;
-    return { start, end, total, steps, agent, x, y, expectedAt, paidAt };
+    const paidAt = (ms: number) => steps.filter((s) => s.at <= ms).at(-1)?.total ?? baseline;
+    return { start, end, total, steps, agent, x, y, expectedAt, paidAt, baseline, loadedCount: city.length };
   }, [contract, payments]);
 
-  const { start, end, total, steps, agent, x, y, expectedAt, paidAt } = model;
+  const { start, end, total, steps, agent, x, y, expectedAt, paidAt, baseline, loadedCount } = model;
   const nowClamped = Math.min(Math.max(now, start), end);
 
   // Step path for cumulative paid, drawn up to today.
-  let path = `M${x(start)},${y(0)}`;
+  let path = `M${x(start)},${y(baseline)}`;
   for (const s of steps) path += ` H${x(s.at)} V${y(s.total)}`;
   path += ` H${x(nowClamped)}`;
 
@@ -63,6 +67,16 @@ export default function PaceChart({ contract, payments }: { contract: Contract; 
   const hover = hoverT === null ? null : { at: hoverT, expected: expectedAt(hoverT), paid: hoverT <= now ? paidAt(hoverT) : null };
   const paidNow = paidAt(now);
   const expectedNow = expectedAt(now);
+
+  // No payment records and no spent-to-date: we don't know what was paid, so don't draw a misleading $0 line.
+  if (contract.spent_to_date === null && loadedCount === 0) {
+    return (
+      <p className="rounded-md border border-dashed border-gray-300 p-4 text-sm text-gray-600">
+        Payment data for this contract isn&apos;t loaded yet, so we can&apos;t show whether it&apos;s on pace. The contract is{" "}
+        {formatMoney(total)}, {contract.start_date} to {contract.end_date}.
+      </p>
+    );
+  }
 
   return (
     <figure className="space-y-3">
@@ -173,6 +187,7 @@ export default function PaceChart({ contract, payments }: { contract: Contract; 
       <figcaption className="text-sm text-gray-700">
         By today the contract should have paid about <strong>{formatMoney(expectedNow)}</strong> to stay on pace; the city has paid{" "}
         <strong>{formatMoney(paidNow)}</strong> ({Math.round((paidNow / total) * 100)}% of {formatMoney(total)}).
+        {baseline > 0 && ` Includes ${formatMoney(baseline)} paid before the first payment record we have (from the contract's spent-to-date).`}
       </figcaption>
 
       <details className="text-xs text-gray-600">

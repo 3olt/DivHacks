@@ -1,10 +1,9 @@
 // iMessage service built on Photon Spectrum (https://photon.codes/docs/spectrum-ts/introduction).
-// - POST /notify { phone, text }  -> sends an iMessage (called by the web app)
 // - GET  /health                  -> { mode: "live" | "dry-run" }
 // - Inbound iMessages: "STOP" unsubscribes; anything else is answered by Grok from the money trail (see replies.ts).
 // - "Funded ✅" alerts: texts a site's followers when it turns green (see fundedAlerts.ts).
 // Without SPECTRUM_PROJECT_ID / SPECTRUM_PROJECT_SECRET it runs in dry-run mode and only logs.
-import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import { createServer, type ServerResponse } from "node:http";
 import { Spectrum } from "spectrum-ts";
 import { imessage } from "spectrum-ts/providers/imessage";
 import { startFundedAlerts } from "./fundedAlerts";
@@ -43,20 +42,6 @@ async function replyLoop(): Promise<void> {
   }
 }
 
-function readJson(req: IncomingMessage): Promise<Record<string, unknown>> {
-  return new Promise((resolve, reject) => {
-    let body = "";
-    req.on("data", (chunk) => (body += chunk));
-    req.on("end", () => {
-      try {
-        resolve(body ? JSON.parse(body) : {});
-      } catch (err) {
-        reject(err);
-      }
-    });
-  });
-}
-
 function json(res: ServerResponse, status: number, data: unknown): void {
   res.writeHead(status, { "Content-Type": "application/json" });
   res.end(JSON.stringify(data));
@@ -67,22 +52,13 @@ createServer(async (req, res) => {
     if (req.method === "GET" && req.url === "/health") {
       return json(res, 200, { mode: live ? "live" : "dry-run" });
     }
-    if (req.method === "POST" && req.url === "/notify") {
-      const { phone, text } = await readJson(req);
-      if (typeof phone !== "string" || typeof text !== "string" || !/^\+\d{10,15}$/.test(phone)) {
-        return json(res, 400, { error: "Expected { phone: E.164 string, text: string }" });
-      }
-      await sendIMessage(phone, text);
-      return json(res, 200, { ok: true, mode: live ? "live" : "dry-run" });
-    }
     json(res, 404, { error: "Not found" });
   } catch (err) {
     console.error(err);
-    // Free plan: only numbers added under Users in the Photon dashboard can be messaged.
-    if (String(err).includes("Target not allowed")) return json(res, 403, { error: "not_allowed" });
-    json(res, 500, { error: "Send failed" });
+    json(res, 500, { error: "Internal error" });
   }
-}).listen(PORT, () => console.log(`imessage service on :${PORT} (${live ? "live" : "dry-run"})`));
+  // Localhost only: this service holds the Photon line, so nothing on the network should reach it.
+}).listen(PORT, "127.0.0.1", () => console.log(`imessage service on 127.0.0.1:${PORT} (${live ? "live" : "dry-run"})`));
 
 replyLoop().catch((err) => console.error("reply loop stopped", err));
 startFundedAlerts(sendIMessage);

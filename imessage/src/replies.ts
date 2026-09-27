@@ -51,8 +51,11 @@ const FOLLOW = /^\s*follow\s+(.+?)\s*$/i;
 const JOIN = /^\s*(?:join\s+)?(\d{5})\s*$/i;
 const FALLBACK = "Sorry, I couldn't look that up right now. Please try again in a minute.";
 
+// GET /subscribers needs x-api-token when the API runs with SUBSCRIBERS_TOKEN (docs/API.md); harmless otherwise.
+const API_HEADERS: Record<string, string> = process.env.SUBSCRIBERS_TOKEN ? { "x-api-token": process.env.SUBSCRIBERS_TOKEN } : {};
+
 async function getJson<T>(path: string): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`);
+  const res = await fetch(`${API_URL}${path}`, { headers: API_HEADERS });
   if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
   return (await res.json()) as T;
 }
@@ -103,7 +106,8 @@ async function findSubscriber(phone: string): Promise<Subscriber | undefined> {
 
 // "FOLLOW burnside heights" -> the site whose name best matches (all query words must appear in the name).
 async function followPlace(phone: string, query: string): Promise<string> {
-  const words = query.toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter(Boolean);
+  // Words of 3+ letters only, so "FOLLOW a" can't match everything.
+  const words = query.toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter((w) => w.length >= 3);
   const sites = await getJson<Site[]>("/sites");
   const match = sites
     .map((s) => ({ s, name: s.name.toLowerCase() }))

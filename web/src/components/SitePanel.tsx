@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import type { Contract, Decision, Payment, Site, Trail } from "@/lib/contracts";
+import { isDemoContract } from "@/lib/openData";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/risk";
 import { OUTCOME_BADGES, enforcedByLabel, formatDate, formatEventTime, formatMoney, nextEvent, refusalLabel } from "@/lib/format";
 import TextUs from "./TextUs";
@@ -68,7 +69,7 @@ export default function SitePanel({
           </Section>
 
           <Section title="Nonprofit">
-            <Nonprofit trail={trail} />
+            <Nonprofit trail={trail} demo={site.is_demo_data} />
           </Section>
 
           <Section title="Payment agent (XRPL)">
@@ -109,7 +110,7 @@ function MoneyTrail({ trail }: { trail: Trail }) {
             {agency.avg_days_registered_late != null && ` (avg ${agency.avg_days_registered_late} days)`}
           </p>
         )}
-        <SourceLink href={agency.source_url} label="Comptroller" />
+        <SourceLink href={agency.source_url} label="Comptroller" demo={agency.is_demo_data} />
       </Step>
       {trail.contracts.map((c) => (
         <Step key={c.contract_id} label="Contract">
@@ -140,10 +141,12 @@ function ContractInfo({ contract: c }: { contract: Contract }) {
       <p className="text-sm font-medium text-gray-900">{c.purpose ?? c.contract_id}</p>
       <p className="font-mono text-[11px] text-gray-500">{c.contract_id}</p>
       <p className="text-xs text-gray-600">
-        {formatMoney(c.spent_to_date)} of {formatMoney(c.amount)} spent · {c.start_date} to {c.end_date}
+        {/* null = payment data not loaded for this contract (not $0). */}
+        {c.spent_to_date === null ? `${formatMoney(c.amount)} contract · payment data not loaded yet` : `${formatMoney(c.spent_to_date)} of ${formatMoney(c.amount)} spent`} ·{" "}
+        {c.start_date} to {c.end_date}
       </p>
       <p className="text-xs text-gray-600">{c.registered_date ? `Registered ${formatDate(c.registered_date)}` : "Not registered"}</p>
-      <SourceLink href={c.source_url} label="Checkbook NYC" />
+      <SourceLink href={c.source_url} label="Checkbook NYC" demo={isDemoContract(c)} />
     </>
   );
 }
@@ -165,7 +168,7 @@ function PaymentRow({ payment: p }: { payment: Payment }) {
   );
 }
 
-function Nonprofit({ trail }: { trail: Trail }) {
+function Nonprofit({ trail, demo }: { trail: Trail; demo: boolean }) {
   const np = trail.nonprofit;
   const f = np.financials;
   const w = np.wallet;
@@ -179,7 +182,7 @@ function Nonprofit({ trail }: { trail: Trail }) {
             <Stat label="Revenue" value={formatMoney(f.revenue)} />
             <Stat label="Net assets" value={formatMoney(f.net_assets)} />
           </dl>
-          <SourceLink href={f.source_url} label={`IRS 990, FY${f.fiscal_year} (ProPublica)`} />
+          <SourceLink href={f.source_url} label={`IRS 990, FY${f.fiscal_year} (ProPublica)`} demo={demo} />
         </>
       ) : (
         <p className="text-xs text-gray-500">No IRS 990 on file.</p>
@@ -197,6 +200,8 @@ function Nonprofit({ trail }: { trail: Trail }) {
             {w.credential_status === "expired" && <span className="text-red-700">credential expired</span>}
             {w.credential_status === "none" && <span className="text-yellow-700">not verified</span>}
             <span className="text-gray-500"> · bank {w.bank_verified ? "verified" : "not verified"} (Nessie)</span>
+            {w.is_demo_data && <DemoBadge />}
+            {w.label && <p className="mt-0.5 text-[11px] text-gray-500">{w.label}</p>}
           </>
         )}
       </div>
@@ -271,11 +276,14 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function SourceLink({ href, label }: { href: string; label: string }) {
+function SourceLink({ href, label, demo }: { href: string; label: string; demo?: boolean }) {
   return (
-    <a href={href} target="_blank" rel="noreferrer" className="text-[11px] text-blue-700 underline">
-      Source: {label}
-    </a>
+    <p className="text-[11px]">
+      <a href={href} target="_blank" rel="noreferrer" className="text-blue-700 underline">
+        Source: {label}
+      </a>
+      {demo && <DemoBadge />}
+    </p>
   );
 }
 

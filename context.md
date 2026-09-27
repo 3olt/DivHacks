@@ -286,7 +286,8 @@ _Synced Sat 2026-09-26 ~21:00 EDT from a review of both halves of the repo. Dead
 
 ### Fix before judging (found in the review)
 
-**Frontend (Noel):**
+**Frontend (Noel): ✅ items 1–6 and 8–12 fixed Sun ~03:00 (item 7 only if it happens; item 13 is a run note).** Also done: pipeline shows the simulated compromised agent in the injection run; iMessage `/notify` removed and the service bound to 127.0.0.1; `FOLLOW` needs 3+ letter words; `imessage/` sends `x-api-token` when `SUBSCRIBERS_TOKEN` is set in `imessage/.env` (so the API can turn it on); report shows `risk.components` as per-factor bars.
+
 1. **/demo pipeline contradicts itself on `injection`**: step "AI invoice check (Grok)" shows ✓ "no hidden instructions" for a run blocked for hidden instructions (`lib/pipeline.ts:24`). The hold is credited to "Agent policy"; it's enforced by the co-signer (`lib/pipeline.ts:60-63`).
 2. **"Verify it yourself" hash recipe is wrong** (`SiteReport.tsx:258-262`): `decision_hash` is the SHA-256 of only the pre-signing fields (`DECISION_HASH_FIELDS` in `shared/hash.ts`), not the whole record. Also "needs 2 of 3 signing keys" → "needs weight 3: agent 1 + co-signer 2 (+ officer 1 over the limit)".
 3. **Map can crash on a cold load** (`MapView.tsx:95-98`, flyToBounds on a zero-size map → NaN LatLng): guard it.

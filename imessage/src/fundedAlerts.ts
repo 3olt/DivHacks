@@ -7,8 +7,11 @@ type Site = { id: string; name: string; risk: Risk };
 type Subscriber = { phone: string };
 type LiveMessage = { type: "hello" } | { type: "site_updated"; site_id: string; risk: Risk } | { type: string };
 
+// GET /subscribers needs x-api-token when the API runs with SUBSCRIBERS_TOKEN (docs/API.md); harmless otherwise.
+const API_HEADERS: Record<string, string> = process.env.SUBSCRIBERS_TOKEN ? { "x-api-token": process.env.SUBSCRIBERS_TOKEN } : {};
+
 async function getJson<T>(path: string): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`);
+  const res = await fetch(`${API_URL}${path}`, { headers: API_HEADERS });
   if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
   return (await res.json()) as T;
 }

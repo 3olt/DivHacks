@@ -67,6 +67,9 @@ export default function Landing() {
               <a href="#how" className="rounded-lg border border-gray-300 px-5 py-3 font-medium text-gray-800 hover:border-gray-900">
                 How it works
               </a>
+              <Link href="/demo" className="rounded-lg border border-gray-300 px-5 py-3 font-medium text-gray-800 hover:border-gray-900">
+                Live demo
+              </Link>
             </div>
           </div>
           <PreviewCard />
@@ -130,9 +133,12 @@ export default function Landing() {
         {/* Honesty + CTA */}
         <section className="mx-auto max-w-6xl px-4 py-14 text-center sm:px-6">
           <h2 className="text-2xl font-bold">See it live</h2>
-          <p className="mx-auto mt-2 max-w-2xl text-gray-600">Open the map, click a pin, and follow the money. Run a payment from the demo controls and watch the pin change color.</p>
-          <div className="mt-6 flex justify-center">
+          <p className="mx-auto mt-2 max-w-2xl text-gray-600">Open the map, click a pin, and follow the money. On the live demo, run a payment on the XRP Ledger and watch every guardrail it passes or trips.</p>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
             <LaunchButton />
+            <Link href="/demo" className="whitespace-nowrap rounded-lg border border-gray-300 px-5 py-3 font-medium text-gray-800 hover:border-gray-900">
+              Live demo →
+            </Link>
           </div>
           <p className="mt-4 text-sm text-gray-600">
             Or check every record yourself on the{" "}
@@ -142,7 +148,7 @@ export default function Landing() {
             : every site, contract, payment, and agent decision, plus live XRP Ledger transactions, downloadable as CSV or JSON.
           </p>
           <p className="mx-auto mt-8 max-w-2xl text-xs text-gray-500">
-            Built at DivHacks 2026. The map currently shows demo data: fictional organizations placed at real NYC addresses, and payments on the XRP Ledger Testnet (no real money). Public-record sources are linked wherever they&apos;re used.
+            Built at DivHacks 2026. The map shows 15 real NYC nonprofits built from public records (NYC Comptroller, Checkbook NYC, IRS 990 filings) plus 4 labelled demo sites. Agent payments run on the XRP Ledger Testnet (test money, no real value), and the example card above uses demo data. Public-record sources are linked wherever they&apos;re used.
           </p>
         </section>
       </main>

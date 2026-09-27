@@ -21,9 +21,12 @@ export function decisionPipeline(d: Decision): Step[] {
   const cosignerSigned = d.signers.includes("cosigner");
 
   const invoice: Step = { name: "Invoice", status: "pass", detail: `${d.invoice_id} · ${d.amount} ${d.currency}` };
-  let grok: Step = { name: "AI invoice check (Grok)", status: "pass", detail: "Facts extracted; no hidden instructions; matches the contract" };
-  let policy: Step = { name: "Agent policy", status: "pass", detail: "Wallet taken only from the registry by EIN; agent signs (1 of 3 weights)" };
-  let cosigner: Step = { name: "Co-signer: 8 checks", status: "pass", detail: `${passed}/${d.checks.length} checks passed; co-signs (2 of 3 weights)` };
+  const flagged = reasons.includes("suspicious_instructions_in_invoice");
+  let grok: Step = flagged
+    ? { name: "AI invoice check (Grok)", status: "fail", detail: "Flagged hidden instructions in the invoice" }
+    : { name: "AI invoice check (Grok)", status: "pass", detail: "Facts extracted; matches the contract" };
+  let policy: Step = { name: "Agent policy", status: "pass", detail: "Wallet taken only from the registry by EIN; agent signs (weight 1)" };
+  let cosigner: Step = { name: "Co-signer: 8 checks", status: "pass", detail: `${passed}/${d.checks.length} checks passed; co-signs (weight 2, reaching the 3 needed)` };
   let ledger: Step = { name: "XRP Ledger", status: "pass", detail: d.ledger_result ? `${d.ledger_result}: paid` : "Paid" };
 
   const stopAt = (step: "grok" | "policy" | "cosigner" | "ledger") => {
@@ -46,7 +49,17 @@ export function decisionPipeline(d: Decision): Step[] {
     return [invoice, grok, policy, cosigner, ledger];
   }
 
+  // Red-team runs where the agent is deliberately compromised (it obeys the malicious invoice): show that at the
+  // agent steps, so the later layers are what stop it.
+  if (d.agent_reasoning.startsWith("[SIMULATED COMPROMISED AGENT")) {
+    grok = { name: "AI invoice check (Grok)", status: "skip", detail: "Ignored: the compromised agent skipped the checker's flag" };
+    policy = { name: "Agent policy", status: "fail", detail: "Compromised (simulated red-team): obeyed the invoice and targeted the attacker's wallet" };
+  }
+
   // Refused: find the layer that stopped it.
+  // Grok flagged it but later layers still ran: a simulated compromised agent ignored the flag.
+  if (flagged && d.enforced_by) grok = { ...grok, detail: "Flagged hidden instructions (a compromised agent ignored the flag)" };
+
   if (d.enforced_by === "ledger") {
     if (!cosignerSigned) cosigner = { name: "Co-signer: 8 checks", status: "skip", detail: "Bypassed: the agent submitted alone" };
     ledger = { name: "XRP Ledger", status: "fail", detail: `${d.ledger_result ?? "Rejected"}: ${first}` };
@@ -58,8 +71,9 @@ export function decisionPipeline(d: Decision): Step[] {
     return [invoice, grok, policy, cosigner, ledger];
   }
   if (d.enforced_by === "hold") {
-    policy = { name: "Agent policy", status: "fail", detail: first };
-    stopAt("policy");
+    // The 72-hour wallet-change hold is enforced by the co-signer (it keeps its own record of every hold).
+    cosigner = { name: "Co-signer: 8 checks", status: "fail", detail: `${first} (enforced by the co-signer)` };
+    stopAt("cosigner");
     return [invoice, grok, policy, cosigner, ledger];
   }
   // enforced_by null: stopped by the agent's own pipeline before anything was signed.

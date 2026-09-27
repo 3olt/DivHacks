@@ -92,6 +92,9 @@ function FlyToSelection({ site, markers }: { site: Site | null; markers: React.R
   const lat = site?.location.coordinates[1];
   const id = site?.id;
   useEffect(() => {
+    // A map with no size yet (cold load, hidden container) makes fly/zoom math produce NaN coordinates.
+    const size = map.getSize();
+    if (size.x === 0 || size.y === 0) return;
     if (lat === undefined || lng === undefined) {
       map.closePopup();
       map.flyToBounds(NYC_BOUNDS, { duration: 0.6 });
