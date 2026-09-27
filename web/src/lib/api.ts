@@ -43,9 +43,27 @@ export async function runDemo(scenario: DemoScenario): Promise<DemoStart> {
   return { ok: true, run_id: body.run_id ?? null, status: body.status ?? "done", message: body.message };
 }
 
-export async function fetchDemoRun(runId: string): Promise<{ status: string } | null> {
+// GET /demo/runs/:run_id (mongo mode). `log_tail` holds the runner's last lines, including why a run failed.
+export interface DemoRun {
+  run_id: string;
+  scenario: string;
+  status: "running" | "succeeded" | "failed" | "unknown";
+  exit_code: number | null;
+  started_at: string;
+  finished_at: string | null;
+  decision_ids: string[];
+  log_tail: string[];
+}
+
+export async function fetchDemoRun(runId: string): Promise<DemoRun | null> {
   const res = await fetch(`${API_URL}/demo/runs/${encodeURIComponent(runId)}`, { cache: "no-store" });
   return res.ok ? res.json() : null;
+}
+
+// Newest first; [] in fixture mode.
+export async function fetchDemoRuns(): Promise<DemoRun[]> {
+  const res = await fetch(`${API_URL}/demo/runs`, { cache: "no-store" });
+  return res.ok ? res.json() : [];
 }
 
 export async function resetDemo(): Promise<{ ok: boolean; message?: string }> {

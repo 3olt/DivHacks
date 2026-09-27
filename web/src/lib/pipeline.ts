@@ -4,7 +4,8 @@
 import type { Decision } from "./contracts";
 import { refusalLabel } from "./format";
 
-export type StepStatus = "pass" | "fail" | "wait" | "skip";
+// fail = this layer stopped the payment; sim = a step the demo deliberately staged (a hacked agent).
+export type StepStatus = "pass" | "fail" | "wait" | "skip" | "sim";
 export interface Step {
   name: string;
   status: StepStatus;
@@ -52,16 +53,16 @@ export function decisionPipeline(d: Decision): Step[] {
   // Red-team runs where the agent is deliberately compromised (it obeys the malicious invoice): show that at the
   // agent steps, so the later layers are what stop it.
   if (d.agent_reasoning.startsWith("[SIMULATED COMPROMISED AGENT")) {
-    grok = { name: "AI invoice check (Grok)", status: "skip", detail: "Ignored: the compromised agent skipped the checker's flag" };
-    policy = { name: "Agent policy", status: "fail", detail: "Compromised (simulated red-team): obeyed the invoice and targeted the attacker's wallet" };
+    grok = { name: "AI invoice check (Grok)", status: "skip", detail: "Grok flagged it, but this simulated hacked agent ignores the flag" };
+    policy = { name: "Agent policy", status: "sim", detail: "Simulated hack: the agent obeys the invoice and targets the scammer's wallet" };
   }
 
   // Refused: find the layer that stopped it.
   // Grok flagged it but later layers still ran: a simulated compromised agent ignored the flag.
-  if (flagged && d.enforced_by) grok = { ...grok, detail: "Flagged hidden instructions (a compromised agent ignored the flag)" };
+  if (flagged && d.enforced_by && grok.status !== "skip") grok = { ...grok, detail: "Flagged hidden instructions (a compromised agent ignored the flag)" };
 
   if (d.enforced_by === "ledger") {
-    if (!cosignerSigned) cosigner = { name: "Co-signer: 8 checks", status: "skip", detail: "Bypassed: the agent submitted alone" };
+    if (!cosignerSigned) cosigner = { name: "Co-signer: 8 checks", status: "skip", detail: "Skipped: the agent sent the payment alone" };
     ledger = { name: "XRP Ledger", status: "fail", detail: `${d.ledger_result ?? "Rejected"}: ${first}` };
     return [invoice, grok, policy, cosigner, ledger];
   }
