@@ -94,6 +94,8 @@ Testnet accounts (public): [agent account](https://testnet.xrpl.org/accounts/rE9
 
 ## Notes for the frontend (Noel)
 
+The full review of both halves, the fix list before judging (frontend, iMessage and backend) and the timeline with owners are in [`../context.md`](../context.md#goals--plan-to-the-deadline).
+
 - `/demo/escrow` in the API is still your fixture placeholder. The real simulated escrow now exists in `xrpl/` (`npm run demo escrow`); Phase 5 wires `/demo/:scenario` to it, and then the placeholder can be deleted.
 - New values to show: `Decision.currency` can be **`CTT`** (simulated escrow only; label it "test token, not RLUSD"); `outcome: "pending_approval"` now really happens (officer approval, then a new `released` decision with signers agent + co-signer + officer); `enforced_by: "hold"` for the address-swap hold. New refusal codes are listed in [`API.md`](API.md#refusal-codes). Re-copy `shared/contracts.ts`.
 - The officer's approve / revoke / restore buttons need an officer token header, so a browser page (or the agent) can't press them. If you want an "Approve" button in the UI, it has to go through a backend route that holds that token; don't put it in the browser.
