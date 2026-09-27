@@ -38,18 +38,16 @@ export default function SitePanel({
         {next && (
           <p className="mt-3 text-sm text-gray-700">
             <span className="font-medium">{next.title}</span> · {formatEventTime(next.starts_at)}
-            {next.is_demo_data && <DemoBadge />}
           </p>
         )}
       </div>
 
-      <Section title="Funding status">
+      <Section title="Financial status">
         <div className="flex items-center gap-2">
           <span className="h-3 w-3 rounded-full" style={{ background: RISK_COLORS[site.risk.level] }} />
           <span className="font-medium text-gray-900">{RISK_LABELS[site.risk.level]}</span>
           <span className="ml-auto text-xs text-gray-500">score {site.risk.score}/100</span>
         </div>
-        <p className="mt-2 text-sm text-gray-700">{site.risk.summary}</p>
         <ul className="mt-2 list-disc pl-5 text-xs text-gray-600">
           {site.risk.reasons.map((r) => (
             <li key={r}>{r}</li>
@@ -68,9 +66,8 @@ export default function SitePanel({
           </Section>
 
           <Section title="Nonprofit">
-            <Nonprofit trail={trail} demo={site.is_demo_data} />
+            <Nonprofit trail={trail} />
           </Section>
-
         </>
       )}
 
@@ -133,7 +130,7 @@ function ContractInfo({ contract: c }: { contract: Contract }) {
       <p className="text-xs text-gray-600">
         {/* null = payment data not loaded for this contract (not $0). */}
         {c.spent_to_date === null ? `${formatMoney(c.amount)} contract · payment data not loaded yet` : `${formatMoney(c.spent_to_date)} of ${formatMoney(c.amount)} spent`} ·{" "}
-        {c.start_date} to {c.end_date}
+        {formatDate(c.start_date)} to {formatDate(c.end_date)}
       </p>
       <p className="text-xs text-gray-600">{c.registered_date ? `Registered ${formatDate(c.registered_date)}` : "Not registered"}</p>
       <SourceLink href={c.source_url} label="Checkbook NYC" demo={isDemoContract(c)} />
@@ -145,24 +142,17 @@ function PaymentRow({ payment: p }: { payment: Payment }) {
   return (
     <li className="flex items-baseline gap-2 text-xs">
       <span className="w-20 shrink-0 text-gray-500">{formatDate(p.date)}</span>
-      <span className={p.status === "refused" ? "text-gray-400 line-through" : "text-gray-900"}>{formatMoney(p.amount, p.currency)}</span>
+      <span className="text-gray-900">{formatMoney(p.amount, p.currency)}</span>
       <span className="text-gray-500">City payment</span>
-      {p.status !== "released" && <span className="text-gray-500">({p.status.replace("_", " ")})</span>}
-      {p.explorer_url && (
-        <a href={p.explorer_url} target="_blank" rel="noreferrer" className="ml-auto text-blue-700 underline">
-          tx
-        </a>
-      )}
     </li>
   );
 }
 
-function Nonprofit({ trail, demo }: { trail: Trail; demo: boolean }) {
+function Nonprofit({ trail }: { trail: Trail }) {
   const np = trail.nonprofit;
   const f = np.financials;
   return (
     <div className="space-y-3">
-      <p className="text-sm font-medium text-gray-900">{np.name}</p>
       {f ? (
         <>
           <dl className="grid grid-cols-3 gap-2 text-center">
@@ -170,7 +160,7 @@ function Nonprofit({ trail, demo }: { trail: Trail; demo: boolean }) {
             <Stat label="Revenue" value={formatMoney(f.revenue)} />
             <Stat label="Net assets" value={formatMoney(f.net_assets)} />
           </dl>
-          <SourceLink href={f.source_url} label={`IRS 990, FY${f.fiscal_year} (ProPublica)`} demo={demo} />
+          <SourceLink href={f.source_url} label={`IRS 990, FY${f.fiscal_year} (ProPublica)`} />
         </>
       ) : (
         <p className="text-xs text-gray-500">No IRS 990 on file.</p>

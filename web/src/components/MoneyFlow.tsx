@@ -62,7 +62,10 @@ export default function MoneyFlow({
                       <p className="text-xs text-gray-600">
                         {formatMoney(flow.paidOfPromised)} promised · <strong className="text-gray-900">{formatMoney(flow.paid)} paid</strong> (
                         {Math.round((flow.paid / flow.paidOfPromised) * 100)}%)
-                        {flow.paidOfPromised < flow.promised && <span className="text-gray-500"> on the contracts with records</span>}
+                        {/* All contracts together; the rating's reasons quote the current contract. */}
+                        <span className="text-gray-500">
+                          {flow.paidOfPromised < flow.promised ? " on the contracts with records" : flow.contracts > 1 ? ` across ${flow.contracts} contracts` : ""}
+                        </span>
                       </p>
                       <div className="h-1.5 w-full overflow-hidden rounded bg-gray-100">
                         <div className="h-full rounded" style={{ width: `${Math.min(100, (flow.paid / flow.paidOfPromised) * 100)}%`, background: "var(--series-1)" }} />
@@ -89,6 +92,7 @@ function flowFor(trail: Trail | undefined) {
   const loaded = trail.contracts.filter((c) => c.spent_to_date !== null);
   return {
     agency: trail.agency.name,
+    contracts: trail.contracts.length,
     promised,
     paid: loaded.length ? loaded.reduce((sum, c) => sum + Number(c.spent_to_date), 0) : null,
     paidOfPromised: loaded.reduce((sum, c) => sum + Number(c.amount), 0),

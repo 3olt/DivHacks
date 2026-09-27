@@ -26,13 +26,12 @@ export default function Dashboard({ initialSiteId = null }: { initialSiteId?: st
 
   // Read inside WS callbacks without reconnecting when the selection changes.
   const selectedRef = useRef<string | null>(null);
-  const sitesRef = useRef<Site[]>([]);
   useEffect(() => {
     selectedRef.current = selectedId;
-    sitesRef.current = sites;
-  }, [selectedId, sites]);
+  }, [selectedId]);
 
-  // Live updates from the API: pins recolor on site_updated; the open trail refetches on relevant events.
+  // Live updates from the API: site_updated (public records only) recolors a pin and refreshes its money flow.
+  // XRPL agent decisions are ignored here: the main map shows public records only (they're on /demo).
   useEffect(() => {
     let cancelled = false;
     async function loadSites() {
@@ -68,10 +67,6 @@ export default function Dashboard({ initialSiteId = null }: { initialSiteId?: st
       } else if (msg.type === "site_updated") {
         setSites((s) => s.map((x) => (x.id === msg.site_id ? { ...x, risk: msg.risk } : x)));
         reloadTrail(msg.site_id);
-      } else if (msg.type === "decision") {
-        // A payment to one of these real organizations changes its money flow row.
-        const site = sitesRef.current.find((x) => x.contract_ids.includes(msg.decision.contract_id) || x.nonprofit_ein === msg.decision.payee_ein);
-        if (site) reloadTrail(site.id);
       }
     });
     return () => {
@@ -104,7 +99,7 @@ export default function Dashboard({ initialSiteId = null }: { initialSiteId?: st
     setTrail(null);
   }
 
-  // Opening a site from the ledger: make sure its type isn't filtered out, so its pin and popup exist.
+  // Opening a site from the Money flow list: make sure its type isn't filtered out, so its pin and popup exist.
   function openSite(id: string) {
     const type = sites.find((s) => s.id === id)?.type;
     if (type && hiddenTypes.has(type)) {

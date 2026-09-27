@@ -148,7 +148,7 @@ export default function Landing() {
             : every site, contract, payment, and agent decision, plus live XRP Ledger transactions, downloadable as CSV or JSON.
           </p>
           <p className="mx-auto mt-8 max-w-2xl text-xs text-gray-500">
-            Built at DivHacks 2026. The map shows 15 real NYC nonprofits built from public records (NYC Comptroller, Checkbook NYC, IRS 990 filings); their events are demo. The live demo adds 4 fictional nonprofits so the payment agent has someone to pay and to block. Agent payments run on the XRP Ledger Testnet (test money, no real value), and the example card above uses demo data. Public-record sources are linked wherever they&apos;re used.
+            Built at DivHacks 2026. The map shows 15 real NYC nonprofits built from public records (NYC Comptroller, Checkbook NYC, IRS 990 filings); their events are demo. The live demo adds 4 fictional nonprofits so the payment agent has someone to pay and to block. Agent payments run on the XRP Ledger Testnet (test money, no real value). Public-record sources are linked wherever they&apos;re used.
           </p>
         </section>
       </main>
@@ -177,16 +177,16 @@ function PinDots() {
   );
 }
 
-// Static illustration of a pin's summary, built from the demo data's golden site.
+// Static example of what the map shows, from real sites on it (public records, Sun 2026-09-27).
 function PreviewCard() {
   const rows = [
-    { level: "yellow" as const, name: "Burnside Heights Community Pantry", note: "41% of contract term elapsed, 15% paid" },
-    { level: "green" as const, name: "Fordham Youth Robotics Lab", note: "5.2 months of cash on hand (FY2024 990)" },
-    { level: "red" as const, name: "Mott Haven Saturday Grocery Giveaway", note: "24% of contract term elapsed, 0% paid" },
+    { level: "red" as const, name: "Food Bank For New York City", note: "Current contract ended June 30 with 70% paid; 0.35 months of cash on hand" },
+    { level: "red" as const, name: "City Harvest", note: "DYCD registered 99% of FY2024 contracts late; 0.46 months of cash on hand" },
+    { level: "yellow" as const, name: "Coalition for the Homeless", note: "DHS registered 85% of FY2024 contracts late; 3.43 months of cash on hand" },
   ];
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-lg" aria-label="Example of what the map shows">
-      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Example · demo data</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Example · from public records</p>
       <ul className="mt-3 space-y-3">
         {rows.map((r) => (
           <li key={r.name} className="flex items-start gap-3 rounded-lg border border-gray-100 p-3">
@@ -198,8 +198,8 @@ function PreviewCard() {
           </li>
         ))}
       </ul>
-      <div className="mt-4 rounded-lg bg-green-50 p-3 text-xs text-green-900">
-        <span className="font-semibold">Paid</span> · 12.50 RLUSD to Burnside Heights Food Collective · signed by agent + co-signer
+      <div className="mt-4 rounded-lg bg-gray-50 p-3 text-xs text-gray-700">
+        <span className="font-semibold">Money flow</span> · HRA → Food Bank For NYC · $6,815,932 of $9,882,692 paid across its 5 contracts (69%)
       </div>
     </div>
   );
