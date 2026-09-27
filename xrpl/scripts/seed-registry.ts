@@ -2,9 +2,10 @@
 // document is DEMO DATA (is_demo_data: true). Holds no keys: loads only the root .env.
 //
 //   nonprofits  np_1..np_4 (EIN 00-0000001..4, names from data/accounts.testnet.json), Nonprofit shape with
-//               wallet {address (registry wallet), credential_status "valid", credential_expires (now + 30 d), bank_verified false}.
-//               credential_expires is only rewritten when it is missing or within 7 days of expiring, so a re-run does not
-//               change the registry (a running co-signer would otherwise see registry_drift).
+//               wallet {address (registry wallet), credential_status, credential_expires, bank_verified}.
+//               Since Phase 3 the wallet STATUS fields belong to onboarding (scripts/onboard-nonprofit.ts): an EIN with a
+//               complete Mongo `onboarding` record keeps what onboarding wrote; any other EIN gets credential_status "none",
+//               bank_verified false (the co-signer reads the real credential on-ledger either way).
 //   contracts   the 4 demo contracts (Contract shape, values copied from api/src/fixtures/contracts.ts) plus
 //               xrpl_budget_rlusd: a TESTNET-SCALE STAND-IN for the contract's remaining balance (the real amount is USD).
 //   indexes     decisions.decision_id unique, decisions.invoice_id, payments.payment_id unique, ...
@@ -49,27 +50,30 @@ async function main(): Promise<number> {
   const m = await openMongo("divhacks-seed-registry");
   try {
     const db = m.db;
-    const now = Date.now();
-    const in30d = new Date(now + 30 * 24 * 3600 * 1000).toISOString().replace(/\.\d{3}Z$/, "Z");
     let changed = 0;
 
     for (const key of Object.keys(reg.nonprofits) as NonprofitKey[]) {
       const np = reg.nonprofits[key];
       const existing = await db.collection<NonprofitDoc>(COLL.nonprofits).findOne({ ein: np.ein });
       const ex = existing?.wallet;
-      const keepExpiry =
-        ex?.address === np.address && ex.credential_status === "valid" && !!ex.credential_expires && Date.parse(ex.credential_expires) > now + 7 * 24 * 3600 * 1000;
+      const onboarded = await db.collection(COLL.onboarding).findOne({ ein: np.ein, wallet: np.address, status: "complete" });
+      // Onboarded (same wallet): keep what onboarding wrote. Otherwise: no credential claimed here.
+      const wallet: NonprofitDoc["wallet"] =
+        onboarded && ex?.address === np.address ? ex : { address: np.address, credential_status: "none", bank_verified: false };
       const doc: NonprofitDoc = {
         ein: np.ein,
         name: np.name,
         address: NP_DETAILS[key].address,
         service_types: NP_DETAILS[key].service_types,
-        wallet: { address: np.address, credential_status: "valid", credential_expires: keepExpiry ? ex!.credential_expires : in30d, bank_verified: false },
+        wallet,
         is_demo_data: true,
       };
       const r = await db.collection<NonprofitDoc>(COLL.nonprofits).updateOne({ ein: np.ein }, { $set: doc }, { upsert: true });
       changed += r.upsertedCount + r.modifiedCount;
-      console.log(`nonprofits  ${np.ein}  ${key}  ${np.address}  credential valid until ${doc.wallet!.credential_expires}  ${r.upsertedCount ? "inserted" : r.modifiedCount ? "updated" : "unchanged"}`);
+      console.log(
+        `nonprofits  ${np.ein}  ${key}  ${np.address}  ${onboarded ? `onboarded: credential ${wallet!.credential_status} until ${wallet!.credential_expires ?? "?"}, bank_verified ${wallet!.bank_verified}` : "not onboarded: credential_status none"}  ` +
+          `${r.upsertedCount ? "inserted" : r.modifiedCount ? "updated" : "unchanged"}`,
+      );
     }
 
     for (const c of CONTRACTS) {
@@ -91,7 +95,7 @@ async function main(): Promise<number> {
     const idx = await ensureIndexes(db);
     console.log(`indexes     ${idx.join(", ")}`);
     const snap = await readRegistrySnapshot(db);
-    console.log(`\nregistry snapshot: ${snap.entries.length} wallets, sha256 ${snap.sha256} (a running co-signer compares against the snapshot it pinned at startup)`);
+    console.log(`\nregistry snapshot (wallet mapping ein/name/address): ${snap.entries.length} wallets, sha256 ${snap.sha256} (a running co-signer compares against the snapshot it pinned at startup)`);
     console.log(`${changed} document(s) inserted or changed in db "${db.databaseName}"`);
     return 0;
   } finally {

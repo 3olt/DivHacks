@@ -13,7 +13,16 @@
     "test:checks": "tsx scripts/test-checks.ts",
     "redteam": "tsx scripts/redteam.ts",
     "verify-invoice": "tsx scripts/verify-invoice.ts",
-    "reconcile": "tsx scripts/reconcile.ts"
+    "reconcile": "tsx scripts/reconcile.ts",
+    "onboard": "tsx scripts/onboard-nonprofit.ts",
+    "service": "tsx src/service/server.ts",
+    "officer-resolve": "tsx scripts/officer-resolve.ts",
+    "officer-click": "tsx scripts/officer-click.ts",
+    "officer": "tsx src/officer/server.ts",
+    "agent-revoke": "tsx scripts/agent-governance.ts revoke",
+    "agent-restore": "tsx scripts/agent-governance.ts restore",
+    "agent-status": "tsx scripts/agent-governance.ts status",
+    "setup-escrow": "tsx scripts/escrow-setup.ts"
   },
   "dependencies": {
     "dotenv": "^18.0.4",

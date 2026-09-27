@@ -87,7 +87,9 @@ export function spawnCosigner(opts: { keep?: boolean; extraEnv?: Record<string, 
     console.log(`co-signer will keep running (pid ${child.pid}); its log: ${path.relative(paths.rootDir, logPath)}`);
     return child;
   }
-  const child = spawn(process.execPath, ["--import", "tsx", serverPath], { cwd: paths.xrplDir, env, stdio: ["ignore", "pipe", "pipe"] });
+  // detached (own process group / hidden console): a Ctrl+C in the demo's terminal does not kill the co-signer in the middle
+  // of a kill-switch restore; the demo stops it itself (stopChild / its signal handler).
+  const child = spawn(process.execPath, ["--import", "tsx", serverPath], { cwd: paths.xrplDir, env, stdio: ["ignore", "pipe", "pipe"], detached: true, windowsHide: true });
   const prefix = opts.prefix ?? "  | ";
   const pipe = (s: NodeJS.ReadableStream | null) =>
     s?.on("data", (b: Buffer) => b.toString().split(/\r?\n/).filter(Boolean).forEach((l) => console.log(`${prefix}${l}`)));
@@ -116,5 +118,114 @@ export async function stopChild(child: ChildProcess): Promise<void> {
   const exited = new Promise<void>((r) => child.once("exit", () => r()));
   child.kill();
   await Promise.race([exited, sleep(5000)]);
-  console.log(`stopped the auto-spawned co-signer (pid ${child.pid})`);
+  console.log(`stopped the auto-spawned child process (pid ${child.pid})`);
+}
+
+/** Runs the officer CLI (scripts/officer-resolve.ts) as a SEPARATE process with a minimal environment: it loads its own
+ *  xrpl/.env.officer (OFFICER_SEED); the calling agent process never sees that key. Resolves with its exit code. */
+export function runOfficerResolve(requestId: string, decision: "approve" | "reject", prefix = "  officer| ", cosignerUrl?: string): Promise<number> {
+  const env: NodeJS.ProcessEnv = {};
+  for (const [k, v] of Object.entries(process.env)) if (PASS_ENV.has(k.toUpperCase())) env[k] = v;
+  const cos = cosignerUrl ?? process.env.COSIGNER_URL;
+  if (cos) env.COSIGNER_URL = cos;
+  const script = path.join(paths.xrplDir, "scripts", "officer-resolve.ts");
+  const child = spawn(process.execPath, ["--import", "tsx", script, requestId, decision], { cwd: paths.xrplDir, env, stdio: ["ignore", "pipe", "pipe"] });
+  const pipe = (s: NodeJS.ReadableStream | null) =>
+    s?.on("data", (b: Buffer) => b.toString().split(/\r?\n/).filter(Boolean).forEach((l) => console.log(`${prefix}${l}`)));
+  pipe(child.stdout);
+  pipe(child.stderr);
+  return new Promise((resolve) => child.once("exit", (code) => resolve(code ?? 1)));
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Phase 3, builder B: the other services (xrpl service :4001, officer :4004) and one-shot child scripts, each spawned with
+// the same MINIMAL environment (OS basics + service URLs; no seeds, no policy values). Each child loads its own env file
+// (the xrpl service xrpl/.env.agent, the officer xrpl/.env.officer, escrow-setup xrpl/.env.local), so the calling process
+// never sees those keys. Dev convenience: for the judged demo start each service in its own terminal and use no-spawn.
+
+export function minimalEnv(extra: Record<string, string> = {}): NodeJS.ProcessEnv {
+  const env: NodeJS.ProcessEnv = {};
+  for (const [k, v] of Object.entries(process.env)) if (PASS_ENV.has(k.toUpperCase())) env[k] = v;
+  for (const k of ["COSIGNER_URL", "XRPL_SERVICE_URL", "OFFICER_URL"]) if (process.env[k]) env[k] = process.env[k];
+  return Object.assign(env, extra);
+}
+
+export type ServiceKind = "xrpl-service" | "officer";
+const SERVICE_SCRIPT: Record<ServiceKind, string[]> = { "xrpl-service": ["src", "service", "server.ts"], officer: ["src", "officer", "server.ts"] };
+
+/** GET <url>/health; returns the JSON when ok and the role matches. */
+export async function serviceHealth(url: string, role: ServiceKind, timeoutMs = 1500): Promise<Record<string, unknown> | null> {
+  try {
+    const r = await fetch(`${url}/health`, { signal: AbortSignal.timeout(timeoutMs) });
+    if (!r.ok) return null;
+    const h = (await r.json()) as Record<string, unknown>;
+    return h.ok && h.role === role ? h : null;
+  } catch {
+    return null;
+  }
+}
+
+export function spawnService(kind: ServiceKind, opts: { keep?: boolean; prefix?: string } = {}): ChildProcess {
+  const script = path.join(paths.xrplDir, ...SERVICE_SCRIPT[kind]);
+  const env = minimalEnv();
+  if (opts.keep) {
+    const fd = fs.openSync(path.join(paths.dataDir, `${kind}.local.log`), "a");
+    const child = spawn(process.execPath, ["--import", "tsx", script], { cwd: paths.xrplDir, env, stdio: ["ignore", fd, fd], detached: true });
+    child.unref();
+    return child;
+  }
+  const child = spawn(process.execPath, ["--import", "tsx", script], { cwd: paths.xrplDir, env, stdio: ["ignore", "pipe", "pipe"], detached: true, windowsHide: true });
+  const prefix = opts.prefix ?? `  ${kind}| `;
+  const pipe = (s: NodeJS.ReadableStream | null) => s?.on("data", (b: Buffer) => b.toString().split(/\r?\n/).filter(Boolean).forEach((l) => console.log(`${prefix}${l}`)));
+  pipe(child.stdout);
+  pipe(child.stderr);
+  return child;
+}
+
+export async function waitService(child: ChildProcess, url: string, role: ServiceKind, timeoutMs = 60000): Promise<Record<string, unknown>> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (child.exitCode !== null) throw new Error(`the ${role} child exited with code ${child.exitCode}`);
+    await sleep(500);
+    const h = await serviceHealth(url, role);
+    if (h) return h;
+  }
+  await stopChild(child);
+  throw new Error(`${role} did not become healthy at ${url} within ${timeoutMs / 1000} s`);
+}
+
+/** Runs a one-shot script (xrpl/scripts/<name>) as a separate process with the minimal environment; resolves its exit code.
+ *  Detached (own process group / hidden console), so a Ctrl+C in the calling terminal does not interrupt e.g. a restore. */
+export function runChildScript(name: string, args: string[], prefix: string): Promise<number> {
+  return runChildScriptCapture(name, args, prefix).then((r) => r.code);
+}
+
+/** Same, also returning the child's stdout lines. */
+export function runChildScriptCapture(name: string, args: string[], prefix: string): Promise<{ code: number; lines: string[] }> {
+  const child = spawn(process.execPath, ["--import", "tsx", path.join(paths.xrplDir, "scripts", name), ...args], { cwd: paths.xrplDir, env: minimalEnv(), stdio: ["ignore", "pipe", "pipe"], detached: true, windowsHide: true });
+  const lines: string[] = [];
+  const pipe = (s: NodeJS.ReadableStream | null, keep: boolean) =>
+    s?.on("data", (b: Buffer) =>
+      b.toString().split(/\r?\n/).filter(Boolean).forEach((l) => {
+        if (keep) lines.push(l);
+        if (!l.startsWith("OFFICER_CLICK_RESULT ")) console.log(`${prefix}${l}`);
+      }),
+    );
+  pipe(child.stdout, true);
+  pipe(child.stderr, false);
+  return new Promise((resolve) => child.once("exit", (code) => resolve({ code: code ?? 1, lines })));
+}
+
+/** The OFFICER's click, as a SEPARATE process (scripts/officer-click.ts): it loads xrpl/.env.officer itself (the click
+ *  credential); the calling agent process never sees it. Resolves {code, status, body} of the officer service's answer. */
+export async function runOfficerClick(args: string[], prefix = "  officer-click| "): Promise<{ code: number; status: number; body: Record<string, unknown> }> {
+  const r = await runChildScriptCapture("officer-click.ts", args, prefix);
+  const line = [...r.lines].reverse().find((l) => l.startsWith("OFFICER_CLICK_RESULT "));
+  let parsed: { status?: number; body?: Record<string, unknown> } = {};
+  try {
+    parsed = line ? (JSON.parse(line.slice("OFFICER_CLICK_RESULT ".length)) as typeof parsed) : {};
+  } catch {
+    parsed = {};
+  }
+  return { code: r.code, status: parsed.status ?? 0, body: parsed.body ?? { ok: false, error: "no_result", message: `officer-click exited ${r.code} without a result line` } };
 }

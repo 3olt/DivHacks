@@ -7,6 +7,8 @@
 //   4. top up agent_account's RLUSD working balance from the treasury (the parent that funds the agent)
 //   5. agent_account SignerListSet {agent:1, cosigner:2, officer:1}, quorum 3 (signed with its master key)
 //   6. only after the signer list is verified on-ledger: disable agent_account's master key
+//      (Phase 3: if the kill switch left the list REVOKED {cosigner:2, officer:1}, setup says so and points to
+//      "npm run agent:restore" instead of erroring; it never changes a signer list once the master key is disabled)
 //   7. write data/accounts.testnet.json + data/allowlist.json (addresses only, committed)
 //
 // Keys: setup-only seeds live in the gitignored xrpl/.env.local. Signer keys (agent / cosigner / officer) are
@@ -16,6 +18,7 @@
 // Run: npm run setup:xrpl   (repo root)   or   npm run setup   (xrpl/)
 import fs from "node:fs";
 import path from "node:path";
+import { randomBytes } from "node:crypto";
 import { Wallet, isValidClassicAddress, TrustSetFlags, PaymentFlags, AccountSetAsfFlags, type Client, type Payment, type SubmittableTransaction } from "xrpl";
 import { loadEnv, paths } from "../src/env";
 import {
@@ -23,6 +26,7 @@ import {
   rlusd, sourceTag, toHex, tokenValue, tokenValueFloor, xrplWs, type Outcome, type SignerListInfo,
 } from "../src/lib/xrpl";
 import { registryPath, allowlistPath, type Registry, type Allowlist, type NonprofitKey } from "../src/lib/registry";
+import { classifySignerList } from "../src/lib/governance";
 
 loadEnv(); // root .env + xrpl/.env.local (setup-only seeds)
 
@@ -106,6 +110,18 @@ function signerAddress(role: SignerRole): string {
   w = null;
   console.log(`    generated ${role} signer keypair ${address} -> xrpl/.env.${role}`);
   return address;
+}
+
+/** The officer's click credential (x-officer-token on the officer service's [HUMAN CLICK] routes). Lives ONLY in
+ *  xrpl/.env.officer, next to OFFICER_SEED; appended once if missing; never printed. */
+function ensureOfficerClickToken(): void {
+  const file = path.join(paths.xrplDir, ".env.officer");
+  if (!fs.existsSync(file)) return;
+  const text = fs.readFileSync(file, "utf8");
+  if (/^\s*OFFICER_CLICK_TOKEN\s*=\s*[0-9a-f]{64}\s*$/m.test(text)) return;
+  const token = randomBytes(32).toString("hex");
+  fs.appendFileSync(file, `${text.endsWith("\n") ? "" : "\n"}# The officer's click credential for the officer service's [HUMAN CLICK] routes (header x-officer-token). Never commit.\nOFFICER_CLICK_TOKEN=${token}\n`);
+  console.log("    generated OFFICER_CLICK_TOKEN -> xrpl/.env.officer (the officer's click credential; not printed)");
 }
 
 async function ensureFunded(client: Client, role: string, w: Wallet): Promise<void> {
@@ -192,6 +208,7 @@ async function main() {
 
     const signers: Record<SignerRole, string> = { agent: signerAddress("agent"), cosigner: signerAddress("cosigner"), officer: signerAddress("officer") };
     for (const r of Object.keys(signers) as SignerRole[]) console.log(`  signer ${r} (weight ${WEIGHTS[r]}): ${signers[r]}`);
+    ensureOfficerClickToken();
     if (new Set(Object.values(signers)).size !== 3) throw new Error("signer keys must be three distinct keypairs");
 
     let agentState = await accountState(client, agentAccount.address);
@@ -254,12 +271,20 @@ async function main() {
     // ---- 5. signer list ---------------------------------------------------------------------------------------
     console.log("\n[5] agent_account signer list");
     agentState = await accountState(client, agentAccount.address);
+    const slConfig = classifySignerList(agentState.signerList, signers);
+    let revoked = false;
     if (signerListMatches(agentState.signerList, signers)) console.log("  signer list already matches {agent:1, cosigner:2, officer:1} quorum 3");
-    else if (agentState.masterDisabled) {
+    else if (agentState.masterDisabled && slConfig === "REVOKED") {
+      // Phase 3 kill switch engaged: {cosigner:2, officer:1} quorum 3. Not an error: the officer restores it.
+      revoked = true;
+      console.log("  agent_account is REVOKED (kill switch engaged): signer list {cosigner:2, officer:1} quorum 3, the agent key does not count.");
+      console.log('  Setup does not touch it. To restore {agent:1, cosigner:2, officer:1}, the officer runs:  npm run agent:restore');
+      console.log("  (or POST $OFFICER_URL/agent/restore on the officer service). Continuing with the rest of setup.");
+    } else if (agentState.masterDisabled) {
       console.error("  ERROR: agent_account's master key is disabled but its on-ledger signer list does not match the signer key files.");
       console.error("  On-ledger:", JSON.stringify(agentState.signerList));
       console.error("  Expected:", JSON.stringify(signers), "quorum", QUORUM);
-      console.error("  Fixing this needs a multisigned SignerListSet (Phase 3 kill-switch tooling). Setup will not touch the account.");
+      console.error(`  It is ${slConfig}, neither CANONICAL nor REVOKED; fixing it needs a multisigned SignerListSet by hand. Setup will not touch the account.`);
       process.exitCode = 1;
       return;
     } else {
@@ -273,8 +298,8 @@ async function main() {
     // ---- 6. disable master key (only after the signer list is verified on-ledger) ------------------------------
     console.log("\n[6] agent_account master key");
     agentState = await accountState(client, agentAccount.address);
-    if (!signerListMatches(agentState.signerList, signers)) throw new Error("signer list not verified on-ledger; refusing to disable the master key");
-    if (agentState.masterDisabled) console.log("  master key already disabled (lsfDisableMaster set)");
+    if (agentState.masterDisabled) console.log(`  master key already disabled (lsfDisableMaster set)${revoked ? "; signer list REVOKED (run npm run agent:restore)" : ""}`);
+    else if (!signerListMatches(agentState.signerList, signers)) throw new Error("signer list not verified on-ledger; refusing to disable the master key");
     else {
       const out = await send(client, { TransactionType: "AccountSet", Account: agentAccount.address, SetFlag: AccountSetAsfFlags.asfDisableMaster }, agentAccount, "agent_account AccountSet asfDisableMaster");
       if (out.result !== "tesSUCCESS") throw new Error(`AccountSet asfDisableMaster failed: ${out.result}`);

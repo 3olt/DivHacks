@@ -4,6 +4,11 @@
 //   contracts   Contract shape + xrpl_budget_rlusd + is_demo_data  written by seed-registry / the over-contract demo; the co-signer pins its terms at startup (read-only)
 //   decisions   Decision shape + is_demo_data + audit {...}        written by the AGENT process for every attempt (the co-signer never reads it)
 //   payments    Payment shape (source "xrpl")                      written by the AGENT process for every attempt
+//   onboarding  OnboardingRecord (Phase 3)                        written by scripts/onboard-nonprofit.ts (holds the Nessie ids; never logged)
+//   onboarding_challenges  wallet-ownership challenges            issued + consumed by onboarding (lib/challenge.ts)
+//   payee_change_requests  PayeeChangeRequest (shared/contracts)  written by the xrpl service (holds) and the officer (signed resolutions)
+//   pending_approvals      PendingApproval (shared/contracts)     written by the agent (pending), the officer (approved) and the xrpl service (executed)
+//   escrow_milestones      EscrowMilestone (shared/contracts)     SIMULATED escrow of CTT (test token, not RLUSD); written by the agent process
 import { MongoClient, type Db } from "mongodb";
 import type { Contract, Nonprofit } from "../../../shared/contracts";
 
@@ -12,6 +17,13 @@ export const COLL = {
   contracts: "contracts",
   decisions: "decisions",
   payments: "payments",
+  onboarding: "onboarding",
+  onboardingChallenges: "onboarding_challenges",
+  payeeChangeRequests: "payee_change_requests",
+  /** Phase 3 (builder B): over-limit payments waiting for the officer (PendingApproval, shared/contracts). */
+  pendingApprovals: "pending_approvals",
+  /** Phase 3 (builder B): SIMULATED milestone escrows of CTT, a city-issued test token (EscrowMilestone, shared/contracts). */
+  escrowMilestones: "escrow_milestones",
 } as const;
 
 /**
@@ -62,6 +74,13 @@ export async function ensureIndexes(db: Db): Promise<string[]> {
   made.push(`${COLL.payments}.` + (await db.collection(COLL.payments).createIndex({ contract_id: 1, date: 1 }, { name: "contract_date" })));
   made.push(`${COLL.nonprofits}.` + (await db.collection(COLL.nonprofits).createIndex({ ein: 1 }, { unique: true, name: "ein_unique" })));
   made.push(`${COLL.contracts}.` + (await db.collection(COLL.contracts).createIndex({ contract_id: 1 }, { unique: true, name: "contract_id_unique" })));
+  made.push(`${COLL.onboarding}.` + (await db.collection(COLL.onboarding).createIndex({ ein: 1 }, { unique: true, name: "ein_unique" })));
+  made.push(`${COLL.onboardingChallenges}.` + (await db.collection(COLL.onboardingChallenges).createIndex({ challenge_id: 1 }, { unique: true, name: "challenge_id_unique" })));
+  made.push(`${COLL.payeeChangeRequests}.` + (await db.collection(COLL.payeeChangeRequests).createIndex({ request_id: 1 }, { unique: true, name: "request_id_unique" })));
+  made.push(`${COLL.payeeChangeRequests}.` + (await db.collection(COLL.payeeChangeRequests).createIndex({ ein: 1, status: 1 }, { name: "ein_status" })));
+  made.push(`${COLL.pendingApprovals}.` + (await db.collection(COLL.pendingApprovals).createIndex({ decision_id: 1 }, { unique: true, name: "decision_id_unique" })));
+  made.push(`${COLL.pendingApprovals}.` + (await db.collection(COLL.pendingApprovals).createIndex({ status: 1, created_at: -1 }, { name: "status_created" })));
+  made.push(`${COLL.escrowMilestones}.` + (await db.collection(COLL.escrowMilestones).createIndex({ milestone_id: 1 }, { unique: true, name: "milestone_id_unique" })));
   return made;
 }
 

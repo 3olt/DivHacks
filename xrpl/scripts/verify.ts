@@ -1,6 +1,7 @@
 // Read-only verifier for a Phase 1 payment. Holds no keys (loads only the root .env).
 // Looks the tx up with the `tx` RPC and checks it against the logged decision in xrpl/data/decisions.local.jsonl:
-//   2 Signers = agent + cosigner, SourceTag, memo {inv,ctr,ein,dh,rv} with dh == computeDecisionHash(decision),
+//   2 Signers = agent + cosigner (3 with the officer for an officer-approved over-limit payment, whose dh is the pending
+//   decision's), SourceTag, memo {inv,ctr,ein,dh,rv} with dh == computeDecisionHash(decision),
 //   memo_hash, delivered_amount to the registry wallet; plus agent_account's lsfDisableMaster + on-ledger signer list.
 // Run: npm run verify -w xrpl [-- <tx hash>]   (default: the latest released decision in the log)
 import fs from "node:fs";
@@ -14,14 +15,14 @@ import { decisionsLogPath, loadRegistry, nonprofitByEin } from "../src/lib/regis
 
 config({ path: path.join(paths.rootDir, ".env"), quiet: true });
 
-type Line = { decision: Decision; payment: Payment | null };
+type Line = { decision: Decision; payment: Payment | null; xrpl?: { approved_from?: string } };
 const results: { name: string; pass: boolean; detail: string }[] = [];
 const check = (name: string, pass: boolean, detail: string) => results.push({ name, pass, detail });
 
 async function main(): Promise<number> {
   const wanted = process.argv.slice(2).find((a) => /^[0-9A-Fa-f]{64}$/.test(a))?.toUpperCase();
   const lines = fs.readFileSync(decisionsLogPath, "utf8").split(/\r?\n/).filter(Boolean).map((l) => JSON.parse(l) as Line);
-  const line = [...lines].reverse().find((l) => (wanted ? l.decision.xrpl_tx_hash === wanted : l.decision.outcome === "released"));
+  const line = [...lines].reverse().find((l) => (wanted ? l.decision.xrpl_tx_hash === wanted : l.decision.outcome === "released" && l.decision.currency === "RLUSD"));
   if (!line) throw new Error(wanted ? `no logged decision with xrpl_tx_hash ${wanted}` : "no released decision in the log");
   const d = line.decision;
   const reg = loadRegistry();
@@ -37,8 +38,11 @@ async function main(): Promise<number> {
     check("Account is agent_account", tx.Account === reg.agent_account, String(tx.Account));
     check("SigningPubKey empty (multisig)", tx.SigningPubKey === "", JSON.stringify(tx.SigningPubKey));
     const signers = ((tx.Signers as { Signer: { Account: string } }[]) ?? []).map((s) => s.Signer.Account);
-    const want = [reg.signers.agent.address, reg.signers.cosigner.address];
-    check("2 Signers = agent + cosigner", signers.length === 2 && want.every((a) => signers.includes(a)), signers.map((a) => (a === want[0] ? `agent ${a}` : a === want[1] ? `cosigner ${a}` : `UNKNOWN ${a}`)).join(", "));
+    // Phase 3: an officer-approved over-limit payment (audit.approved_from) carries 3 signatures: agent + cosigner + officer.
+    const approvedFrom = line.xrpl?.approved_from;
+    const want = [reg.signers.agent.address, reg.signers.cosigner.address, ...(approvedFrom ? [reg.signers.officer.address] : [])];
+    const roleName = (a: string) => (a === reg.signers.agent.address ? `agent ${a}` : a === reg.signers.cosigner.address ? `cosigner ${a}` : a === reg.signers.officer.address ? `officer ${a}` : `UNKNOWN ${a}`);
+    check(approvedFrom ? "3 Signers = agent + cosigner + officer" : "2 Signers = agent + cosigner", signers.length === want.length && want.every((a) => signers.includes(a)), signers.map(roleName).join(", "));
     check("SourceTag", tx.SourceTag === reg.source_tag, String(tx.SourceTag));
     check("Destination is registry wallet for EIN", !!np && tx.Destination === np.np.address, `${String(tx.Destination)} (${np?.key ?? "no registry entry"})`);
 
@@ -48,8 +52,10 @@ async function main(): Promise<number> {
     check("MemoType / MemoFormat", !!memo && fromHex(memo.MemoType ?? "") === MEMO_TYPE && fromHex(memo.MemoFormat ?? "") === MEMO_FORMAT, `${fromHex(memo?.MemoType ?? "")} / ${fromHex(memo?.MemoFormat ?? "")}`);
     check("memo keys {inv,ctr,ein,dh,rv}", Object.keys(m).join(",") === "inv,ctr,ein,dh,rv", memoText);
     check("memo inv/ctr/ein/rv match decision", m.inv === d.invoice_id && m.ctr === d.contract_id && m.ein === d.payee_ein && m.rv === d.rule_version, `${m.inv} ${m.ctr} ${m.ein} ${m.rv}`);
-    const recomputed = computeDecisionHash(d as DecisionCore);
-    check("dh == computeDecisionHash(logged decision)", m.dh === recomputed && recomputed === d.decision_hash, `dh ${m.dh} recomputed ${recomputed}`);
+    // An approved execution's memo commits to the PENDING decision the officer approved (audit.approved_from).
+    const hashed = approvedFrom ? lines.find((l) => l.decision.decision_id === approvedFrom)?.decision : d;
+    const recomputed = hashed ? computeDecisionHash(hashed as DecisionCore) : "(pending decision not in the log)";
+    check(approvedFrom ? `dh == computeDecisionHash(pending ${approvedFrom})` : "dh == computeDecisionHash(logged decision)", m.dh === recomputed && recomputed === d.decision_hash, `dh ${m.dh} recomputed ${recomputed}`);
     check("memo_hash == sha256(on-ledger MemoData)", !!line.payment && line.payment.memo_hash === memoHash(memoText), `${line.payment?.memo_hash}`);
     check("memo under 1 KB", Buffer.byteLength(memoText) + MEMO_TYPE.length + MEMO_FORMAT.length < 1024, `${Buffer.byteLength(memoText) + MEMO_TYPE.length + MEMO_FORMAT.length} bytes`);
     const da = meta.delivered_amount;

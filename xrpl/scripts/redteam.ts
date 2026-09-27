@@ -8,11 +8,13 @@
 //   instance A: started with LOOSENED policy values in its environment (AUTO_LIMIT etc. = 1000000, another database,
 //               a non-Testnet node). They must be discarded: /health must show the root .env values.
 //               -> auto-limit, forged officer, tx format, amount precision, exclusions, unknown / late / changed /
-//                  expired contracts, re-spelled paid invoices, registry drift
+//                  expired contracts, re-spelled paid invoices, registry drift, (Phase 3) no on-ledger credential (np_4),
+//                  a payee change hold whose database document is DELETED (still enforced; the officer resolves it from
+//                  the co-signer's own record)
 //   instance B: TEST caps via the tighten-only COSIGNER_TEST_DAILY_CAP=60, COSIGNER_TEST_PAYEE_DAILY_CAP=50 (and a
 //               COSIGNER_TEST_AUTO_LIMIT that tries to LOOSEN, which must be ignored) -> daily caps
 // It writes temporary documents to the SHARED database (REDTEAM-* demo contracts, one demo nonprofit wallet to cause
-// registry drift) and deletes them at the end. A co-signer running elsewhere would see that registry drift, so this
+// registry drift, one payee change request for the fictional EIN 00-0000097, resolved by the officer) and deletes them at the end. A co-signer running elsewhere would see that registry drift, so this
 // script refuses to run while a co-signer answers at COSIGNER_URL (override: REDTEAM_ALLOW_SHARED=1).
 //
 // Run: npm run redteam   (repo root)
@@ -25,7 +27,7 @@ import { readRootEnvFile } from "../src/env";
 import { connect, rlusd, sourceTag, toHex } from "../src/lib/xrpl";
 import { scanAgentHistory } from "../src/lib/ledgerScan";
 import { COLL, openMongo, type ContractDoc, type NonprofitDoc } from "../src/lib/mongo";
-import { describeHealth, health, policyProblems, spawnCosigner, stopChild, waitHealthy } from "./_cosigner";
+import { describeHealth, health, policyProblems, runOfficerResolve, spawnCosigner, stopChild, waitHealthy } from "./_cosigner";
 
 const PORT = 4012;
 const URL_ = `http://localhost:${PORT}`;
@@ -172,6 +174,29 @@ async function main(): Promise<number> {
     await attempt(URL_, "2 registry changed in Mongo after startup (drift)", inv("DRIFT"), await craft(inv("DRIFT"), BAD_TAG), { failed: ["destination_is_registry_wallet"], codes: ["registry_drift"] });
     await removeDrift();
     await attempt(URL_, "2 drift reverted -> registry_drift gone (other defect kept)", inv("DRIFT2"), await craft(inv("DRIFT2"), BAD_TAG), { failed: ["tx_format_valid"], codes: ["bad_source_tag"], absent: ["registry_drift"] });
+
+    // 1 (Phase 3) on-ledger credential: np_4 was never onboarded, so ledger_entry finds no credential for its wallet
+    const np4 = reg.nonprofits.np_4;
+    await attempt(URL_, "1 np_4 registry wallet has no on-ledger credential", inv("NOCRED"), await craftMemo(inv("NOCRED"), np4.contract_id, np4.ein, { ...BAD_TAG, Destination: np4.address }), { failed: ["credential_valid"], codes: ["credential_invalid"], absent: ["destination_not_registry_wallet"] });
+
+    // 2 (Phase 3) payee change hold for a fictional EIN; its document is then DELETED from Mongo (a compromised agent could)
+    const holdEin = "00-0000097";
+    const reqId = `pcr_redteam_${st.replace("-", "")}`;
+    const created = new Date();
+    await mongo.db.collection(COLL.payeeChangeRequests).insertOne({
+      request_id: reqId, ein: holdEin, current_address: np1.address, requested_address: reg.attacker, reason: "red-team hold (fictional EIN)", contact: "red-team",
+      status: "on_hold", created_at: created.toISOString().replace(/\.\d{3}Z$/, "Z"), hold_until: new Date(created.getTime() + 72 * 3600e3).toISOString().replace(/\.\d{3}Z$/, "Z"),
+      requires: { nessie_reconfirmed: false, officer_approved: false }, is_demo_data: true,
+    });
+    cleanup.push(() => mongo.db.collection(COLL.payeeChangeRequests).deleteMany({ request_id: reqId }));
+    await fetch(`${URL_}/holds/refresh`, { method: "POST" });
+    await attempt(URL_, "2 payee change on hold for the memo EIN", inv("HOLD"), await craftMemo(inv("HOLD"), np1.contract_id, holdEin, BAD_TAG), { failed: ["destination_is_registry_wallet"], codes: ["payee_change_on_hold"] });
+    await mongo.db.collection(COLL.payeeChangeRequests).deleteOne({ request_id: reqId });
+    await attempt(URL_, "2 hold document DELETED from Mongo -> still on hold", inv("HOLD2"), await craftMemo(inv("HOLD2"), np1.contract_id, holdEin, BAD_TAG), { failed: ["destination_is_registry_wallet"], codes: ["payee_change_on_hold"] });
+    const officerCode = await runOfficerResolve(reqId, "reject", "  officer| ", URL_);
+    const holdsNow = (await (await fetch(`${URL_}/holds`)).json()) as { active: { request_id: string }[] };
+    record("2 officer rejects the deleted hold (details from the co-signer's record) -> lifted", officerCode === 0 && !holdsNow.active.some((h) => h.request_id === reqId), `officer exit ${officerCode}; active holds [${holdsNow.active.map((h) => h.request_id).join(",")}]`);
+    await attempt(URL_, "2 after the officer's signed reject -> no payee_change_on_hold", inv("HOLD3"), await craftMemo(inv("HOLD3"), np1.contract_id, holdEin, BAD_TAG), { failed: ["destination_is_registry_wallet"], codes: ["destination_not_registry_wallet"], absent: ["payee_change_on_hold"] });
     await stopChild(child);
     child = null;
 

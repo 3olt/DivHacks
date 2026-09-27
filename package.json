@@ -17,7 +17,16 @@
     "seed:registry": "npm run seed-registry -w xrpl",
     "test:checks": "npm run test:checks -w xrpl",
     "redteam": "npm run redteam -w xrpl --",
-    "reconcile": "npm run reconcile -w xrpl --"
+    "reconcile": "npm run reconcile -w xrpl --",
+    "onboard": "npm run onboard -w xrpl --",
+    "xrpl:service": "npm run service -w xrpl",
+    "officer:resolve": "npm run officer-resolve -w xrpl --",
+    "officer:click": "npm run officer-click -w xrpl --",
+    "officer": "npm run officer -w xrpl",
+    "agent:revoke": "npm run agent-revoke -w xrpl --",
+    "agent:restore": "npm run agent-restore -w xrpl --",
+    "agent:status": "npm run agent-status -w xrpl --",
+    "setup:escrow": "npm run setup-escrow -w xrpl"
   },
   "engines": {
     "node": ">=20"

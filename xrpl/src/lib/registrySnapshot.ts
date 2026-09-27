@@ -2,7 +2,10 @@
 // The co-signer reads it ONCE at startup and pins it (the hash is logged); on every /cosign it re-reads the collection
 // and refuses (registry_drift) if the content no longer matches the pinned snapshot. The agent process has the same
 // database credentials in this hackathon setup, so a change while the co-signer runs is treated as possible tampering.
-// (Production: the co-signer's DB user is one the agent cannot write, and Phase 3 moves credentials on-ledger.)
+// (Production: the co-signer's DB user is one the agent cannot write.)
+// Since Phase 3 the snapshot hash covers only the WALLET MAPPING {ein, name, address}: credential validity is read
+// on-ledger for every payment (check 1), so the informational mirror fields (credential_status, credential_expires,
+// bank_verified) that onboarding writes do not change the pinned hash. A new or changed wallet still does.
 import type { Db } from "mongodb";
 import { canonicalJson, sha256Hex } from "../../../shared/hash";
 import { COLL, type NonprofitDoc } from "./mongo";
@@ -41,7 +44,7 @@ export async function readRegistrySnapshot(db: Db): Promise<RegistrySnapshot> {
     .sort((a, b) => (a.ein < b.ein ? -1 : a.ein > b.ein ? 1 : 0));
   return {
     entries,
-    sha256: sha256Hex(canonicalJson(entries)),
+    sha256: sha256Hex(canonicalJson(entries.map((e) => ({ ein: e.ein, name: e.name, address: e.address })))),
     read_at: new Date().toISOString(),
     byEin: new Map(entries.map((e) => [e.ein, e])),
     byAddress: new Map(entries.map((e) => [e.address, e])),

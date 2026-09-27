@@ -6,6 +6,15 @@ The REST + WebSocket API the map (`web/`) builds against. Types live in **[`shar
 > - **Agent (XRPL) amounts are testnet-scale RLUSD.** AUTO_LIMIT is **25** and DAILY_CAP is **100** RLUSD (were 2,500 / 10,000). The golden demo invoice is `"12.50"`, the other fixture invoices are 7.50-18.00, and the over-limit ones are 32.00-48.00. Decision/XRPL `amount` values, check `detail` texts, `agent_reasoning`, and risk `reasons`/`summary` that quote an RLUSD amount changed with them (e.g. `"RLUSD 12.50 released on XRPL today (demo)"`). **Checkbook contracts and payments stay real-dollar USD**, and every risk score and level is unchanged.
 > - **`decision_hash` has a new definition:** SHA-256 of the canonical JSON of **only the pre-signing fields** (see [`GET /decisions`](#get-decisions)). Every fixture `decision_hash` and `memo_hash` was recomputed. The code is in `shared/hash.ts`, which the api and the xrpl services both use.
 
+> **Changed in Phase 3 (additive; no shape changes).**
+> - **`Currency` gains `"CTT"`**: City Test Token, used ONLY by the simulated milestone escrow (RLUSD escrow is impossible on Testnet). Show it as "test token, not RLUSD".
+> - **`outcome: "pending_approval"` now really happens**: the co-signer refused only because the amount is over AUTO_LIMIT (`refusal_reasons: ["over_auto_limit_needs_officer"]`, `enforced_by: "cosigner"`, `signers: ["agent"]`). After the officer approves, a **new** `released` decision arrives with `signers: ["agent","cosigner","officer"]`.
+> - **`enforced_by: "hold"`** appears on payments refused during a payee wallet-change hold (`payee_change_on_hold`).
+> - **`held_escrow`** appears for the simulated escrow (currency `CTT`), followed by a `released` decision when the milestone is released.
+> - **`credential_valid`** is now read on-ledger (`NYC_VERIFIED_NONPROFIT` credential issued by the city); no allowlist fallback.
+> - New refusal codes: `officer_approval_invalid`, `escrow_condition_invalid`, `escrow_not_found`, `escrow_timing_invalid`, `escrow_release_not_approved`, `agent_key_revoked` (table below). Real decisions carry rule versions `p3-*`.
+> - The XRPL services (xrpl service :4001, co-signer :4002, officer :4004) have their own endpoints, listed in [`xrpl/README.md`](../xrpl/README.md). The officer's approve / revoke / restore endpoints require an officer token header, so never call them from the browser.
+
 > **Changed in Phase 2 (additive; no shape changes).**
 > - **New refusal codes** (table below): `bad_tx_fields`, `tx_not_fresh`, `cosigner_unavailable`, `verifier_unavailable`, `registry_drift`, `contract_not_found`, `contract_not_active`, `ledger_status_unknown`, `ledger_unavailable`, `agent_balance_insufficient`. Unknown codes should be shown raw, never hidden.
 > - **`enforced_by: null` on a refused decision** now means "stopped by the agent's own policy before anything was signed" (e.g. the AI verifier flagged a prompt injection). On a released decision `null` still means nothing stopped it.
@@ -1134,6 +1143,12 @@ useEffect(() => connectLive((msg) => {
 | `ledger_status_unknown` | Submitted, final result not yet confirmed | `null` |
 | `ledger_unavailable` | Couldn't reach the XRP Ledger: nothing landed | `null` |
 | `agent_balance_insufficient` | Agent's working balance too low: nothing signed | `null` (agent policy) |
+| `officer_approval_invalid` | The officer did not sign this exact over-limit payment | cosigner |
+| `escrow_condition_invalid` | Escrow condition isn't the one the co-signer issued (simulated escrow) | cosigner |
+| `escrow_not_found` | Escrow not on the ledger (simulated escrow) | cosigner |
+| `escrow_timing_invalid` | Escrow deadline outside the allowed window (simulated escrow) | cosigner |
+| `escrow_release_not_approved` | Milestone release not approved by the officer (simulated escrow) | cosigner |
+| `agent_key_revoked` | The agent's key was revoked (kill switch) | ledger |
 
 A failed check always comes with its matching code (e.g. `invoice_not_already_paid` failed -> `invoice_already_paid`). `suspicious_instructions_in_invoice`, `payee_change_on_hold`, `verifier_rejected` and `ledger_rejected` can appear with every check passing: the payment itself was well-formed, but something outside the transaction stopped it.
 
@@ -1159,7 +1174,7 @@ A failed check always comes with its matching code (e.g. `invoice_not_already_pa
 | `released` | Paid on-ledger (`ledger_result: "tesSUCCESS"`, `xrpl_tx_hash` set) | green "Paid" |
 | `pending_approval` | Over AUTO_LIMIT: waiting for the officer's signature. When approved, a **new** `released` decision arrives with signers `agent, cosigner, officer` | amber "Needs approval" |
 | `refused` | Stopped; see `refusal_reasons` and `enforced_by` | red "Blocked" |
-| `held_escrow` | Reserved for milestone escrow (Phase 3, only if RLUSD escrow works on Testnet); not in fixtures | blue "In escrow" |
+| `held_escrow` | Funds locked in the **simulated** milestone escrow (currency `CTT`, a city test token: RLUSD escrow is impossible on Testnet); a `released` decision follows when the officer-approved milestone is released | blue "In escrow (simulated)" |
 
 | `enforced_by` | Show as |
 |---|---|

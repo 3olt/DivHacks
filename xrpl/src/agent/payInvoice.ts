@@ -20,6 +20,7 @@ import { notEvaluatedChecks } from "../cosigner/checks";
 import { baseDecision, buildMemo, decisionCore, isoSeconds, newDecisionId, paymentFor } from "./decision";
 import { agentAudit } from "./audit";
 import type { Recorder, RecordResult } from "./record";
+import { createPendingApproval } from "./approvals";
 
 /** Loads root .env + xrpl/.env.agent ONLY and returns the agent signer wallet. Removes the seed from process.env. */
 export function loadAgentWallet(): Wallet {
@@ -61,12 +62,12 @@ export type PayMode =
   | { kind: "compromised_cosigner"; destination: string }
   | { kind: "compromised_agent_only"; destination: string };
 
-type CosignResponse =
+export type CosignResponse =
   | { ok: true; signer: "cosigner"; signer_address: string; signed_blob: string; checks: Check[] }
   | { ok: false; refusal_reasons?: string[]; checks?: Check[]; error?: string; message?: string };
 
 /** POST /cosign. Never throws: transport errors, timeouts and non-JSON replies become {ok:false, error, message}. */
-async function requestCosign(url: string, body: { tx_blob: string; invoice_id: string; decision_id: string }): Promise<{ status: number; cos: CosignResponse }> {
+export async function requestCosign(url: string, body: { tx_blob: string; invoice_id: string; decision_id: string }): Promise<{ status: number; cos: CosignResponse }> {
   let status = 0;
   try {
     const res = await fetch(`${url}/cosign`, {
@@ -188,11 +189,28 @@ export async function payInvoice(invoice: Invoice, ctx: AgentCtx, opts: { reason
     if (!cos.ok) {
       const transport = !cos.refusal_reasons?.length;
       const reasons = (transport ? ["cosigner_unavailable"] : cos.refusal_reasons) as RefusalCode[];
+      // Phase 3 (builder B): over AUTO_LIMIT and NOTHING else wrong -> pending_approval for the human officer. The agent
+      // stores what is needed to rebuild the same payment (no signature); the officer service approves it once.
+      const failedChecks = (cos.checks ?? []).filter((c) => !c.passed).map((c) => c.name);
+      if (mode.kind === "normal" && ctx.db && reasons.length === 1 && reasons[0] === "over_auto_limit_needs_officer" && failedChecks.join() === "within_auto_limit_or_officer_signed") {
+        const decision: Decision = { ...base, outcome: "pending_approval", refusal_reasons: reasons, checks: cos.checks ?? [], enforced_by: "cosigner", signers: ["agent"] };
+        const pending = await createPendingApproval(ctx.db, { decision, invoice, destination, memo_json: memo.json, cosigner_refusal: reasons });
+        const payment = paymentFor(decision, { memo_hash });
+        const recorded = await ctx.recorder.record(decision, payment, {
+          ...auditBase, stage: "cosigner", http_status: status, destination, memo_json: memo.json, pending_approval: { expires_at: pending.expires_at, status: pending.status },
+        });
+        log(
+          `co-signer: over AUTO_LIMIT without an officer signature (only check 5 failed) -> PENDING APPROVAL until ${pending.expires_at}; nothing signed by the co-signer, nothing submitted. ` +
+            `The officer approves with: npm run officer:click -- approve ${decision_id}   (-> POST ${(process.env.OFFICER_URL ?? "http://localhost:4004").replace(/\/$/, "")}/approvals/${decision_id}, officer credential required)`,
+        );
+        return { decision, payment, destination, explorer_url: null, delivered_amount: null, engine_result: null, memo_json: memo.json, recorded };
+      }
       const decision: Decision = {
         ...base,
         refusal_reasons: reasons,
         checks: cos.checks?.length ? cos.checks : notEvaluatedChecks(`the co-signer did not evaluate the tx (${cos.error ?? "error"}: ${cos.message ?? `HTTP ${status}`})`),
-        enforced_by: "cosigner",
+        // "hold": the co-signer refused because a payee change request for this EIN is on hold (address-swap guardrail).
+        enforced_by: reasons.includes("payee_change_on_hold") ? "hold" : "cosigner",
         signers: ["agent"],
       };
       const payment = paymentFor(decision, { memo_hash });

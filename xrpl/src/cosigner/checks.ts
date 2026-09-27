@@ -1,15 +1,18 @@
-// The compliance co-signer's 8 checks (Phase 2). A PURE function over the DECODED transaction plus facts the caller
-// gathered itself. The co-signer never sees the agent's reasoning, the invoice or any LLM text: only the tx, the
+// The compliance co-signer's 8 checks (rule p3-cosigner-2; the 8 checks are unchanged since p3-cosigner-1, the bump marks the new officer-facing endpoints). A PURE function over the DECODED transaction plus facts the
+// caller gathered itself. The co-signer never sees the agent's reasoning, the invoice or any LLM text: only the tx, the
 // invoice/decision ids, and its own sources of truth:
 //
 //   check                                source of truth
-//   1 credential_valid                   pinned allowlist.json AND the pinned registry snapshot (Mongo nonprofits):
-//                                        credential_status "valid" and not expired  (allowlist fallback until Phase 3
-//                                        reads NYC_VERIFIED_NONPROFIT credentials on-ledger)
+//   1 credential_valid                   the LEDGER: ledger_entry {credential: {subject: Destination, issuer: city_issuer
+//                                        (pinned accounts.testnet.json), credential_type: hex NYC_VERIFIED_NONPROFIT}} on
+//                                        the validated ledger: exists, lsfAccepted, Expiration > that ledger's close time,
+//                                        URI EIN == memo EIN (and the contract's payee EIN). No allowlist fallback (Phase 3).
 //   2 destination_is_registry_wallet     memo ctr -> contract terms PINNED at startup (lib/contractPins.ts) ->
-//                                        nonprofit_ein == memo ein -> pinned registry wallet for that EIN == Destination;
-//                                        refused (registry_drift) if the registry or that contract changed in Mongo since
-//                                        they were pinned
+//                                        nonprofit_ein == memo ein -> pinned registry wallet for that EIN == Destination,
+//                                        and Destination on the pinned allowlist (extra guard); refused (registry_drift) if
+//                                        the registry or that contract changed in Mongo since they were pinned; refused
+//                                        (payee_change_on_hold) while a payee change request for the EIN is on hold
+//                                        (lib/holds.ts: the co-signer's own sticky hold record + officer-signed resolutions)
 //   3 invoice_not_already_paid           agent_account's validated on-ledger history (tesSUCCESS Payments, memo inv)
 //                                        + the co-signer's own still-live co-signatures; matched by a spelling-insensitive
 //                                        key (lib/invoiceId.ts) scoped to the payee EIN
@@ -34,8 +37,10 @@ import { invoiceKey, isCanonicalInvoiceId } from "../lib/invoiceId";
 import type { ContractView } from "../lib/contractPins";
 import type { RegistrySnapshot } from "../lib/registrySnapshot";
 import type { ExclusionEntry } from "../lib/registry";
+import { credentialProblems, rippleToIso, type CredentialFacts } from "../lib/credentials";
+import { describeHold, type ActiveHold } from "../lib/holds";
 
-export const COSIGNER_RULE_VERSION = "p2-cosigner-2";
+export const COSIGNER_RULE_VERSION = "p3-cosigner-2";
 
 /** Token amounts the co-signer accepts: a plain positive decimal with at most 6 decimals (no exponent, no rounding). */
 export const AMOUNT_RE = /^\d{1,12}(\.\d{1,6})?$/;
@@ -81,6 +86,12 @@ export type { ContractView };
 
 export interface CheckContext {
   agentAccount: string;
+  /** city_issuer (pinned accounts.testnet.json): the only issuer whose NYC_VERIFIED_NONPROFIT credential counts. */
+  credentialIssuer: string;
+  /** What the caller read on the validated ledger for (Destination, city_issuer, NYC_VERIFIED_NONPROFIT). */
+  credential: CredentialFacts;
+  /** Payee change holds in force (the co-signer's sticky record + officer-signed resolutions). runChecks filters by EIN. */
+  holds: readonly ActiveHold[];
   /** Signers the tx may already carry: the agent (always) and the officer (over AUTO_LIMIT). */
   signerAddresses: { agent: string; officer: string };
   allowlist: Set<string>;
@@ -189,22 +200,18 @@ export function runChecks(tx: Tx, ctx: CheckContext): CheckResult {
   const regDest = ctx.registry.byAddress.get(dest);
   const pendingSum = (f: (r: SignedRecord) => boolean) => ctx.pending.filter(f).reduce((s, r) => s + toMicro(r.amount), 0);
 
-  // 1 credential_valid (allowlist fallback until Phase 3 reads the on-ledger credential)
+  // 1 credential_valid: the on-ledger City Credential of the Destination (no allowlist fallback since Phase 3)
   {
-    const why: string[] = [];
-    if (!ctx.allowlist.has(dest)) why.push(`${dest || "(no Destination)"} is not on the pinned allowlist (${ctx.allowlist.size} wallets)`);
-    if (!regDest) why.push(`${dest || "(no Destination)"} is not a wallet in the pinned registry snapshot`);
-    else {
-      if (regDest.credential_status !== "valid") why.push(`registry credential_status is "${regDest.credential_status}"`);
-      const exp = regDest.credential_expires ? Date.parse(regDest.credential_expires) : NaN;
-      if (!(exp > ctx.nowMs)) why.push(`credential ${regDest.credential_expires ? `expired ${regDest.credential_expires}` : "has no expiry date"}`);
-    }
+    const c = ctx.credential;
+    const eins = [memo.data?.ein ?? null, ctx.contract?.nonprofit_ein ?? null];
+    const why = c.subject === dest && c.issuer === ctx.credentialIssuer ? credentialProblems(c, eins) : [`the credential facts are for ${c.subject} / issuer ${c.issuer}, not Destination ${dest || "(none)"} / city_issuer ${ctx.credentialIssuer}`];
     set(
       "credential_valid",
       why.length === 0,
-      why.length === 0
-        ? `${dest} (${regDest!.name}, EIN ${regDest!.ein}) is on the pinned allowlist and its registry credential is valid until ${regDest!.credential_expires} (allowlist fallback until Phase 3 reads the on-ledger credential)`
-        : `${why.join("; ")} (allowlist fallback until Phase 3 reads the on-ledger credential)`,
+      why.length === 0 && c.found
+        ? `On-ledger credential ${c.index} (NYC_VERIFIED_NONPROFIT, issuer city_issuer ${c.issuer}, subject ${dest}): accepted (lsfAccepted), expires ${rippleToIso(c.expiration!)} > ` +
+            `validated ledger ${c.ledger_index} close ${rippleToIso(c.close_time)}, URI EIN ${c.uri_ein} = memo EIN${regDest ? ` (${regDest.name})` : ""}`
+        : `${why.join("; ")} (read on-ledger with ledger_entry; the allowlist is not a substitute)`,
       ["credential_invalid"],
     );
   }
@@ -220,6 +227,16 @@ export function runChecks(tx: Tx, ctx: CheckContext): CheckResult {
     if (ctx.contractDrift) {
       why.push(`${ctx.contractDrift}; refusing until the co-signer is restarted and the change is reviewed`);
       codes.push("registry_drift");
+    }
+    if (!ctx.allowlist.has(dest)) {
+      why.push(`Destination ${dest || "(missing)"} is not on the pinned allowlist (${ctx.allowlist.size} wallets)`);
+      codes.push("destination_not_registry_wallet");
+    }
+    const holdEins = new Set([memo.data?.ein, ctx.contract?.nonprofit_ein, regDest?.ein].filter((e): e is string => !!e));
+    const holds = ctx.holds.filter((h) => holdEins.has(h.ein));
+    for (const h of holds) {
+      why.push(`${describeHold(h)}; payments to this EIN are frozen until an officer-signed resolution is verified by the co-signer`);
+      codes.push("payee_change_on_hold");
     }
     let passDetail = "";
     if (!memo.data) {
@@ -243,7 +260,8 @@ export function runChecks(tx: Tx, ctx: CheckContext): CheckResult {
         codes.push("destination_not_registry_wallet");
       } else {
         passDetail =
-          `Destination ${dest} is the registry wallet for EIN ${ein} (${reg.name}), the payee of contract ${ctx.contract.contract_id} (memo ctr -> pinned contract terms -> nonprofit_ein; registry snapshot ${ctx.registry.sha256.slice(0, 12)} pinned at startup, unchanged)` +
+          `Destination ${dest} is the registry wallet for EIN ${ein} (${reg.name}), the payee of contract ${ctx.contract.contract_id} (memo ctr -> pinned contract terms -> nonprofit_ein; registry snapshot ${ctx.registry.sha256.slice(0, 12)} pinned at startup, unchanged; on the pinned allowlist); ` +
+          `no payee change request on hold for EIN ${ein} (${ctx.holds.length} hold${ctx.holds.length === 1 ? "" : "s"} in force for other EINs)` +
           (ctx.contractNote ? `; ${ctx.contractNote}` : "");
       }
     }

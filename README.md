@@ -61,6 +61,17 @@ npm run demo happy no-spawn # terminal 2: the agent
 
 Without a running co-signer, `npm run demo happy` starts one as a child process and stops it afterwards (dev convenience).
 
+**Phases 2–3: guardrails, credentials, officer, kill switch** (details: [`xrpl/README.md`](xrpl/README.md), evidence: [`docs/STATUS.md`](docs/STATUS.md)):
+
+```bash
+npm run demo all            # every scenario on Testnet: happy, injection, duplicate, over-contract, uncredentialed,
+                            # address-swap, over-limit (officer approval, 3 signers), kill-switch, escrow (simulated)
+npm run onboard -- np_1     # Nessie bank check + signed wallet challenge + on-ledger NYC_VERIFIED_NONPROFIT credential
+npm run officer             # the human approver's service (:4004): approvals, revoke/restore, hold resolution
+npm run agent:status        # signer list + master key, read from the ledger
+npm run test:checks         # 186 offline guardrail tests;  npm run redteam: live co-signer refusals, nothing submitted
+```
+
 ## Secrets
 
 - Shared config and API keys: repo-root `.env` (gitignored). Template: `.env.example`.

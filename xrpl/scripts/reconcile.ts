@@ -6,6 +6,7 @@
 //      the 8 CHECK_NAMES. audit.backfilled_from records where the row came from.
 //   2. settle: decisions refused with ledger_status_unknown (the agent lost contact before the final result) are
 //      looked up on-ledger by xrpl_tx_hash and updated with the real result; the update is also appended to the log.
+//   3. over-limit: the Payment row of an executed pending approval gets {approval_status, superseded_by, settled_by_tx}.
 // Run: npm run reconcile -w xrpl   [-- --dry-run]
 import fs from "node:fs";
 import path from "node:path";
@@ -88,6 +89,22 @@ async function main(): Promise<number> {
       }
     }
     console.log(`settle: ${unknown.length} decision(s) with ledger_status_unknown examined`);
+
+    // 3. over-limit payments: the pending decision's Payment row (status pending_approval) points at the payment that
+    //    executed it, so a money trail does not count the same amount twice (Phase 3 fixes; new executions do this at once).
+    const executed = await db.collection(COLL.pendingApprovals).find({ status: "executed", executed_decision_id: { $exists: true } }, { projection: { _id: 0, decision_id: 1, executed_decision_id: 1, xrpl_tx_hash: 1 } }).toArray();
+    let linked = 0;
+    for (const p of executed) {
+      const payment_id = `pay_${String(p.decision_id).replace(/^dec_/, "")}`;
+      const superseded_by = `pay_${String(p.executed_decision_id).replace(/^dec_/, "")}`;
+      if (DRY) continue;
+      const r = await db.collection(COLL.payments).updateOne(
+        { payment_id, status: "pending_approval", superseded_by: { $exists: false } },
+        { $set: { approval_status: "executed", superseded_by, ...(p.xrpl_tx_hash ? { settled_by_tx: p.xrpl_tx_hash } : {}) } },
+      );
+      linked += r.modifiedCount;
+    }
+    console.log(`over-limit: ${executed.length} executed approval(s); ${linked} pending_approval payment row(s) newly linked to the executed payment (superseded_by)${DRY ? " [dry run]" : ""}`);
     return 0;
   } finally {
     await m.close();

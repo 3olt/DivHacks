@@ -10,11 +10,13 @@ import { rlusd, sourceTag } from "../lib/xrpl";
 import { runChecks, notEvaluatedChecks } from "../cosigner/checks";
 import { gatherContext, policyFromEnv, type PolicyInputs } from "../cosigner/context";
 import { liveContractResolver } from "../lib/contractPins";
+import { HoldBook } from "../lib/holds";
 
 export function agentPolicy(reg: Registry): PolicyInputs {
   const ex = loadExclusions();
   return policyFromEnv({
     agentAccount: reg.agent_account,
+    credentialIssuer: reg.city_issuer,
     signerAddresses: { agent: reg.signers.agent.address, officer: reg.signers.officer.address },
     allowlist: new Set(loadAllowlist().addresses),
     exclusions: new Map(ex.entries.map((e) => [e.ein, e])),
@@ -34,6 +36,7 @@ export async function agentAudit(
   try {
     const ctx = await gatherContext(tx, invoiceId, {
       client: deps.client, db: deps.db, policy: agentPolicy(deps.reg), pinned: null, contracts: liveContractResolver(deps.db), signed: [], requireSignatures: false,
+      holdBook: new HoldBook(null, deps.reg.signers.officer.address),
     });
     const r = runChecks(tx, ctx);
     return { checks: r.checks.map((c) => ({ ...c, detail: `[agent-side audit: ${label}] ${c.detail}` })), refusal_reasons: r.refusal_reasons };

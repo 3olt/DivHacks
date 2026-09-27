@@ -1,0 +1,13 @@
+MILESTONE REPORT (demo data)
+Bronx Riverbend Youth Works (demo), EIN 00-0000003
+Contract: CT1-260-20241298815 (DYCD, after-school STEM programming)
+
+Milestone ID: {MILESTONE_ID}
+Milestone: September 2026 robotics showcase completed
+Service period: 2026-09-01 to 2026-09-30
+Amount due on completion of this milestone: {AMOUNT} RLUSD-equivalent (held in the city's milestone escrow)
+
+Evidence: 42 middle-school students presented robotics projects at the September 26 showcase;
+attendance sheets and the showcase program are attached.
+
+Submitted by the program director. This report is demo data for a testnet-scale milestone escrow.
