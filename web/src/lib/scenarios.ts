@@ -162,7 +162,9 @@ export interface Run {
 export function groupRuns(decisions: Decision[]): Run[] {
   const runs: Run[] = [];
   const byKey = new Map<string, Run>();
-  const sorted = [...decisions].sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at));
+  // created_at has 1 s resolution, so steps of one run can tie (injection steps 1 and 2): break ties by pipeline stage.
+  const stage = (d: Decision) => (d.enforced_by === "ledger" ? 2 : d.enforced_by ? 1 : 0);
+  const sorted = [...decisions].sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at) || stage(a) - stage(b));
   for (const d of sorted) {
     const scenario = scenarioOf(d.invoice_id);
     const t = Date.parse(d.created_at);
