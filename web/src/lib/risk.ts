@@ -7,7 +7,7 @@ export const RISK_COLORS: Record<RiskLevel, string> = {
 };
 
 export const RISK_LABELS: Record<RiskLevel, string> = {
-  green: "Funded, on track",
-  yellow: "Payments running late",
-  red: "At risk of delay",
+  green: "Financially stable",
+  yellow: "Financially strained",
+  red: "Financially critical",
 };

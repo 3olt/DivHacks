@@ -168,7 +168,7 @@ Example: `GET /sites?near=-73.9095,40.8538&radius_m=2500`
         "3.6 months of cash on hand (FY2023 990)",
         "Contract registered 69 days after its 2025-07-01 start"
       ],
-      "summary": "Payments running late: 41% of contract term elapsed, 15% paid; HRA registered 89% of FY2025 contracts late (avg 118 days).",
+      "summary": "Financially strained: 41% of contract term elapsed, 15% paid; HRA registered 89% of FY2025 contracts late (avg 118 days).",
       "computed_at": "2026-09-26T09:00:00-04:00"
     },
     "is_demo_data": true
@@ -236,7 +236,7 @@ Example: `GET /sites?near=-73.9095,40.8538&radius_m=2500`
       "3.6 months of cash on hand (FY2023 990)",
       "Contract registered 69 days after its 2025-07-01 start"
     ],
-    "summary": "Payments running late: 41% of contract term elapsed, 15% paid; HRA registered 89% of FY2025 contracts late (avg 118 days).",
+    "summary": "Financially strained: 41% of contract term elapsed, 15% paid; HRA registered 89% of FY2025 contracts late (avg 118 days).",
     "computed_at": "2026-09-26T09:00:00-04:00"
   },
   "is_demo_data": true
@@ -730,7 +730,7 @@ Errors: 400 `missing_decision_id`, 400 `invalid_decision` (malformed `decision`)
       "3.6 months of cash on hand (FY2023 990)",
       "Contract registered 69 days after its 2025-07-01 start"
     ],
-    "summary": "Funded, on track: RLUSD 12.50 released on XRPL on 2026-09-20 (demo); invoice INV-2026-0412 paid; payments now current (15% of contract paid).",
+    "summary": "Financially stable: RLUSD 12.50 released on XRPL on 2026-09-20 (demo); invoice INV-2026-0412 paid; payments now current (15% of contract paid).",
     "computed_at": "2026-09-26T13:41:17-04:00"
   },
   "broadcast": [
@@ -754,7 +754,7 @@ Errors: 400 `missing_decision_id`, 400 `invalid_decision` (malformed `decision`)
       "3.6 months of cash on hand (FY2023 990)",
       "Contract registered 69 days after its 2025-07-01 start"
     ],
-    "summary": "Funded, on track: RLUSD 12.50 released on XRPL on 2026-09-20 (demo); invoice INV-2026-0412 paid; payments now current (15% of contract paid).",
+    "summary": "Financially stable: RLUSD 12.50 released on XRPL on 2026-09-20 (demo); invoice INV-2026-0412 paid; payments now current (15% of contract paid).",
     "computed_at": "2026-09-26T13:41:17-04:00"
   },
   "broadcast": [
@@ -832,7 +832,7 @@ In fixture mode the decision is synthesized. **In Phase 5 this endpoint runs the
         "3.6 months of cash on hand (FY2023 990)",
         "Contract registered 69 days after its 2025-07-01 start"
       ],
-      "summary": "Funded, on track: RLUSD 12.50 released on XRPL today (demo); invoice INV-2026-D001 paid; payments now current (15% of contract paid).",
+      "summary": "Financially stable: RLUSD 12.50 released on XRPL today (demo); invoice INV-2026-D001 paid; payments now current (15% of contract paid).",
       "computed_at": "2026-09-26T14:49:43-04:00"
     }
   }
@@ -924,7 +924,7 @@ curl -X POST http://localhost:4000/dev/flip/site_002 -H "content-type: applicati
     "reasons": [
       "Manually set to yellow (score 55) for testing (dev flip)"
     ],
-    "summary": "Payments running late: manually set to yellow (score 55) for testing (dev flip).",
+    "summary": "Financially strained: manually set to yellow (score 55) for testing (dev flip).",
     "computed_at": "2026-09-26T13:41:17-04:00"
   }
 }
@@ -1020,7 +1020,7 @@ On a released payment the order is always **`site_updated` then `decision`**.
       "3.6 months of cash on hand (FY2023 990)",
       "Contract registered 69 days after its 2025-07-01 start"
     ],
-    "summary": "Funded, on track: RLUSD 12.50 released on XRPL on 2026-09-20 (demo); invoice INV-2026-0412 paid; payments now current (15% of contract paid).",
+    "summary": "Financially stable: RLUSD 12.50 released on XRPL on 2026-09-20 (demo); invoice INV-2026-0412 paid; payments now current (15% of contract paid).",
     "computed_at": "2026-09-26T13:41:17-04:00"
   }
 }
@@ -1176,9 +1176,9 @@ Colors and labels are the ones in `web/src/lib/risk.ts`.
 
 | Level | Score | Color | Label |
 |---|---|---|---|
-| `green` | 0-39 | `#16a34a` | Funded, on track |
-| `yellow` | 40-69 | `#eab308` | Payments running late |
-| `red` | 70-100 | `#dc2626` | At risk of delay |
+| `green` | 0-39 | `#16a34a` | Financially stable |
+| `yellow` | 40-69 | `#eab308` | Financially strained |
+| `red` | 70-100 | `#dc2626` | Financially critical |
 
 Score components (explainable, not a trained model; each shows up as one entry in `risk.reasons` with its numbers): payment pace (40 pts: share of the contract term elapsed minus share paid), registration lateness (20), agency lateness (20, from `AgencyStats`), cash cushion (20, months of cash from the IRS 990). After a released XRPL payment, the first two reasons become `"RLUSD 12.50 released on XRPL today (demo)"` and `"Invoice ... paid; payments now current (...)"` (a fixture rule; see [`POST /events/payment`](#post-eventspayment)). `summary` is at most 25 words and made only of `reasons` entries, verbatim apart from the first letter being lower-cased.
 

@@ -145,7 +145,7 @@ export default function Dashboard({ initialSiteId = null }: { initialSiteId?: st
         {/* Hidden (and click-through) while a pin popup is open so it doesn't cover it. */}
         <div className={`absolute left-3 top-3 z-[1000] max-w-xs rounded-lg bg-white/95 p-4 shadow-md transition-opacity ${popupOpen ? "pointer-events-none opacity-0" : "opacity-100"}`}>
           <h1 className="text-base font-semibold text-gray-900">NYC community resources</h1>
-          <p className="mt-1 hidden text-xs text-gray-600 md:block">Colored by whether the city money behind each one is on time.</p>
+          <p className="mt-1 hidden text-xs text-gray-600 md:block">Colored by the financial health of the city funding behind each one.</p>
           <ul className="mt-3 space-y-1">
             {(["green", "yellow", "red"] as const).map((lvl) => (
               <li key={lvl} className="flex items-center gap-2 text-xs text-gray-800">

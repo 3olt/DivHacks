@@ -47,7 +47,7 @@ Product overview (`web/src/app/page.tsx`), with **Open data** links to `/data`: 
 
 ### 1. Money map (`/map`, shows delays)
 1. **Map:** NYC with pins for food pantries, grocery giveaways, shelters, youth programs, and events.
-2. **Pin color = funding health** (from the API's risk score): 🟢 0–39 funded, on track · 🟡 40–69 payments running late · 🔴 70–100 at risk of delay.
+2. **Pin color = financial status rating** (from the API's score): 🟢 0–39 financially stable · 🟡 40–69 financially strained · 🔴 70–100 financially critical.
 3. **Click a pin →** the map zooms to it, a small popup opens (`SitePopup.tsx`: name, next event, status, one-line risk summary), and the side panel shows that location. The panel's **✕** and the popup's **×** both close everything and zoom back out to the five boroughs (start view fits the boroughs to the screen; a site zooms to level 13). Clicking the map background doesn't close the popup.
 4. **Side panel** (`SitePanel.tsx`), from `GET /sites/:id/trail`:
    - Funding status: score, summary, reasons (the numbers behind the score)
@@ -136,7 +136,7 @@ Without keys the service runs in **dry-run** mode: it logs messages instead of s
 - **Nearby recommendations (Grok, per the subscriber's selections):** the welcome after web sign-up (`POST /welcome` on the iMessage service) and every reply include up to 3 places near the subscriber's ZIP that match their interests (same ZIP first, then same borough from the ZIP prefix), with the next event time and funding status as 🟢 / 🟡 / 🔴. Texting a ZIP (`10453` or `JOIN 10453`) subscribes by ZIP (`channel: "imessage"`) with no website needed; non-NYC ZIPs are rejected without calling Grok, and when nothing is nearby the reply skips Grok.
 - Inbound replies: **built** in `imessage/src/replies.ts`. "STOP" unsubscribes (`DELETE /subscribers/:phone`). Anything else (e.g. "why?") is answered by **Grok** (`grok-4.3`, `reasoning_effort: none`, ~1 s) using only facts from the API for the sites the sender follows (`/subscribers`, `/sites/:id`, `/sites/:id/trail`). The prompt forbids wallet addresses and treats the user's text as untrusted (tested against a prompt injection). Needs `XAI_API_KEY` in `imessage/.env` (never commit it).
 - **Grok budget (~$5 of credit):** ~900 tokens per call (compact facts, max 150 output tokens, max 3 sites). Same question + unchanged data is cached for 30 min. Limits: 5 Grok answers per phone per hour, 150 per day overall (`GROK_PER_PHONE_PER_HOUR`, `GROK_DAILY_CAP`). Past a limit, or if Grok errors, the reply is the free risk summary from the API. Every call logs its token count (`[grok] call N/150 today, X tokens`).
-- "Funded ✅" alerts: **built** in `imessage/src/fundedAlerts.ts`. The service listens to WS `/live`; when a site changes to green it texts everyone from `GET /subscribers?site_id=` ("✅ <site> is funded. <risk summary>"). Numbers not on the Photon Users list are skipped and logged. Set `API_URL` in `imessage/.env` if the API isn't on :4000.
+- "Funded ✅" alerts: **built** in `imessage/src/fundedAlerts.ts`. The service listens to WS `/live`; when a site changes to green it texts everyone from `GET /subscribers?site_id=` ("✅ <site> is financially stable again. <summary>"). Numbers not on the Photon Users list are skipped and logged. Set `API_URL` in `imessage/.env` if the API isn't on :4000.
 - Site details (hours, what to bring, eligibility): "What to know before you go" in `SitePanel.tsx`.
 
 ## How the payment agent is guarded (Ripple story)
@@ -185,7 +185,23 @@ RLUSD escrow fails on Testnet (`tecNO_PERMISSION`: the RLUSD issuer doesn't allo
 
 A **refused** decision with `enforced_by: null` means the agent's own policy stopped it before anything was signed; the UI shows "Stopped by the agent's own policy (nothing was signed)". Backend status, proof links, and what's real vs demo: [`docs/STATUS.md`](docs/STATUS.md).
 
-## Risk score (explainable, not a trained model)
+## Financial status rating (explainable, not a trained model)
+
+> **Note for Gagan (changed 2026-09-26, Noel):** the 🟢/🟡/🔴 rating is now framed as a **financial status rating**, not a delay prediction. There's no public data on how often events are actually delayed or cancelled; the score's four inputs are all financial, so the labels now say what it measures. **Only wording changed; the formula, scores, and thresholds are untouched.** Files edited on the backend side:
+> - `api/src/risk.ts`: `RISK_LABELS` → green "Financially stable", yellow "Financially strained", red "Financially critical" (summaries start with these).
+> - `api/scripts/smoke.ts`: the site_012 summary assertion now expects "Financially strained: …" (smoke passes 116/116).
+> - `docs/API.md`: label table and example summaries.
+> Please use the same labels in `data/risk.py` (Phase 4) so real summaries match.
+
+| Rating | Score | Meaning |
+|---|---|---|
+| 🟢 Financially stable | 0–39 | City money is arriving on pace |
+| 🟡 Financially strained | 40–69 | Payments are behind, or the contract is stuck in registration |
+| 🔴 Financially critical | 70–100 | Far behind on payment, with little cash to absorb it |
+
+**Pitch wording:** "an explainable financial status rating for each service's city funding." Do **not** call it a likelihood or prediction of delays: it isn't validated against outcomes, and the weights (40/20/20/20) and cut-offs (40, 70) are judgment calls.
+
+### How the score is computed
 
 Deterministic, 0–100, computed by the backend (`data/risk.py`; fixtures use `api/src/risk.ts`):
 - Payment pace (40): share of the contract term elapsed minus share paid
@@ -242,7 +258,7 @@ The API currently serves **fixture data** (15 sites, all fictional, `is_demo_dat
 1. **Hook (20s):** "NYC owes nonprofits over $1 billion in unpaid invoices. The food pantry on your block might not open Saturday, and you'd never know why. We make every dollar's path visible."
 2. **Demo (90s):** map → yellow pin → money trail → agent pays a verified invoice on XRPL autonomously → pin turns green live → then an injected invoice is blocked by the co-signer, and the agent's key alone is rejected by the ledger (`tefBAD_QUORUM`).
 3. **How it works (40s):** public data → explainable risk score; agent + independent co-signer + ledger multisig; XLS-70 credentials; Nessie bank check; Grok never touches addresses.
-4. **Impact (30s):** residents see where services are at risk and get alerts they qualify for; nonprofits get paid fast and safely; auditors get a verifiable trail (invoice id + decision hash on-chain).
+4. **Impact (30s):** residents see which services' funding is strained and get alerts they qualify for; nonprofits get paid fast and safely; auditors get a verifiable trail (invoice id + decision hash on-chain).
 
 ## Q&A prep
 

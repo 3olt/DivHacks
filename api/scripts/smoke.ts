@@ -409,7 +409,7 @@ async function main() {
   const evYellow = await call("POST", "/events/payment", { decision_id: "fx_dec_007" });
   check(
     "POST /events/payment released but still yellow -> summary = payment + biggest remaining driver",
-    evYellow.status === 200 && evYellow.body?.site_id === "site_012" && evYellow.body.risk.level === "yellow" && evYellow.body.risk.summary.startsWith("Payments running late: RLUSD 32 released on XRPL") && !evYellow.body.risk.summary.includes("now current"),
+    evYellow.status === 200 && evYellow.body?.site_id === "site_012" && evYellow.body.risk.level === "yellow" && evYellow.body.risk.summary.startsWith("Financially strained: RLUSD 32 released on XRPL") && !evYellow.body.risk.summary.includes("now current"),
     evYellow.body?.risk,
   );
   const evMissing = await call("POST", "/events/payment", {});

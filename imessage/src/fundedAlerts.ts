@@ -35,7 +35,7 @@ export function startFundedAlerts(send: (phone: string, text: string) => Promise
       getJson<Site>(`/sites/${encodeURIComponent(siteId)}`),
       getJson<Subscriber[]>(`/subscribers?site_id=${encodeURIComponent(siteId)}`),
     ]);
-    const text = `✅ ${site.name} is funded. ${risk.summary}`;
+    const text = `✅ ${site.name} is financially stable again. ${risk.summary}`;
     console.log(`[funded-alerts] ${site.name} turned green; texting ${followers.length} follower(s)`);
     for (const f of followers) {
       try {

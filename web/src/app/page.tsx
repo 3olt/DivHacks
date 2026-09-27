@@ -13,8 +13,8 @@ const STATS = [
 
 const STEPS = [
   {
-    title: "See where services are at risk",
-    body: "Every food pantry, shelter, and youth program is a pin, colored by how late the city money behind it is. The score is explainable: each pin lists the numbers that drive it.",
+    title: "See each service's financial health",
+    body: "Every food pantry, shelter, and youth program is a pin with a financial status rating: 🟢 stable, 🟡 strained, 🔴 critical. The rating is explainable: each pin lists the numbers behind it (payment pace, contract registration, agency track record, cash on hand).",
   },
   {
     title: "Follow the money",
@@ -26,7 +26,7 @@ const STEPS = [
   },
   {
     title: "Get alerts you qualify for",
-    body: "Sign up with your phone to get iMessage alerts about free food and events near you, and when their funding is running late.",
+    body: "Sign up with your phone to get iMessage alerts about free food and events near you, and when their funding becomes strained.",
   },
 ];
 
@@ -60,7 +60,7 @@ export default function Landing() {
             <p className="text-sm font-semibold uppercase tracking-wide text-gray-500">Transparency for NYC&apos;s community services</p>
             <h1 className="mt-3 text-4xl font-bold leading-tight tracking-tight sm:text-5xl">See where the city&apos;s money is stuck, and where it goes.</h1>
             <p className="mt-4 text-lg text-gray-600">
-              A live map of food pantries, shelters, and youth programs, colored by whether the city money behind them is on time. Every step of the money is traceable, down to the payment on the XRP Ledger.
+              A live map of food pantries, shelters, and youth programs, rated by the financial health of the city money behind them. Every step of the money is traceable, down to the payment on the XRP Ledger.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <LaunchButton />

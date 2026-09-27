@@ -16,9 +16,10 @@ export const RISK_FIXTURE_COMPUTED_AT = "2026-09-26T09:00:00-04:00";
 
 /** Same labels as web/src/lib/risk.ts RISK_LABELS. */
 export const RISK_LABELS: Record<RiskLevel, string> = {
-  green: "Funded, on track",
-  yellow: "Payments running late",
-  red: "At risk of delay",
+  // Financial status rating (renamed from delay wording on 2026-09-26; see context.md "Financial status rating").
+  green: "Financially stable",
+  yellow: "Financially strained",
+  red: "Financially critical",
 };
 
 export function levelForScore(score: number): RiskLevel {
@@ -147,7 +148,7 @@ export function computeRisk(inp: RiskInputs, computedAt: string, release?: Relea
     const level = levelForScore(score);
     const reasons = [...lead, ...rest.map((c) => c.reason)];
     // Green: lead with the payment. Still yellow/red: the payment plus the biggest remaining driver, so the
-    // summary never reads "Payments running late: ... payments now current".
+    // summary never reads "Financially strained: ... payments now current" without the remaining driver.
     const facts = level === "green" ? lead : [lead[0], ...rest.map((c) => c.reason)];
     return { level, score, reasons, summary: buildSummary(level, facts), computed_at: computedAt };
   }

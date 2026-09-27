@@ -98,7 +98,7 @@ export default function SiteReport({ id }: { id: string }) {
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <span className="flex items-center gap-2 rounded-full border border-gray-200 px-3 py-1 text-sm font-medium">
               <span className="h-2.5 w-2.5 rounded-full" style={{ background: RISK_COLORS[site.risk.level] }} />
-              {RISK_LABELS[site.risk.level]} · risk {site.risk.score}/100
+              {RISK_LABELS[site.risk.level]} · score {site.risk.score}/100
             </span>
             <span className="text-xs text-gray-500">Score computed {formatEventTime(site.risk.computed_at)}</span>
           </div>
@@ -134,7 +134,7 @@ export default function SiteReport({ id }: { id: string }) {
       </Section>
 
       {/* 3. Score */}
-      <Section title="How the risk score was calculated" subtitle="A fixed, explainable formula. No machine learning: the same inputs always give the same score.">
+      <Section title="How the financial status rating was calculated" subtitle="A fixed, explainable formula over the site's funding: no machine learning, and not a prediction of whether an event will happen. The same inputs always give the same score.">
         <ScoreMeter score={site.risk.score} />
         <div className="mt-5 grid gap-5 md:grid-cols-2">
           <div>
@@ -314,9 +314,9 @@ function ScoreMeter({ score }: { score: number }) {
         <div className="absolute -top-1 h-5 w-1 rounded bg-gray-900" style={{ left: `calc(${Math.min(100, Math.max(0, score))}% - 2px)` }} aria-hidden />
       </div>
       <div className="mt-1 flex justify-between text-[11px] text-gray-500">
-        <span>0 · funded</span>
-        <span>40 · late</span>
-        <span>70 · at risk</span>
+        <span>0 · stable</span>
+        <span>40 · strained</span>
+        <span>70 · critical</span>
         <span>100</span>
       </div>
       <p className="mt-1 text-sm">

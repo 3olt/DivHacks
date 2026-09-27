@@ -49,7 +49,7 @@ export default function SitePanel({
         <div className="flex items-center gap-2">
           <span className="h-3 w-3 rounded-full" style={{ background: RISK_COLORS[site.risk.level] }} />
           <span className="font-medium text-gray-900">{RISK_LABELS[site.risk.level]}</span>
-          <span className="ml-auto text-xs text-gray-500">risk {site.risk.score}/100</span>
+          <span className="ml-auto text-xs text-gray-500">score {site.risk.score}/100</span>
         </div>
         <p className="mt-2 text-sm text-gray-700">{site.risk.summary}</p>
         <ul className="mt-2 list-disc pl-5 text-xs text-gray-600">
