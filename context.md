@@ -11,8 +11,6 @@ Project name: **GlassLedger**. This file is the project context and pitch. **The
 ## Deadline & submission
 
 - **Devpost submission due: Sunday, Sept 27, 2026, 10:30 AM EDT** (14:30 UTC).
-- Required: link to source code (this repo) + a way to test/view it (deployed URL or demo video).
-- Target: backup demo video and Devpost draft by ~8:30 AM EDT.
 - Expo judging: ~3 min pitch + ~2 min Q&A per judge. Prepare a short slide deck.
 
 ## One-liner
