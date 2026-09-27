@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import type { Contract, Decision, Payment, Site, Trail } from "@/lib/contracts";
+import type { Contract, Payment, Site, Trail } from "@/lib/contracts";
 import { isDemoContract } from "@/lib/openData";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/risk";
-import { OUTCOME_BADGES, enforcedByLabel, formatDate, formatEventTime, formatMoney, nextEvent, refusalLabel } from "@/lib/format";
+import { formatDate, formatEventTime, formatMoney, nextEvent } from "@/lib/format";
 import TextUs from "./TextUs";
 
 export default function SitePanel({
@@ -72,17 +71,6 @@ export default function SitePanel({
             <Nonprofit trail={trail} demo={site.is_demo_data} />
           </Section>
 
-          <Section title="Payment agent (XRPL)">
-            {trail.decisions.length === 0 ? (
-              <Placeholder text="No agent payments for this location yet." />
-            ) : (
-              <ul className="space-y-2">
-                {trail.decisions.map((d) => (
-                  <DecisionRow key={d.decision_id} decision={d} />
-                ))}
-              </ul>
-            )}
-          </Section>
         </>
       )}
 
@@ -98,8 +86,10 @@ export default function SitePanel({
   );
 }
 
+// The main map shows real public records only: XRPL agent payments (test money) are left out here and shown on /demo.
 function MoneyTrail({ trail }: { trail: Trail }) {
   const { agency } = trail;
+  const payments = trail.payments.filter((p) => p.source !== "xrpl");
   return (
     <ol className="relative ml-2 border-l-2 border-gray-200">
       <Step label="NYC agency">
@@ -118,11 +108,11 @@ function MoneyTrail({ trail }: { trail: Trail }) {
         </Step>
       ))}
       <Step label="Payments">
-        {trail.payments.length === 0 ? (
+        {payments.length === 0 ? (
           <p className="text-xs text-gray-500">No payments recorded.</p>
         ) : (
           <ul className="space-y-1">
-            {trail.payments.map((p) => (
+            {payments.map((p) => (
               <PaymentRow key={p.payment_id} payment={p} />
             ))}
           </ul>
@@ -152,12 +142,11 @@ function ContractInfo({ contract: c }: { contract: Contract }) {
 }
 
 function PaymentRow({ payment: p }: { payment: Payment }) {
-  const isXrpl = p.source === "xrpl";
   return (
     <li className="flex items-baseline gap-2 text-xs">
       <span className="w-20 shrink-0 text-gray-500">{formatDate(p.date)}</span>
       <span className={p.status === "refused" ? "text-gray-400 line-through" : "text-gray-900"}>{formatMoney(p.amount, p.currency)}</span>
-      <span className="text-gray-500">{isXrpl ? "XRPL agent" : "City payment"}</span>
+      <span className="text-gray-500">City payment</span>
       {p.status !== "released" && <span className="text-gray-500">({p.status.replace("_", " ")})</span>}
       {p.explorer_url && (
         <a href={p.explorer_url} target="_blank" rel="noreferrer" className="ml-auto text-blue-700 underline">
@@ -171,7 +160,6 @@ function PaymentRow({ payment: p }: { payment: Payment }) {
 function Nonprofit({ trail, demo }: { trail: Trail; demo: boolean }) {
   const np = trail.nonprofit;
   const f = np.financials;
-  const w = np.wallet;
   return (
     <div className="space-y-3">
       <p className="text-sm font-medium text-gray-900">{np.name}</p>
@@ -187,64 +175,7 @@ function Nonprofit({ trail, demo }: { trail: Trail; demo: boolean }) {
       ) : (
         <p className="text-xs text-gray-500">No IRS 990 on file.</p>
       )}
-      <div className="text-xs text-gray-600">
-        <span>XRPL wallet: </span>
-        {!w ? (
-          <span className="text-gray-500">none registered</span>
-        ) : (
-          <>
-            <span className="font-mono">{w.address.slice(0, 10)}…</span>{" "}
-            {w.credential_status === "valid" && (
-              <span className="text-green-700">✓ verified{w.credential_expires ? ` until ${formatDate(w.credential_expires)}` : ""}</span>
-            )}
-            {w.credential_status === "expired" && <span className="text-red-700">credential expired</span>}
-            {w.credential_status === "none" && <span className="text-yellow-700">not verified</span>}
-            <span className="text-gray-500"> · bank {w.bank_verified ? "verified" : "not verified"} (Nessie)</span>
-            {w.is_demo_data && <DemoBadge />}
-            {w.label && <p className="mt-0.5 text-[11px] text-gray-500">{w.label}</p>}
-          </>
-        )}
-      </div>
     </div>
-  );
-}
-
-function DecisionRow({ decision: d }: { decision: Decision }) {
-  const [open, setOpen] = useState(false);
-  const badge = OUTCOME_BADGES[d.outcome];
-  const enforced = enforcedByLabel(d);
-  return (
-    <li className="rounded-md border border-gray-200 p-3 text-sm">
-      <div className="flex items-center gap-2">
-        <span className={`rounded px-1.5 py-0.5 text-xs font-medium ${badge.className}`}>{badge.label}</span>
-        <span className="font-mono text-xs text-gray-600">{d.invoice_id}</span>
-        <span className="ml-auto font-medium text-gray-900">{formatMoney(d.amount, d.currency)}</span>
-      </div>
-      {d.refusal_reasons.length > 0 && <p className="mt-1 text-xs font-medium text-red-700">{refusalLabel(d.refusal_reasons[0])}</p>}
-      {enforced && <p className="mt-0.5 text-xs text-gray-700">{enforced}</p>}
-      <p className="mt-1 text-xs text-gray-500">
-        {formatEventTime(d.created_at)} · signed by {d.signers.join(" + ")}
-      </p>
-      <button onClick={() => setOpen(!open)} className="mt-1 text-xs text-gray-600 underline">
-        {open ? "Hide audit" : "Show audit"}
-      </button>
-      {open && (
-        <div className="mt-2 space-y-2">
-          <ul className="space-y-1">
-            {d.checks.map((c) => (
-              <li key={c.name} className="text-xs">
-                <span className={c.passed ? "text-green-700" : "text-red-700"}>{c.passed ? "✓" : "✗"}</span>{" "}
-                <span className="font-mono text-gray-800">{c.name}</span>
-                <p className="ml-4 text-gray-500">{c.detail}</p>
-              </li>
-            ))}
-          </ul>
-          {/* Untrusted invoice text can appear here: render as plain text only. */}
-          <p className="text-xs text-gray-600">{d.agent_reasoning}</p>
-          <p className="break-all font-mono text-[10px] text-gray-400">decision hash {d.decision_hash}</p>
-        </div>
-      )}
-    </li>
   );
 }
 

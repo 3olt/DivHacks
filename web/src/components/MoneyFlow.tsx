@@ -69,11 +69,6 @@ export default function MoneyFlow({
                       </div>
                     </>
                   )}
-                  {flow.agentPayments > 0 && (
-                    <p className="text-[11px] text-gray-500">
-                      + {flow.agentPayments} XRPL agent payment{flow.agentPayments === 1 ? "" : "s"} (Testnet, test money)
-                    </p>
-                  )}
                 </div>
               )}
             </button>
@@ -81,7 +76,7 @@ export default function MoneyFlow({
         ))}
       </ul>
       <p className="text-[11px] text-gray-500">
-        Contracts and payments from NYC Comptroller and Checkbook NYC. Click a row for its full money trail and sources. The AI agent&apos;s scenarios are on the live demo.
+        Contracts and payments from NYC Comptroller and Checkbook NYC. Click a row for its full money trail and sources. The AI payment agent (XRPL Testnet) is on the live demo.
       </p>
     </div>
   );
@@ -97,6 +92,5 @@ function flowFor(trail: Trail | undefined) {
     promised,
     paid: loaded.length ? loaded.reduce((sum, c) => sum + Number(c.spent_to_date), 0) : null,
     paidOfPromised: loaded.reduce((sum, c) => sum + Number(c.amount), 0),
-    agentPayments: trail.payments.filter((p) => p.source === "xrpl" && p.status === "released").length,
   };
 }
