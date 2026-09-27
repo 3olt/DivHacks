@@ -28,7 +28,7 @@ export const SCENARIOS: Record<DemoScenario, ScenarioInfo> = {
     defense: "The agent checks it and signs (weight 1). The co-signer's 8 checks pass and it signs (weight 2). That makes 3, so it pays in seconds with no human.",
     attempts: [{ label: "A verified invoice under the nonprofit's contract", expect: "released", result: "Paid" }],
     payee: "golden",
-    note: "Pays Food Bank For NYC, a real organization with a demo wallet.",
+    note: "Pays Food Bank For NYC, a real organization with a demo wallet. Its pin on this page moves (test money counted at a disclosed demo scale, 1 RLUSD = $10,000); the main map doesn't change.",
   },
   injection: {
     title: "Prompt-injected invoice",

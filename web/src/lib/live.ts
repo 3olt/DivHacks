@@ -18,7 +18,7 @@ export function connectLive(onMessage: (msg: LiveMessage) => void): () => void {
       } catch {
         return;
       }
-      if (msg.type === "hello" || msg.type === "site_updated" || msg.type === "decision" || msg.type === "demo_run") onMessage(msg as LiveMessage);
+      if (msg.type === "hello" || msg.type === "site_updated" || msg.type === "decision" || msg.type === "demo_run" || msg.type === "demo_risk_updated") onMessage(msg as LiveMessage);
     };
     ws.onclose = () => {
       if (!stopped) setTimeout(open, Math.min(30_000, 1_000 * 2 ** retry++));

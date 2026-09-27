@@ -2,9 +2,9 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { API_URL, DEMO_SCENARIOS, fetchDecisions, fetchDemoRun, fetchDemoRuns, fetchSites, resetDemo, runDemo, type DemoRun, type DemoScenario } from "@/lib/api";
-import type { Decision, RiskLevel, Site } from "@/lib/contracts";
+import type { Decision, Site, SiteRisk } from "@/lib/contracts";
 import { OUTCOME_BADGES, enforcedByLabel, explorerTxUrl, formatEventTime, formatMoney } from "@/lib/format";
 import { connectLive } from "@/lib/live";
 import { isRealTxHash } from "@/lib/openData";
@@ -26,7 +26,12 @@ const STEP_STYLE: Record<StepStatus, { icon: string; label: string; className: s
 const TESTNET_ONLY: DemoScenario[] = ["uncredentialed", "escrow"];
 
 type ActiveRun = { run_id: string | null; scenario: DemoScenario; startedMs: number };
-type PinChange = { from: RiskLevel; to: RiskLevel; fromScore: number; toScore: number };
+// The latest demo_risk_updated per site (this session): before -> after for "Effect of this run".
+type PinMove = { from: SiteRisk; to: SiteRisk };
+
+// On /demo, pins and "Effect on the locations" show the what-if score after Testnet payments (demo_risk ?? risk).
+// /map, the site report and iMessage always use the public-records `risk` (docs/API.md, Sun 04:50).
+const demoView = (s: Site): Site => (s.demo_risk ? { ...s, risk: s.demo_risk } : s);
 
 export default function DemoPage() {
   const [sites, setSites] = useState<Site[]>([]);
@@ -39,16 +44,10 @@ export default function DemoPage() {
   const [starting, setStarting] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [error, setError] = useState("");
-  const [pinChanges, setPinChanges] = useState<Record<string, PinChange>>({});
+  const [pinMoves, setPinMoves] = useState<Record<string, PinMove>>({});
   const [mapHidden, setMapHidden] = useState(false);
   const [now, setNow] = useState(() => Date.now());
-  const sitesRef = useRef<Site[]>([]);
-
-  useEffect(() => {
-    sitesRef.current = sites;
-  }, [sites]);
-
-  // Initial load + live updates: pins recolor on site_updated, decisions land as the agent records them.
+  // Initial load + live updates: demo pins move on demo_risk_updated, decisions land as the agent records them.
   useEffect(() => {
     let cancelled = false;
     async function load() {
@@ -69,12 +68,15 @@ export default function DemoPage() {
     load();
     const stop = connectLive((msg) => {
       if (msg.type === "hello") load();
-      else if (msg.type === "site_updated") {
-        const old = sitesRef.current.find((x) => x.id === msg.site_id);
-        if (old && old.risk.score !== msg.risk.score) {
-          setPinChanges((p) => ({ ...p, [msg.site_id]: { from: p[msg.site_id]?.from ?? old.risk.level, fromScore: p[msg.site_id]?.fromScore ?? old.risk.score, to: msg.risk.level, toScore: msg.risk.score } }));
-        }
-        setSites((s) => s.map((x) => (x.id === msg.site_id ? { ...x, risk: msg.risk } : x)));
+      else if (msg.type === "site_updated") setSites((s) => s.map((x) => (x.id === msg.site_id ? { ...x, risk: msg.risk } : x)));
+      else if (msg.type === "demo_risk_updated") {
+        setSites((s) => s.map((x) => (x.id === msg.site_id ? { ...x, demo_risk: msg.demo_risk } : x)));
+        setPinMoves((p) => {
+          const next = { ...p };
+          if (msg.demo_risk && msg.previous_demo_risk) next[msg.site_id] = { from: msg.previous_demo_risk, to: msg.demo_risk };
+          else delete next[msg.site_id]; // reset: back to the public score
+          return next;
+        });
       } else if (msg.type === "decision") {
         setDecisions((f) => [msg.decision, ...f.filter((d) => d.decision_id !== msg.decision.decision_id)]);
         setOpenRunKey(null);
@@ -150,18 +152,18 @@ export default function DemoPage() {
   }
 
   async function reset() {
-    if (!window.confirm("Reset the demo? This clears every demo decision and payment in the shared database, for everyone on the team.")) return;
+    if (!window.confirm("Reset the demo? Every pin on this page goes back to its public-records score, for everyone on the team. The Testnet history is kept.")) return;
     setResetting(true);
     setError("");
     try {
       const r = await resetDemo();
       if (!r.ok) setError(r.message ?? "Reset failed");
       else {
-        // The reset doesn't "un-broadcast" removed decisions (docs/API.md), so refetch.
+        // Refetch rather than rely on the broadcasts (docs/API.md).
         const [s, d] = await Promise.all([fetchSites(), fetchDecisions(200)]);
         setSites(s);
         setDecisions(d);
-        setPinChanges({});
+        setPinMoves({});
         setOpenRunKey(null);
       }
     } finally {
@@ -212,14 +214,15 @@ export default function DemoPage() {
 
       <div className="grid gap-6 p-4 sm:p-6 lg:grid-cols-[1fr_600px]">
         <div className="h-[40dvh] overflow-hidden rounded-xl border border-gray-200 lg:sticky lg:top-6 lg:h-[calc(100dvh-7rem)]">
-          <MapView sites={sites} selectedId={mapHidden ? null : (payeeSite?.id ?? null)} onSelect={() => {}} onPopupChange={() => {}} onDismiss={() => setMapHidden(true)} />
+          <MapView sites={sites.map(demoView)} selectedId={mapHidden ? null : (payeeSite?.id ?? null)} onSelect={() => {}} onPopupChange={() => {}} onDismiss={() => setMapHidden(true)} />
         </div>
 
         <div className="space-y-8">
           <div className="space-y-2">
             <p className="rounded-md bg-amber-50 p-3 text-xs text-amber-900">
               <strong>This is the agent playground.</strong> The four &quot;(demo)&quot; nonprofits are fictional organizations with Testnet wallets, so the agent has
-              someone to pay and to block. Food Bank For NYC is a real organization with a demo wallet.
+              someone to pay and to block. Food Bank For NYC is a real organization with a demo wallet. Test payments move pins on this page only; the main map
+              always shows public records.
             </p>
             <p className="rounded-md bg-gray-50 p-3 text-xs text-gray-600">
               Every payment needs <strong>3 signature weights</strong> on the XRP Ledger: the AI agent has 1, the independent co-signer 2, a human officer 1. The
@@ -323,7 +326,11 @@ export default function DemoPage() {
             {!viewedRun ? (
               <p className="mt-2 text-sm text-gray-500">No run of this scenario yet.</p>
             ) : (
-              <RunResult run={viewedRun} site={payeeSite} pinChange={payeeSite ? pinChanges[payeeSite.id] : undefined} />
+              <RunResult
+                run={viewedRun}
+                site={payeeSite}
+                pinMove={payeeSite && runs.find((r) => r.decisions[0].payee_ein === payeeSite.nonprofit_ein)?.key === viewedRun.key ? pinMoves[payeeSite.id] : undefined}
+              />
             )}
             {runs.filter((r) => r.scenario === selected).length > 1 && (
               <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
@@ -350,7 +357,6 @@ export default function DemoPage() {
             <LocationEffects
               sites={sites.filter((s) => s.is_demo_data || s.is_golden)}
               decisions={decisions}
-              pinChanges={pinChanges}
               onSelect={(ein) => {
                 const s = DEMO_SCENARIOS.find((x) => (SCENARIOS[x].payee === "golden" ? sites.find((y) => y.is_golden)?.nonprofit_ein : SCENARIOS[x].payee) === ein);
                 if (s) pick(s);
@@ -433,7 +439,7 @@ function ScenarioCard({
   );
 }
 
-function RunResult({ run, site, pinChange }: { run: Run; site?: Site; pinChange?: PinChange }) {
+function RunResult({ run, site, pinMove }: { run: Run; site?: Site; pinMove?: PinMove }) {
   const info = run.scenario ? SCENARIOS[run.scenario] : null;
   const expected = info?.attempts.length ?? run.decisions.length;
   const ok = asExpected(run);
@@ -473,14 +479,17 @@ function RunResult({ run, site, pinChange }: { run: Run; site?: Site; pinChange?
           {paidText ? `Paid ${paidText} to ${site?.name ?? "the nonprofit"} (Testnet test money).` : "No money moved."}
           {blocked > 0 && ` ${blocked} payment${blocked === 1 ? " was" : "s were"} stopped${run.scenario === "injection" ? "; the scammer's wallet got nothing" : ""}.`}
         </p>
-        {site?.is_golden ? (
+        {site && (
           <p className="mt-1">
-            {pinChange
-              ? `Its pin: ${RISK_LABELS[pinChange.from]} (${pinChange.fromScore}) → ${RISK_LABELS[pinChange.to]} (${pinChange.toScore}) this session.`
-              : "Its pin reacts to payments: each one lowers its score a little."}
+            {!paidText
+              ? `Its pin didn't move: nothing was paid.`
+              : pinMove
+                ? `Its pin on this page moved: ${riskText(pinMove.from)} → ${riskText(pinMove.to)}.`
+                : site.demo_risk
+                  ? `Its pin on this page: ${riskText(site.risk)} from public records → ${riskText(site.demo_risk)} after the test payments since the last reset.`
+                  : `This run was before the last reset, so its pin is back to its public-records score, ${riskText(site.risk)}.`}
+            {site.is_golden && " The main map never changes from test money."}
           </p>
-        ) : (
-          site && <p className="mt-1 text-gray-500">Demo nonprofits keep a fixed color: they are fictional, so payments don&apos;t re-score them.</p>
         )}
       </div>
     </div>
@@ -519,12 +528,10 @@ function AttemptCard({ n, decision: d, attempt }: { n: number; decision: Decisio
 function LocationEffects({
   sites,
   decisions,
-  pinChanges,
   onSelect,
 }: {
   sites: Site[];
   decisions: Decision[];
-  pinChanges: Record<string, PinChange>;
   onSelect: (ein: string) => void;
 }) {
   const rows = [...sites].sort((a, b) => Number(!!b.is_golden) - Number(!!a.is_golden) || a.name.localeCompare(b.name));
@@ -543,18 +550,22 @@ function LocationEffects({
             const mine = decisions.filter((d) => d.payee_ein === s.nonprofit_ein);
             const paid = Object.entries(paidTotals(mine));
             const count = mine.filter((d) => d.outcome === "released").length;
-            const change = pinChanges[s.id];
+            const shown = s.demo_risk ?? s.risk;
             return (
               <tr key={s.id} className="cursor-pointer border-b border-gray-100 align-top hover:bg-gray-50" onClick={() => onSelect(s.nonprofit_ein)}>
                 <td className="py-2 pr-2">
                   <div className="flex items-start gap-2">
-                    <span className="mt-0.5 h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: RISK_COLORS[s.risk.level] }} title={RISK_LABELS[s.risk.level]} />
+                    <span className="mt-0.5 h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: RISK_COLORS[shown.level] }} title={RISK_LABELS[shown.level]} />
                     <div>
                       <p className="font-medium text-gray-900">{s.name}</p>
                       <p className="text-gray-500">
-                        {RISK_LABELS[s.risk.level]}
-                        {s.is_golden ? " · real organization, color reacts" : " · fictional, fixed color"}
-                        {change && ` · changed this session: ${RISK_LABELS[change.from]} → ${RISK_LABELS[change.to]}`}
+                        {s.is_golden ? "Real organization" : "Fictional"} · public records: {riskText(s.risk)}
+                        {s.demo_risk && (
+                          <>
+                            {" "}
+                            → <span className="font-medium text-gray-900">after test payments: {riskText(s.demo_risk)}</span>
+                          </>
+                        )}
                       </p>
                     </div>
                   </div>
@@ -569,9 +580,9 @@ function LocationEffects({
         </tbody>
       </table>
       <p className="mt-2 text-[11px] text-gray-500">
-        {/* GET /decisions returns at most 200 */}
-        {decisions.length >= 200 ? "Totals of the latest 200 agent decisions" : "Totals of every agent decision since the last reset"} (Testnet test money). Click a row to
-        see its scenario.
+        Colors on this page are the what-if score after the Testnet payments since the last reset (the Food Bank&apos;s at a disclosed demo scale, 1 RLUSD =
+        $10,000). The main map always shows public records. Paid / stopped: {/* GET /decisions returns at most 200 */}
+        {decisions.length >= 200 ? "the latest 200 agent decisions" : "every agent decision"} (test money). Click a row to see its scenario.
       </p>
     </div>
   );
@@ -684,6 +695,10 @@ function explainFailure(run: DemoRun): string {
   if (/ECONNREFUSED|:4001|cosigner/i.test(line)) return "The co-signer service isn't running on this computer.";
   if (run.status === "unknown") return "The run didn't report back within 10 minutes.";
   return line;
+}
+
+function riskText(r: SiteRisk): string {
+  return `${RISK_LABELS[r.level]} (${r.score})`;
 }
 
 function timeOf(iso: string): string {

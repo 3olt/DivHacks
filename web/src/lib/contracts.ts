@@ -23,7 +23,13 @@ export interface Site {
   agency_code: "HRA" | "DHS" | "DYCD" | string;
   contract_ids: string[];
   events: { title: string; starts_at: string; is_demo_data: boolean }[];
+  /** PUBLIC RECORDS ONLY (Checkbook NYC, Comptroller, IRS 990). /map, the site report and iMessage read this.
+   *  XRPL Testnet payments NEVER change it (changed Sun 04:50). */
   risk: SiteRisk;
+  /** Additive (Sun 04:50): the /demo what-if score after released XRPL Testnet demo payments (the golden site: Option B
+   *  demo scale; the 4 fictional demo sites: the fixture release rule). Absent/null = no demo effect.
+   *  /demo pins and "Effect on the locations" use `demo_risk ?? risk`; everything else uses `risk`. Cleared by POST /dev/reset. */
+  demo_risk?: SiteRisk | null;
   is_demo_data: boolean;
   /** Phase 5 (additive, mongo mode): true on the golden demo site (site_fbnyc, Food Bank For NYC). */
   is_golden?: boolean;
@@ -205,7 +211,11 @@ export type LiveMessage =
   | { type: "site_updated"; site_id: string; risk: Site["risk"] }
   | { type: "decision"; decision: Decision }
   // Added in Phase 5 (additive, mongo mode only): a real XRPL Testnet demo run started / finished.
-  | { type: "demo_run"; run_id: string; scenario: string; status: DemoRunStatus };
+  | { type: "demo_run"; run_id: string; scenario: string; status: DemoRunStatus }
+  // Added Sun 04:50 (additive): a site's DEMO score changed (a released XRPL Testnet payment, or POST /dev/reset with
+  // demo_risk null). previous_demo_risk = the site's demo view before the update (its old demo_risk ?? its risk), so /demo can
+  // show before -> after. Testnet payments are NEVER sent as site_updated (that is public records only).
+  | { type: "demo_risk_updated"; site_id: string; demo_risk: SiteRisk | null; previous_demo_risk: SiteRisk | null };
 
 /** "unknown" (additive): the run did not exit within RUN_LOCK_MAX_MS (default 10 min), so the API released its
  *  one-run lock without killing the child; a later exit still updates it to succeeded / failed. */
