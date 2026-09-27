@@ -23,7 +23,9 @@ export function formatDate(value: string): string {
 export function formatMoney(amount: string | number, currency: string = "USD"): string {
   const n = Number(amount);
   if (currency === "USD") return n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
-  return `${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
+  const text = `${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
+  // CTT = City Test Token, used only for the simulated milestone escrow (docs/STATUS.md).
+  return currency === "CTT" ? `${text} (test token, not RLUSD)` : text;
 }
 
 export const REFUSAL_LABELS: Record<RefusalCode, string> = {
@@ -52,6 +54,12 @@ export const REFUSAL_LABELS: Record<RefusalCode, string> = {
   ledger_status_unknown: "Submitted, final result not yet confirmed",
   ledger_unavailable: "Couldn't reach the XRP Ledger: nothing landed",
   agent_balance_insufficient: "Agent's working balance too low: nothing signed",
+  officer_approval_invalid: "The officer did not sign this exact over-limit payment",
+  escrow_condition_invalid: "Escrow condition isn't the one the co-signer issued (simulated escrow)",
+  escrow_not_found: "Escrow not on the ledger (simulated escrow)",
+  escrow_timing_invalid: "Escrow deadline outside the allowed window (simulated escrow)",
+  escrow_release_not_approved: "Milestone release not approved by the officer (simulated escrow)",
+  agent_key_revoked: "The agent's key was revoked (kill switch)",
 };
 
 export const refusalLabel = (code: string) => REFUSAL_LABELS[code as RefusalCode] ?? code;

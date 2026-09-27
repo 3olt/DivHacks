@@ -239,6 +239,12 @@ const REFUSAL_LABELS: Record<string, string> = {
   ledger_status_unknown: "the final result isn't confirmed yet",
   ledger_unavailable: "the XRP Ledger couldn't be reached",
   agent_balance_insufficient: "the agent's balance was too low",
+  officer_approval_invalid: "the officer hadn't approved that exact payment",
+  escrow_condition_invalid: "the escrow condition didn't match (simulated escrow)",
+  escrow_not_found: "the escrow wasn't found on the ledger (simulated escrow)",
+  escrow_timing_invalid: "the escrow deadline was outside the allowed window (simulated escrow)",
+  escrow_release_not_approved: "the officer hadn't approved releasing the escrow (simulated escrow)",
+  agent_key_revoked: "the agent's key had been revoked (kill switch)",
 };
 
 function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
