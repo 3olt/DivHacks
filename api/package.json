@@ -6,13 +6,17 @@
     "dev": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
     "smoke": "tsx scripts/smoke.ts",
+    "smoke:mongo": "tsx scripts/smoke-mongo.ts",
+    "golden-path": "tsx scripts/golden-path.ts",
+    "seed:demo-sites": "tsx scripts/seed-demo-sites.ts",
     "typecheck": "tsc --noEmit -p ."
   },
   "dependencies": {
     "@fastify/cors": "^11.3.0",
     "@fastify/websocket": "^11.3.1",
     "dotenv": "^18.0.4",
-    "fastify": "^5.12.5"
+    "fastify": "^5.12.5",
+    "mongodb": "^7.6.0"
   },
   "devDependencies": {
     "@types/node": "^22.20.4",

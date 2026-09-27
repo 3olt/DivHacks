@@ -688,6 +688,17 @@ async function recomputeSiteRisk(db: import("mongodb").Db, siteId: string, label
   return site?.risk ?? null;
 }
 
+/** Reads a site's stored risk (no recompute). */
+async function readSiteRisk(db: import("mongodb").Db, siteId: string): Promise<SiteRisk | null> {
+  const site = (await db.collection("sites").findOne({ $or: [{ id: siteId }, { _id: siteId as never }] }, { projection: { risk: 1 } })) as { risk?: SiteRisk } | null;
+  return site?.risk ?? null;
+}
+
+/** NOTIFY_API=1 (a run started by the API): the API re-scores the site when it receives the payment event and broadcasts
+ *  that score, so this script only READS the stored risk (a second risk.py run would overwrite the broadcast score's
+ *  summary / computed_at with a new Grok text and cost ~2 s per run). */
+const apiScores = () => /^(1|true|yes)$/i.test(process.env.NOTIFY_API ?? "");
+
 const printRisk = (tag: string, r: SiteRisk | null) =>
   console.log(r ? `  ${tag}: ${r.level.toUpperCase()} ${r.score} (computed ${r.computed_at}) "${r.summary}"` : `  ${tag}: (no risk on the site document)`);
 
@@ -707,7 +718,10 @@ async function golden(ctx: AgentCtx, db: import("mongodb").Db): Promise<void> {
 
   const site = ds?.golden_site_id ?? null;
   let before: SiteRisk | null = null;
-  if (site && riskPy()) before = await recomputeSiteRisk(db, site, "before");
+  if (site && apiScores()) {
+    before = await readSiteRisk(db, site);
+    console.log("  [before] stored risk read from Mongo (NOTIFY_API=1: the API re-scores the site on the payment event)");
+  } else if (site && riskPy()) before = await recomputeSiteRisk(db, site, "before");
   else if (site) console.log("  data/risk.py does not exist yet: printing the payment decision only");
 
   const input = jsonInput("golden.json", { invoice_id: id, amount: amt, contract_id: contractId, payee_ein: np.ein }, `golden-${id}.json`);
@@ -717,8 +731,9 @@ async function golden(ctx: AgentCtx, db: import("mongodb").Db): Promise<void> {
   show(`golden: ${np.name} (np_5 demo wallet)`, r, `released (agent + co-signer, all 8 checks incl. the on-ledger credential for the REAL EIN ${np.ein})`,
     r.decision.outcome === "released" && r.decision.ledger_result === "tesSUCCESS" && r.decision.checks.length === 8 && r.decision.checks.every((c) => c.passed) && credOk);
 
-  if (!site || !riskPy()) return;
-  const after = await recomputeSiteRisk(db, site, "after");
+  if (!site || (!riskPy() && !apiScores())) return;
+  const after = apiScores() ? await readSiteRisk(db, site) : await recomputeSiteRisk(db, site, "after");
+  if (apiScores()) console.log("  [after] stored risk read from Mongo (written by the API's data/risk.py run for the payment event)");
   console.log(`\n--- golden: site ${site} risk (builder A's data/risk.py; informational, not part of AS EXPECTED) ---`);
   printRisk("before", before);
   printRisk("after ", after);

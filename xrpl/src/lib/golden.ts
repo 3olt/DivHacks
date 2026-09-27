@@ -22,7 +22,7 @@ export const GOLDEN_CHECKBOOK_VENDOR = "0000822784";
 export const GOLDEN_FALLBACK_CONTRACT_ID = "CT106920258801736";
 export const GOLDEN_WALLET_LABEL = "demo wallet on XRPL Testnet; the real organization has not onboarded";
 /** Testnet-scale budget B sets on the golden contract (xrpl_budget_rlusd) unless one is already set. */
-export const GOLDEN_BUDGET_RLUSD = process.env.GOLDEN_BUDGET_RLUSD ?? "100.00";
+export const GOLDEN_BUDGET_RLUSD = process.env.GOLDEN_BUDGET_RLUSD ?? "500.00";
 export const DEMO_STATE_COLL = "demo_state";
 
 export interface DemoState {

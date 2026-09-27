@@ -184,7 +184,12 @@ Indexes: `decisions.decision_id` (unique), `decisions.invoice_id`, `decisions.cr
 backfilled on 2026-09-26 with `audit.backfilled_from`; their unrun checks are padded as `not evaluated: ...`), settles any
 `ledger_status_unknown` decision from the ledger by its `xrpl_tx_hash`, and links executed over-limit approvals' pending payment
 rows (`superseded_by`; new executions do this at once).
-Optional: `NOTIFY_API=1` POSTs `{decision_id, decision}` to `$API_URL/events/payment` after each decision (failures ignored; off by default).
+Optional: `NOTIFY_API=1` POSTs `{decision_id, decision}` to `$API_URL/events/payment` after each decision (failures ignored).
+Phase 5: it sends header `x-events-token: $EVENTS_TOKEN` (root `.env`), waits up to `NOTIFY_TIMEOUT_MS` (30 s; the API re-scores a
+real site with `data/risk.py` before answering), and the root `.env` now sets `NOTIFY_API=1`, so the demo CLI and the xrpl service
+report every decision to the API. A demo that auto-spawns the xrpl service passes `NOTIFY_API` + `API_URL` on (`minimalEnv`), so the
+officer-approved over-limit execution it records reaches the same API. The API's `POST /demo/:scenario` (mongo mode) runs
+`scripts/demo.ts` itself with `NOTIFY_API=1` and `API_URL` pointing at the API (see docs/API.md, "Changed in Phase 5").
 
 ## Run it
 
@@ -853,6 +858,6 @@ codes are already in `REFUSAL_CODES` in `shared/contracts.ts` (additive; re-copy
   executed payment is a separate `released` decision with signers `["agent","cosigner","officer"]` and `audit.approved_from`.
 - `outcome: "held_escrow"` / `currency: "CTT"` (Phase 3): a SIMULATED milestone escrow of the city test token (not RLUSD);
   the release is a later `released` CTT decision for the same milestone id (`invoice_id`). `Currency` gained `"CTT"`
-  (additive; `api/src/lib/validateDecision.ts` must accept it before NOTIFY_API forwards CTT decisions).
+  (additive; accepted by `api/src/lib/validateDecision.ts` since Phase 5, so NOTIFY_API forwards CTT decisions).
 - `decisions.audit` is an extension of the stored document (not part of the `Decision` type): verifier meta, proposal,
   destination, co-signer HTTP status, memo JSON, and `backfilled_from` / `reconciled_at` where applicable.

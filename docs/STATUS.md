@@ -23,6 +23,7 @@ GlassLedger makes NYC's community-services money visible. A map shows food pantr
 | **2: guardrails + Grok** | Grok invoice verifier (JSON/text/PDF/image, never outputs an address); co-signer runs **8 checks** from the ledger + a pinned registry; every attempt recorded in MongoDB | [Grok-verified payment](https://testnet.xrpl.org/transactions/4FC19C902FC8C19F6BCA9DC31C4B06E1EF6823083A110792260CD0E60E077D09) |
 | **3: payee verification, human over the limit, kill switch** | nonprofit onboarding (EIN match → Nessie bank check + micro-deposit → signed wallet challenge → on-ledger **`NYC_VERIFIED_NONPROFIT` credential**); co-signer reads credentials **on-ledger**; 72 h address-swap hold; officer service (:4004) for over-limit approval (3-signer payment), kill switch and hold resolution; simulated milestone escrow with a city test token; **`npm run demo all` passes 26/26** | table below |
 | **4: real data (lean)** | 15 real nonprofits (5 food/HRA, 5 shelter/DHS, 5 youth/DYCD) in MongoDB: sites (real public addresses; shelters at their HQ, never a shelter address), 42 contracts, the 19 real Checkbook payments to Food Bank For NYC, agency lateness, real IRS 990 cash for all 15. `data/risk.py` (stable / strained / critical + per-factor `components`), Grok summaries (≤25 words, grounded, cached). Golden = **Food Bank For New York City** (EIN 13-3179546): its Testnet **demo wallet** holds an on-ledger credential with the real EIN. Option B demo scale (1 RLUSD = $10,000, golden only, disclosed) | [golden payment](https://testnet.xrpl.org/transactions/F025742EE49D76E0B15085DE6A3FCF799EC19F61F07D88FBC25BC02BC1EBEC2A): 🔴 71 → 🟡 67; `data/demo_reset.py` → 🔴 71. `python data/verify_phase4.py`: 0 FAIL |
+| **5: real API + live loop** | The API reads MongoDB (`API_MODE=mongo`): **15 real sites + 4 labelled demo sites**, same shapes (`spent_to_date` may be null). **Live loop:** agent payment → `POST /events/payment` (token-protected) → `data/risk.py` recomputes the site → WebSocket `site_updated` + `decision` → the pin recolors live. The website's `/demo` buttons run the **real Testnet scenarios** (happy → golden; decisions stream in live; `GET /demo/runs/:id`). The escrow placeholder is gone (the real CTT escrow runs instead). Demo/dev routes accept only local callers. `npm run golden-path`: **27/27** | [golden payment via the website flow](https://testnet.xrpl.org/transactions/F536A4CED58569C79663303782B45EDEBFA251EEA16E1A1BE016A1566F4374BD): 🔴 71 → live 🟡 67 → reset 🔴 71 |
 | **/data page** | the third layer + `GET /xrpl/accounts` | `web/src/app/data/` |
 | **Public data pull** | full raw public datasets committed (Comptroller, Checkbook, ProPublica, NYC Open Data) | [`../data/raw/public/README.md`](../data/raw/public/README.md) |
 
@@ -73,7 +74,11 @@ Honest limits: agent, co-signer and officer are separate processes with separate
 
 ```bash
 npm install
-npm run dev:api                     # API on :4000 (fixtures)
+npm run cosigner                    # :4002  (each service in its own terminal)
+npm run xrpl:service                # :4001 (agent)
+npm run officer                     # :4004 (human approver)
+API_MODE=mongo DEMO_NO_SPAWN=1 npm run start:api   # API on :4000 reading MongoDB; /demo buttons run real Testnet scenarios
+npm run golden-path                 # end-to-end check: reset -> pay golden -> live pin update -> injection refused -> reset
 cd web && npm run dev               # http://localhost:3000, /map, /data
 npm run demo all                    # every XRPL scenario, 26 steps (auto-starts co-signer, xrpl service, officer)
 # judged-demo mode: each service in its own terminal
@@ -91,7 +96,6 @@ Testnet accounts (public): [agent account](https://testnet.xrpl.org/accounts/rE9
 
 | Phase | What |
 |---|---|
-| **5** | API reads Mongo (same shapes); agent decisions flip pins live via `/events/payment`; `/demo/:scenario` runs the real XRPL demos (replaces the escrow placeholder); golden-path test |
 | 7 | demo script, reset script, deploy |
 
 ## Notes for the frontend (Noel)

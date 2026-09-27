@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import type { Subscriber } from "../../../shared/contracts";
 import type { AppContext } from "../context";
+import { requireToken } from "../lib/auth";
 import { isRecord, queryString, sendError } from "../lib/http";
 import { normalizeUsPhone } from "../lib/phone";
 import { SITE_TYPES } from "./sites";
@@ -64,7 +65,10 @@ export function registerSubscriberRoutes(app: FastifyInstance, ctx: AppContext):
     return reply.code(204).send();
   });
 
-  app.get<{ Querystring: Record<string, unknown> }>("/subscribers", async (req) => {
+  // Phone numbers are personal data: when SUBSCRIBERS_TOKEN is set, GET needs the header x-api-token (opt-in, so
+  // imessage/ keeps working until it sends the header). POST / DELETE stay open for the web sign-up form.
+  app.get<{ Querystring: Record<string, unknown> }>("/subscribers", async (req, reply) => {
+    if (!requireToken(req, reply, "x-api-token", ctx.subscribersToken)) return reply;
     const siteId = queryString(req.query?.site_id)?.trim();
     return ctx.store.listSubscribers(siteId || undefined);
   });

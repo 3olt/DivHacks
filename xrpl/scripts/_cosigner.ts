@@ -146,7 +146,9 @@ export function runOfficerResolve(requestId: string, decision: "approve" | "reje
 export function minimalEnv(extra: Record<string, string> = {}): NodeJS.ProcessEnv {
   const env: NodeJS.ProcessEnv = {};
   for (const [k, v] of Object.entries(process.env)) if (PASS_ENV.has(k.toUpperCase())) env[k] = v;
-  for (const k of ["COSIGNER_URL", "XRPL_SERVICE_URL", "OFFICER_URL"]) if (process.env[k]) env[k] = process.env[k];
+  // NOTIFY_API + API_URL (Phase 5 live loop): a spawned xrpl service records the executed over-limit payment, so it must
+  // report to the same API as this demo process. Neither is a seed or a policy value (EVENTS_TOKEN comes from the root .env).
+  for (const k of ["COSIGNER_URL", "XRPL_SERVICE_URL", "OFFICER_URL", "NOTIFY_API", "API_URL"]) if (process.env[k]) env[k] = process.env[k];
   return Object.assign(env, extra);
 }
 

@@ -200,8 +200,13 @@ def main():
 
     # ---------------- 5. sites ----------------
     print("\n== sites")
-    sites = list(d.sites.find({}, {"_id": 0}))
+    # Phase 5: the API also seeds 4 DEMO sites (site_001..site_004, is_demo_data true, api/scripts/seed-demo-sites.ts)
+    # into this collection; they are fixtures, not public records, so only the real sites are verified here.
+    sites = list(d.sites.find({"is_demo_data": False}, {"_id": 0}))
+    demo_sites = d.sites.count_documents({"is_demo_data": True})
     ok(len(sites) == 15, f"sites {len(sites)}")
+    ok(d.sites.count_documents({"is_demo_data": {"$ne": True}}) == len(sites), "sites without an is_demo_data flag")
+    print(f"  ({demo_sites} demo sites skipped: seeded by the API, is_demo_data true)")
     for s in sites:
         sid = s["id"]
         r = next((x for x in seed if x["site_id"] == sid), None)

@@ -1,5 +1,5 @@
-// Data access behind one interface so Phase 5 can swap FixtureStore for a MongoStore (2dsphere queries)
-// without touching routes. All methods are async for that reason. Returned objects are copies.
+// Data access behind one interface: FixtureStore (in-memory demo data, API_MODE=fixtures) and MongoStore
+// (./mongoStore.ts, the Phase 4 collections in MongoDB Atlas, API_MODE=mongo). All methods are async. Returned objects are copies.
 import type { AgencyStats, Decision, Site, SiteType, Subscriber, Trail } from "../../shared/contracts";
 import {
   agencyByCode,
@@ -48,7 +48,8 @@ export interface DataStore {
   upsertDecision(d: Decision): Promise<void>;
   /** The site a decision belongs to: by contract_id in site.contract_ids, else by payee_ein. */
   findSiteForDecision(d: Decision): Promise<Site | null>;
-  /** Recompute a site's risk after a released payment landed, save it and return it. */
+  /** Recompute a site's risk after a released payment landed, save it and return it.
+   *  null = the risk did not change (mongo mode: a demo site, or the recompute failed and the old risk is kept). */
   applyRelease(siteId: string, d: Decision): Promise<Risk | null>;
   setSiteRisk(siteId: string, risk: Risk): Promise<Site | null>;
   listSubscribers(siteId?: string): Promise<Subscriber[]>;
@@ -58,8 +59,10 @@ export interface DataStore {
   deleteSubscriber(phone: string): Promise<boolean>;
   /** Monotonic counter for synthesized demo ids (fixture mode). */
   nextDemoSeq(): Promise<number>;
-  /** Restore the initial state. Returns the ids of sites whose risk changed. */
+  /** Restore the initial state. Returns the ids of sites whose risk changed (mongo mode: always includes the golden site). */
   reset(): Promise<string[]>;
+  /** Release connections (mongo mode). */
+  close?(): Promise<void>;
 }
 
 const clone = <T>(v: T): T => structuredClone(v);

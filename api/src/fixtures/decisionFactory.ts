@@ -103,9 +103,7 @@ export function makeDecision(spec: DecisionSpec, history: Decision[]): Decision 
     if (spec.refusal_reasons.length || Object.keys(failed).length || !spec.xrpl_tx_hash || spec.ledger_result !== "tesSUCCESS" || spec.enforced_by !== null) {
       throw new Error(`${spec.decision_id}: inconsistent released decision`);
     }
-  // PLACEHOLDER — simulated escrow: a held_escrow decision has no refusal reason. Remove "spec.outcome !== \"held_escrow\" &&"
-  // together with api/src/demo/escrowPlaceholder.ts.
-  } else if (spec.outcome !== "held_escrow" && spec.refusal_reasons.length === 0) {
+  } else if (spec.refusal_reasons.length === 0) {
     throw new Error(`${spec.decision_id}: non-released decision needs refusal_reasons`);
   }
 

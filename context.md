@@ -256,7 +256,7 @@ The API currently serves **fixture data** (15 sites, all fictional, `is_demo_dat
 - [x] `/data` open-data page (backend)
 - [x] Raw public datasets committed (`data/raw/public/`: Comptroller, Checkbook, ProPublica, NYC Open Data incl. supply gap, Community Food Connection, sites with capacity)
 - [x] Real data in Mongo (backend Phase 4): 15 real nonprofits, their sites, 42 contracts, agency lateness, real 990 cash; golden Food Bank For NYC with its 19 real Checkbook payments; `data/risk.py` + Grok summaries
-- [ ] Served by the API + live loop (backend Phase 5)
+- [x] Served by the API + live loop (backend Phase 5): `API_MODE=mongo` serves 15 real + 4 demo sites; a real payment recolors the golden pin live over the WebSocket; `/demo` buttons run the real Testnet scenarios; `npm run golden-path` 27/27
 - [x] Simulated escrow demo (placeholder in `api/`, marked for removal)
 - [x] Real CTT test-token escrow on Testnet in `xrpl/` (officer-approved release)
 - [ ] Wire it to `/demo/escrow` and accept `CTT` in the API (Phase 5)
@@ -294,6 +294,14 @@ _Synced Sat 2026-09-26 ~21:00 EDT from a review of both halves of the repo. Dead
 5. Side panel labels fixture records "Source: Checkbook NYC / Comptroller / IRS 990" with no per-row demo badge (`SitePanel.tsx:112,146,182`).
 6. Landing: add a **Live demo →** link; fix the stale "demo controls" copy (`page.tsx:133`).
 7. If the build fails with TS2307 in `.next/dev/types`, delete `web/.next` (stale route types) and rebuild.
+
+**Frontend after Phase 5 (Noel; exact lines in the Phase 5 notes of `docs/API.md` and below):**
+8. Re-copy `shared/contracts.ts` into `web/src/lib/contracts.ts` (`spent_to_date` is now `string | null`; new optional fields).
+9. `spent_to_date: null` means **not loaded**, not $0: `SitePanel.tsx:143` shows "$0 of $X spent" and `SiteReport.tsx:133,203` says "the city has paid $0" for the 14 non-golden orgs. Show "Payment data not loaded yet".
+10. Golden pace chart (`PaceChart.tsx`) sums only the 14 loaded FY2026 checks (45%) while the score uses spent-to-date (70%): start the paid line at `spent_to_date` minus the loaded checks, or quote spent-to-date in the caption.
+11. The golden's wallet is a **demo** Testnet wallet: show `wallet.label` + a demo badge next to "verified / bank verified" (`SitePanel.tsx:187-201`, `data/tables.tsx:122-154`).
+12. `/demo` runs are now asynchronous (202 + `run_id`, WS `demo_run` running → succeeded/failed): keep buttons disabled until the run finishes (`live.ts:21` pass `demo_run`; `DemoPage.tsx:73-92`), treat 409 as "a run is already going", drop `escrow-release` from `DEMO_SCENARIOS` (`api.ts:18-39`), label escrow "simulated escrow (test token CTT)".
+13. Run the web on the same laptop as the API for the judged demo: demo and dev buttons are accepted only from local callers (or set `ALLOWED_ORIGINS`).
 
 **iMessage (Noel):** `POST /notify` on :4003 is unauthenticated (anyone on the network can text from the line), so bind it to localhost or remove it. `FOLLOW a` matches anything, so require a minimum word length. Don't put the imessage terminal on the projector (it logs phone numbers).
 

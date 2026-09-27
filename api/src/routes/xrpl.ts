@@ -25,7 +25,10 @@ export interface PublicRegistry {
   agent_account: string | null;
   signers: Record<string, { address: string | null; weight: number | null }>;
   quorum: number | null;
-  nonprofits: Record<string, { address: string | null; ein: string | null; name: string | null; contract_id: string | null }>;
+  /** `label` (additive) is set on a DEMO wallet of a REAL organization (np_5, the golden: "demo wallet on XRPL Testnet; the
+   *  real organization has not onboarded"); its `name` then carries the label in parentheses too, so a client that shows
+   *  only the name never presents the demo wallet as the organization's own. */
+  nonprofits: Record<string, { address: string | null; ein: string | null; name: string | null; contract_id: string | null; label?: string }>;
   attacker: string | null;
   source_tag: number | null;
 }
@@ -43,7 +46,15 @@ export function publicRegistry(raw: Record<string, unknown>): PublicRegistry {
   if (isRecord(raw.nonprofits)) {
     for (const [key, np] of Object.entries(raw.nonprofits)) {
       if (/^np_\d+$/.test(key) && isRecord(np)) {
-        nonprofits[key] = { address: address(np.address), ein: text(np.ein), name: text(np.name), contract_id: text(np.contract_id) };
+        const label = typeof np.label === "string" && np.label.trim() ? np.label.trim().slice(0, 200) : null;
+        const name = text(np.name);
+        nonprofits[key] = {
+          address: address(np.address),
+          ein: text(np.ein),
+          name: name !== null && label ? `${name} (${label})` : name,
+          contract_id: text(np.contract_id),
+          ...(label ? { label } : {}),
+        };
       }
     }
   }

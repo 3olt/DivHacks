@@ -1,12 +1,19 @@
-// Smoke test against a RUNNING api server.
+// Smoke test against a RUNNING api server in FIXTURE mode (start it with API_MODE=fixtures).
 //   API_URL=http://localhost:4000 npm run smoke -w api
 // Prints PASS/FAIL per assertion and exits 1 on any failure. Calls POST /dev/reset at the start and end.
+// Sends EVENTS_TOKEN / SUBSCRIBERS_TOKEN from the root .env when they are set (the server loads the same file).
 import { createHash } from "node:crypto";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { config } from "dotenv";
 import WebSocket from "ws";
 import { CHECK_NAMES, REFUSAL_CODES } from "../../shared/contracts";
 import type { AgencyStats, Decision, LiveMessage, Site, Subscriber, Trail } from "../../shared/contracts";
 
-const API = (process.env.API_URL ?? "http://localhost:4000").replace(/\/+$/, "");
+config({ path: path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../.env"), quiet: true });
+const EVENTS_TOKEN = process.env.EVENTS_TOKEN || "";
+const SUBSCRIBERS_TOKEN = process.env.SUBSCRIBERS_TOKEN || "";
+const API = (process.env.SMOKE_API_URL ?? process.env.API_URL ?? "http://localhost:4000").replace(/\/+$/, "");
 const WS_URL = `${API.replace(/^http/, "ws")}/live`;
 
 let passed = 0;
@@ -28,7 +35,11 @@ interface Res<T = any> {
   headers: Headers;
 }
 async function call<T = any>(method: string, path: string, body?: unknown, headers: Record<string, string> = {}): Promise<Res<T>> {
-  const init: RequestInit = { method, headers: { ...headers } };
+  // Phase 5 shared secrets (root .env), sent only to the endpoints that check them.
+  const auth: Record<string, string> = {};
+  if (EVENTS_TOKEN && path.startsWith("/events/")) auth["x-events-token"] = EVENTS_TOKEN;
+  if (SUBSCRIBERS_TOKEN && method === "GET" && path.startsWith("/subscribers")) auth["x-api-token"] = SUBSCRIBERS_TOKEN;
+  const init: RequestInit = { method, headers: { ...auth, ...headers } };
   if (body !== undefined) {
     init.body = JSON.stringify(body);
     (init.headers as Record<string, string>)["content-type"] = "application/json";
@@ -428,6 +439,26 @@ async function main() {
   check("pushed decision appears in GET /decisions", afterPush.body.some((d) => d.decision_id === "smoke_pushed_001"));
   const badPush = await call("POST", "/events/payment", { decision: { decision_id: "x" } });
   check("POST /events/payment with malformed decision -> 400 invalid_decision", badPush.status === 400 && badPush.body?.error === "invalid_decision", badPush.body);
+  // Phase 5: CTT (the simulated escrow's city test token) is accepted.
+  const ctt: Decision = { ...pushed, decision_id: "smoke_pushed_ctt", invoice_id: "INV-SMOKE-CTT", currency: "CTT", outcome: "held_escrow", created_at: new Date().toISOString() };
+  ctt.decision_hash = hashOf(ctt);
+  const evCtt = await call("POST", "/events/payment", { decision_id: ctt.decision_id, decision: ctt });
+  check("POST /events/payment with a CTT held_escrow decision -> 200 (CTT accepted)", evCtt.status === 200 && JSON.stringify(evCtt.body?.broadcast) === JSON.stringify(["decision"]), evCtt.body);
+  if (EVENTS_TOKEN) {
+    const noTok = await fetch(`${API}/events/payment`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ decision_id: "fx_dec_003" }) });
+    check("POST /events/payment without x-events-token -> 401 unauthorized (EVENTS_TOKEN set)", noTok.status === 401 && (await noTok.json())?.error === "unauthorized");
+  }
+  if (SUBSCRIBERS_TOKEN) {
+    const noTok = await fetch(`${API}/subscribers`);
+    check("GET /subscribers without x-api-token -> 401 (SUBSCRIBERS_TOKEN set)", noTok.status === 401);
+  }
+  // Phase 5: escrow runs on XRPL Testnet only; fixture mode answers 409 testnet_only (the placeholder is gone).
+  for (const s of ["escrow", "escrow-release"]) {
+    const r = await call("POST", `/demo/${s}`);
+    check(`POST /demo/${s} (fixtures) -> 409 testnet_only`, r.status === 409 && r.body?.error === "testnet_only" && /mongo mode/.test(r.body?.message ?? ""), r.body);
+  }
+  const runs404 = await call("GET", "/demo/runs/run_nope");
+  check("GET /demo/runs/run_nope (fixtures) -> 404 run_not_found", runs404.status === 404 && runs404.body?.error === "run_not_found", runs404.body);
 
   // demo scenarios
   from = live.messages.length;
@@ -475,6 +506,9 @@ async function main() {
     const r = await call("POST", `/demo/${scenario}`);
     check(`POST /demo/${scenario} -> 202 with expected decision`, r.status === 202 && r.body?.scenario === scenario && ok(r.body.decision) && hashOf(r.body.decision) === r.body.decision.decision_hash, r.body?.decision?.refusal_reasons);
   }
+  const protoNames = ["constructor", "__proto__", "toString"];
+  const protoRes = await Promise.all(protoNames.map((n) => call("POST", `/demo/${n}`)));
+  check("POST /demo/<Object.prototype name> -> 404 unknown_scenario", protoRes.every((r) => r.status === 404 && r.body?.error === "unknown_scenario"), protoRes.map((r) => r.status));
   const unknown = await call("POST", "/demo/nope");
   check("POST /demo/nope -> 404 unknown_scenario with list", unknown.status === 404 && unknown.body?.error === "unknown_scenario" && Array.isArray(unknown.body.scenarios) && unknown.body.scenarios.length === 7, unknown.body);
 
