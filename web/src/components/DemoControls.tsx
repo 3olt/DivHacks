@@ -17,7 +17,7 @@ const LABELS: Record<DemoScenario, string> = {
 };
 
 // Triggers the backend's demo scenarios (POST /demo/:scenario). Results arrive over the live WebSocket.
-export default function DemoControls() {
+export default function DemoControls({ onReset }: { onReset: () => Promise<void> }) {
   const [running, setRunning] = useState<DemoScenario | "reset" | null>(null);
   const [error, setError] = useState("");
 
@@ -25,7 +25,10 @@ export default function DemoControls() {
     setRunning(action);
     setError("");
     try {
-      if (action === "reset") await resetDemo();
+      if (action === "reset") {
+        await resetDemo();
+        await onReset();
+      }
       else await runDemo(action);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed");

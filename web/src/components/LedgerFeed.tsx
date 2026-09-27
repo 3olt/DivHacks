@@ -10,10 +10,12 @@ export default function LedgerFeed({
   decisions,
   sites,
   onOpenSite,
+  onReset,
 }: {
   decisions: Decision[];
   sites: Site[];
   onOpenSite: (id: string) => void;
+  onReset: () => Promise<void>;
 }) {
   const siteFor = (d: Decision) => sites.find((s) => s.contract_ids.includes(d.contract_id)) ?? sites.find((s) => s.nonprofit_ein === d.payee_ein);
   const paid = decisions.filter((d) => d.outcome === "released");
@@ -34,7 +36,7 @@ export default function LedgerFeed({
         <Stat label="Needs approval" value={`${pending}`} />
       </dl>
 
-      <DemoControls />
+      <DemoControls onReset={onReset} />
 
       {decisions.length === 0 ? (
         <p className="text-sm text-gray-500">No decisions yet.</p>
