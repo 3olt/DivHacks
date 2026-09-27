@@ -2,12 +2,12 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import { fetchDecisions, fetchSites, fetchTrail } from "@/lib/api";
-import type { Decision, Site, SiteType, Trail } from "@/lib/contracts";
+import { fetchSites, fetchTrail } from "@/lib/api";
+import type { Site, SiteType, Trail } from "@/lib/contracts";
 import { connectLive } from "@/lib/live";
 import { SITE_TYPE_LABELS } from "@/lib/format";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/risk";
-import LedgerFeed from "./LedgerFeed";
+import MoneyFlow from "./MoneyFlow";
 import SitePanel from "./SitePanel";
 import TextUs from "./TextUs";
 
@@ -20,7 +20,8 @@ export default function Dashboard({ initialSiteId = null }: { initialSiteId?: st
   const [trail, setTrail] = useState<Trail | null>(null);
   const [trailErrorFor, setTrailErrorFor] = useState<string | null>(null);
   const [popupOpen, setPopupOpen] = useState(false);
-  const [decisions, setDecisions] = useState<Decision[]>([]);
+  // Money trail per real site, for the Money flow list.
+  const [trails, setTrails] = useState<Record<string, Trail>>({});
   const [hiddenTypes, setHiddenTypes] = useState<Set<SiteType>>(new Set());
 
   // Read inside WS callbacks without reconnecting when the selection changes.
@@ -42,42 +43,35 @@ export default function Dashboard({ initialSiteId = null }: { initialSiteId?: st
           setSites(data);
           setApiError(false);
         }
+        const loaded = await Promise.all(data.map((s) => fetchTrail(s.id).then((t) => [s.id, t] as const).catch(() => null)));
+        if (!cancelled) setTrails(Object.fromEntries(loaded.filter((x) => x !== null)));
       } catch {
         if (!cancelled) setApiError(true);
-      }
-    }
-    async function loadDecisions() {
-      try {
-        // Most agent runs are demo scenarios; fetch more so the real organizations' payments are included.
-        const data = await fetchDecisions(200);
-        if (!cancelled) setDecisions(data);
-      } catch {
-        // the map error banner already covers an unreachable API
       }
     }
     async function reloadTrail(id: string) {
       try {
         const t = await fetchTrail(id);
-        if (!cancelled && selectedRef.current === id) setTrail(t);
+        if (cancelled) return;
+        setTrails((m) => (id in m ? { ...m, [id]: t } : m));
+        if (selectedRef.current === id) setTrail(t);
       } catch {
         // keep the last trail on a transient error
       }
     }
     loadSites();
-    loadDecisions();
     const stop = connectLive((msg) => {
       const open = selectedRef.current;
       if (msg.type === "hello") {
         loadSites();
-        loadDecisions();
         if (open) reloadTrail(open);
       } else if (msg.type === "site_updated") {
         setSites((s) => s.map((x) => (x.id === msg.site_id ? { ...x, risk: msg.risk } : x)));
-        if (open === msg.site_id) reloadTrail(open);
+        reloadTrail(msg.site_id);
       } else if (msg.type === "decision") {
-        setDecisions((f) => [msg.decision, ...f.filter((d) => d.decision_id !== msg.decision.decision_id)]);
-        const site = sitesRef.current.find((x) => x.id === open);
-        if (open && site?.contract_ids.includes(msg.decision.contract_id)) reloadTrail(open);
+        // A payment to one of these real organizations changes its money flow row.
+        const site = sitesRef.current.find((x) => x.contract_ids.includes(msg.decision.contract_id) || x.nonprofit_ein === msg.decision.payee_ein);
+        if (site) reloadTrail(site.id);
       }
     });
     return () => {
@@ -135,8 +129,6 @@ export default function Dashboard({ initialSiteId = null }: { initialSiteId?: st
   }
 
   const selectedSite = sites.find((s) => s.id === selectedId) ?? null;
-  // Only payments to the real organizations shown on this map (demo-site runs are on /demo).
-  const realDecisions = decisions.filter((d) => sites.some((s) => s.contract_ids.includes(d.contract_id) || s.nonprofit_ein === d.payee_ein));
   const visibleSites = sites.filter((s) => !hiddenTypes.has(s.type));
   const counts = visibleSites.reduce<Record<string, number>>((acc, s) => ({ ...acc, [s.risk.level]: (acc[s.risk.level] ?? 0) + 1 }), {});
   const typeCounts = sites.reduce<Partial<Record<SiteType, number>>>((acc, s) => ({ ...acc, [s.type]: (acc[s.type] ?? 0) + 1 }), {});
@@ -192,7 +184,7 @@ export default function Dashboard({ initialSiteId = null }: { initialSiteId?: st
         ) : (
           <div className="space-y-4 p-5">
             <TextUs />
-            <LedgerFeed decisions={realDecisions} sites={sites} onOpenSite={openSite} />
+            <MoneyFlow sites={sites} trails={trails} onOpenSite={openSite} />
           </div>
         )}
       </aside>

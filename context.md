@@ -51,7 +51,7 @@ Judging weights: Concept 30%, Functionality 30%, Wow Factor 20%, UX/Design 10%, 
 ### 0. Landing page (`/`)
 Product overview (`web/src/app/page.tsx`), with **Open data** links to `/data`: transparency pitch, the problem (Comptroller figures with source links), how it works, the agent's guardrails, a demo-data disclaimer, and **"Launch the map"** buttons to `/map`. TODO: add a **Live demo →** link to `/demo`; the "Run a payment from the demo controls" copy is stale (the controls moved to `/demo`).
 
-> **Clear split (Sun ~03:30):** the main map (`/map`) and the text line show **real organizations only** (the 15 real nonprofits; demo sites with `is_demo_data: true` are filtered out in `Dashboard.tsx` and `imessage/src/replies.ts`). Its Live ledger shows only agent payments to those real organizations (today: Food Bank For NYC). The **4 fictional demo nonprofits and every scenario live on `/demo`** (the agent playground). Food Bank For NYC connects the two: paying it on `/demo` moves its real pin on `/map`.
+> **Clear split (Sun ~03:30):** the main map (`/map`) and the text line show **real organizations only** (the 15 real nonprofits; demo sites with `is_demo_data: true` are filtered out in `Dashboard.tsx` and `imessage/src/replies.ts`). Its Money flow list shows government → nonprofit money for each real organization (agent payments appear as a note on Food Bank For NYC's row). The **4 fictional demo nonprofits and every scenario live on `/demo`** (the agent playground). Food Bank For NYC connects the two: paying it on `/demo` moves its real pin on `/map`.
 
 ### 1. Money map (`/map`, shows delays)
 1. **Map:** NYC with pins for food pantries, grocery giveaways, shelters, youth programs, and events.
@@ -63,7 +63,7 @@ Product overview (`web/src/app/page.tsx`), with **Open data** links to `/data`: 
    - Nonprofit: 990 financials, XRPL wallet credential status, Nessie bank check
    - Payment agent (XRPL): each decision with outcome (Paid / Blocked / Needs approval), refusal reason, what stopped it (co-signer / ledger / 72h hold), signers, and an audit expander with all 8 checks
 5. **Live:** when the agent releases a payment, the API broadcasts over WebSocket and the pin recolors instantly (e.g. 🟡→🟢).
-6. **Live ledger** (`LedgerFeed.tsx`, under the "text your ZIP" card): every agent decision, newest first, from `GET /decisions` + WebSocket, with outcome, site, reason, what stopped it, signers, XRPL link and audit hash; back-to-back repeats are grouped ("×3 attempts"). Clicking the site opens its panel. A **Live demo →** link goes to `/demo`.
+6. **Money flow** (`MoneyFlow.tsx`, under the "text your ZIP" card): one row per real nonprofit, worst financial status first: `agency → nonprofit`, amount promised (sum of contracts), and amount paid where payment records are loaded (`spent_to_date` not null) with a progress bar; otherwise "payment data not loaded yet". XRPL agent payments show as a note on that row ("+ 6 XRPL agent payments (Testnet, test money)"). Totals at the top. Built from `GET /sites/:id/trail` for every real site, refreshed over WebSocket (`site_updated` / `decision`). Clicking a row opens the site's panel. A **Live demo →** link goes to `/demo`, where every agent decision and scenario lives.
 7. **Live demo (`/demo`, `components/demo/DemoPage.tsx`)**, the technical view for judges: the map, every scenario button with what it demonstrates (`POST /demo/:scenario`) and reset, the **pipeline** of the latest run (invoice → Grok check → agent policy → co-signer 8 checks → XRP Ledger, with ✓/✗ where it stopped; `lib/pipeline.ts`), full details (all 8 checks, signers, ledger result, reasoning, hash), and every decision with a pipeline strip.
 8. Pins are HTML markers (`.map-pin` in `globals.css`): a 36px click area around a smaller dot, which grows smoothly on hover and gets a dark ring when selected.
 
@@ -86,7 +86,7 @@ There is **no web sign-up** (removed 2026-09-26). Everything for individuals hap
 - **`FOLLOW <place name>`**: follows a map location (matched by name); the follower gets "✅ … is financially stable again" when it's paid and turns 🟢.
 - **`HELP`**: lists the options. **`STOP`**: unsubscribes.
 - **Anything else** (e.g. "any food drives this weekend?"): Grok answers from the places they follow plus nearby places, with today's date, next event times, and 🟢/🟡/🔴 status.
-- The web app only points people to the line: a "Get alerts by text" card above the Live ledger, and in each site's panel a "Text FOLLOW <site>" link that opens Messages with the text filled in.
+- The web app only points people to the line: a "Get alerts by text" card above the Money flow list, and in each site's panel a "Text FOLLOW <site>" link that opens Messages with the text filled in.
 - Photon free plan: the person must text the line first, and the number must be on the Photon Users list (max 10).
 - **Removed with the web sign-up:** the intake profile (name, age, address, household size, language, benefits) and the `Subscriber.profile` request to the backend. The API's `Subscriber` (phone, zip, interests, site_ids, channel) is all that's stored.
 
@@ -247,7 +247,7 @@ The API currently serves **fixture data** (15 sites, all fictional, `is_demo_dat
 - [x] Pin popup + side panel with the full money trail and agent decisions
 - [x] Live pin flip over WebSocket (`/demo/happy`)
 - [x] Text-only alerts: ZIP sign-up, FOLLOW, HELP, STOP, Grok answers (tested on a real phone)
-- [x] Live ledger feed on `/map` + `/demo` page (scenario buttons, pipeline view, all 8 checks) + site report `/sites/<id>`
+- [x] Money flow list on `/map` (was the Live ledger) + `/demo` page (scenario buttons, pipeline view, all 8 checks) + site report `/sites/<id>`
 - [x] Bigger pin click targets
 - [x] Map filters by site type (chips in the legend; client-side over the loaded pins)
 - [x] "Funded ✅" iMessage alerts to a site's followers when it turns green (`imessage/src/fundedAlerts.ts`)
