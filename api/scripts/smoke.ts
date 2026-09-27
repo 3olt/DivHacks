@@ -397,31 +397,35 @@ async function main() {
   const flip404 = await call("POST", "/dev/flip/site_999");
   check("POST /dev/flip/site_999 -> 404", flip404.status === 404);
 
-  // events/payment for a released fixture decision -> site_updated THEN decision
+  // events/payment for a released fixture decision -> demo_risk_updated THEN decision (Sun 04:50: risk vs demo_risk).
+  // The public risk never changes and site_updated is never sent for a Testnet payment.
+  const g1 = await call<Site>("GET", "/sites/site_001");
   from = live.messages.length;
   const ev = await call("POST", "/events/payment", { decision_id: "fx_dec_001" });
   check(
-    "POST /events/payment released -> 200 site_001 green, broadcast [site_updated, decision]",
-    ev.status === 200 && ev.body?.site_id === "site_001" && ev.body?.risk?.level === "green" && ev.body.risk.score < 40 && JSON.stringify(ev.body.broadcast) === JSON.stringify(["site_updated", "decision"]) && ev.body.risk.reasons[0].startsWith("RLUSD 12.50 released on XRPL"),
+    "POST /events/payment released -> 200 site_001 demo_risk green, public risk unchanged, broadcast [demo_risk_updated, decision]",
+    ev.status === 200 && ev.body?.site_id === "site_001" && ev.body?.demo_risk?.level === "green" && ev.body.demo_risk.score < 40 && JSON.stringify(ev.body.broadcast) === JSON.stringify(["demo_risk_updated", "decision"]) && ev.body.demo_risk.reasons[0].startsWith("RLUSD 12.50 released on XRPL") && JSON.stringify(ev.body.risk) === JSON.stringify(g1.body.risk) && JSON.stringify(ev.body.previous_demo_risk) === JSON.stringify(g1.body.risk),
     ev.body,
   );
-  const suIdx = await live.waitFor((m) => m.type === "site_updated" && m.site_id === "site_001", from);
+  const suIdx = await live.waitFor((m) => m.type === "demo_risk_updated" && m.site_id === "site_001", from);
   const dIdx = await live.waitFor((m) => m.type === "decision" && m.decision.decision_id === "fx_dec_001", from);
-  check("WS got site_updated(site_001 green) then decision(fx_dec_001)", suIdx >= 0 && dIdx > suIdx && (live.messages[suIdx] as any).risk.level === "green", { suIdx, dIdx });
+  const su1 = live.messages[suIdx] as Extract<LiveMessage, { type: "demo_risk_updated" }> | undefined;
+  check("WS got demo_risk_updated(site_001 green, previous = its risk) then decision(fx_dec_001)", suIdx >= 0 && dIdx > suIdx && su1?.demo_risk?.level === "green" && JSON.stringify(su1?.previous_demo_risk) === JSON.stringify(g1.body.risk), { suIdx, dIdx });
+  check("  ...and NO site_updated was sent for the Testnet payment", live.messages.slice(from).every((m) => m.type !== "site_updated"));
   const g2 = await call<Site>("GET", "/sites/site_001");
-  check("GET /sites/site_001 now green", g2.body.risk.level === "green");
+  check("GET /sites/site_001: risk unchanged, demo_risk green", JSON.stringify(g2.body.risk) === JSON.stringify(g1.body.risk) && g2.body.demo_risk?.level === "green", { risk: g2.body.risk?.level, demo: g2.body.demo_risk?.level });
 
   from = live.messages.length;
   const evRefused = await call("POST", "/events/payment", { decision_id: "fx_dec_003" });
   const refIdx = await live.waitFor((m) => m.type === "decision" && m.decision.decision_id === "fx_dec_003", from);
   check("POST /events/payment refused -> broadcast [decision] only", evRefused.status === 200 && JSON.stringify(evRefused.body?.broadcast) === JSON.stringify(["decision"]) && refIdx >= 0, evRefused.body);
-  check("  ...and no site_updated was sent for it", live.messages.slice(from).every((m) => m.type !== "site_updated"));
+  check("  ...and no site_updated / demo_risk_updated was sent for it", live.messages.slice(from).every((m) => m.type !== "site_updated" && m.type !== "demo_risk_updated"));
   // A release that leaves the site yellow (site_012, fx_dec_007) must not claim "running late" and "now current" at once.
   const evYellow = await call("POST", "/events/payment", { decision_id: "fx_dec_007" });
   check(
-    "POST /events/payment released but still yellow -> summary = payment + biggest remaining driver",
-    evYellow.status === 200 && evYellow.body?.site_id === "site_012" && evYellow.body.risk.level === "yellow" && evYellow.body.risk.summary.startsWith("Financially strained: RLUSD 32 released on XRPL") && !evYellow.body.risk.summary.includes("now current"),
-    evYellow.body?.risk,
+    "POST /events/payment released but still yellow -> demo_risk summary = payment + biggest remaining driver",
+    evYellow.status === 200 && evYellow.body?.site_id === "site_012" && evYellow.body.demo_risk.level === "yellow" && evYellow.body.demo_risk.summary.startsWith("Financially strained: RLUSD 32 released on XRPL") && !evYellow.body.demo_risk.summary.includes("now current"),
+    evYellow.body?.demo_risk,
   );
   const evMissing = await call("POST", "/events/payment", {});
   check("POST /events/payment {} -> 400 missing_decision_id", evMissing.status === 400 && evMissing.body?.error === "missing_decision_id", evMissing.body);
@@ -466,22 +470,27 @@ async function main() {
   const injIdx = await live.waitFor((m) => m.type === "decision" && m.decision.decision_id === inj.body?.decision?.decision_id, from);
   check(
     "POST /demo/injection -> 202 refused suspicious_instructions_in_invoice (fx_demo_, fixture-0, [fixture])",
-    inj.status === 202 && inj.body?.scenario === "injection" && inj.body?.mode === "fixtures" && inj.body.decision.outcome === "refused" && inj.body.decision.refusal_reasons.includes("suspicious_instructions_in_invoice") && inj.body.decision.decision_id.startsWith("fx_demo_") && inj.body.decision.rule_version === "fixture-0" && inj.body.decision.agent_reasoning.startsWith("[fixture] ") && inj.body.site_updated === undefined,
+    inj.status === 202 && inj.body?.scenario === "injection" && inj.body?.mode === "fixtures" && inj.body.decision.outcome === "refused" && inj.body.decision.refusal_reasons.includes("suspicious_instructions_in_invoice") && inj.body.decision.decision_id.startsWith("fx_demo_") && inj.body.decision.rule_version === "fixture-0" && inj.body.decision.agent_reasoning.startsWith("[fixture] ") && inj.body.site_updated === undefined && inj.body.demo_risk_updated === undefined,
     inj.body,
   );
   check("WS got the injection decision", injIdx >= 0);
 
-  // Reset first (golden back to yellow). The reset broadcasts site_updated for changed sites; wait for it.
+  // Reset first: every demo_risk is cleared (demo_risk_updated with demo_risk null); site_updated only for public risk
+  // changes (here: the dev-flipped site_003), never for site_001 (its public risk never moved).
   const beforeReset = live.messages.length;
-  await call("POST", "/dev/reset");
-  const resetMsg = await live.waitFor((m) => m.type === "site_updated" && m.site_id === "site_001" && m.risk.level === "yellow", beforeReset);
-  check("POST /dev/reset broadcasts site_updated for sites it changed", resetMsg >= 0);
+  const rst = await call("POST", "/dev/reset");
+  const resetMsg = await live.waitFor((m) => m.type === "demo_risk_updated" && m.site_id === "site_001" && m.demo_risk === null && m.previous_demo_risk?.level === "green", beforeReset);
+  check("POST /dev/reset broadcasts demo_risk_updated {site_001, demo_risk:null, previous_demo_risk green}", rst.status === 200 && Array.isArray(rst.body?.demo_risk_cleared) && rst.body.demo_risk_cleared.includes("site_001") && resetMsg >= 0, rst.body);
+  const flipBack = await live.waitFor((m) => m.type === "site_updated" && m.site_id === "site_003", beforeReset);
+  check("  ...site_updated only for the dev-flipped site_003 (public risk restored), none for site_001", flipBack >= 0 && live.messages.slice(beforeReset).every((m) => !(m.type === "site_updated" && m.site_id === "site_001")));
+  const g3 = await call<Site>("GET", "/sites/site_001");
+  check("  ...GET /sites/site_001: demo_risk absent after reset", g3.body.demo_risk == null, g3.body.demo_risk);
   from = live.messages.length;
   const happy = await call("POST", "/demo/happy");
-  const hSu = await live.waitFor((m) => m.type === "site_updated" && m.site_id === "site_001" && m.risk.level === "green", from);
+  const hSu = await live.waitFor((m) => m.type === "demo_risk_updated" && m.site_id === "site_001" && m.demo_risk?.level === "green", from);
   const hDec = await live.waitFor((m) => m.type === "decision" && m.decision.decision_id === happy.body?.decision?.decision_id, from);
-  check("POST /demo/happy -> 202 released + site_updated golden green", happy.status === 202 && happy.body?.decision?.outcome === "released" && happy.body?.site_updated?.site_id === "site_001" && happy.body.site_updated.risk.level === "green", happy.body?.site_updated);
-  check("WS got site_updated before decision for happy", hSu >= 0 && hDec > hSu, { hSu, hDec });
+  check("POST /demo/happy -> 202 released + demo_risk_updated golden green (previous = its risk)", happy.status === 202 && happy.body?.decision?.outcome === "released" && happy.body?.demo_risk_updated?.site_id === "site_001" && happy.body.demo_risk_updated.demo_risk.level === "green" && JSON.stringify(happy.body.demo_risk_updated.previous_demo_risk) === JSON.stringify(g3.body.risk) && happy.body.site_updated === undefined, happy.body?.demo_risk_updated);
+  check("WS got demo_risk_updated before decision for happy, and no site_updated", hSu >= 0 && hDec > hSu && live.messages.slice(from).every((m) => m.type !== "site_updated"), { hSu, hDec });
   check("happy decision hash verifies", happy.body?.decision && hashOf(happy.body.decision) === happy.body.decision.decision_hash);
   const trailAfter = (await call<Trail>("GET", "/sites/site_001/trail")).body;
   check("golden trail now shows the demo payment + decision", trailAfter.payments.some((p) => p.invoice_id === happy.body?.decision?.invoice_id) && trailAfter.decisions[0]?.decision_id === happy.body?.decision?.decision_id);

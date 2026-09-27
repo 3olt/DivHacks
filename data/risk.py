@@ -1,11 +1,18 @@
 """Financial status rating (Phase 4): deterministic, explainable 0-100 score per site. NOT a trained model.
 
-  python data/risk.py                          # all sites: compute + write sites.risk, print a table
-  python data/risk.py --site site_fbnyc        # one site (writes)
-  python data/risk.py --site site_fbnyc --json # ...and print the new risk JSON (for the API's recompute hook)
+  python data/risk.py                          # all real sites: compute + write sites.risk (PUBLIC RECORDS ONLY), print a table
+  python data/risk.py --site site_fbnyc        # one site (writes sites.risk, public records only)
+  python data/risk.py --site site_fbnyc --json # ...and print the new risk JSON
+  python data/risk.py --site site_fbnyc --demo-risk --json
+                                               # golden only: the Option B what-if score -> writes sites.demo_risk (NOT
+                                               # sites.risk) and prints it (the API's hook for a released demo payment)
   python data/risk.py --dry-run                # compute + print, no writes
-  python data/risk.py --simulate-xrpl 12.50    # golden site: before/after one extra RLUSD payment (dry run, no writes)
+  python data/risk.py --simulate-xrpl 12.50    # golden site: demo view before/after one extra RLUSD payment (dry run)
   python data/risk.py --suggest-scale          # golden site: which round demo scales flip it for a 12.50 payment
+
+risk vs demo_risk (Sun 04:50): sites.risk is PUBLIC RECORDS ONLY (Checkbook NYC, Comptroller, IRS 990). It is what /map, the
+site report and iMessage read, and XRPL Testnet payments NEVER change it. sites.demo_risk is the Option B what-if score for
+the /demo page (golden site here; the 4 fictional demo sites get theirs from the API's fixture release rule).
 
 Factors (points; higher = more strained). Same weights, levels and labels as api/src/risk.ts:
   payment pace   40  gap = share of contract term elapsed - share paid; 40 * clamp(gap / 0.5, 0, 1) (a 50-point gap = max)
@@ -18,9 +25,9 @@ Each factor is rounded to whole points. A factor whose data is NOT loaded is exc
 round(sum of available points * 100 / sum of their maxima), and a reason says "score uses N of 4 factors".
 Levels: green < 40 "Financially stable", yellow 40-69 "Financially strained", red >= 70 "Financially critical".
 
-Option B (disclosed demo scale): for the GOLDEN site only (demo_state._id "golden"), released XRPL Testnet RLUSD payments on
-the golden contract dated at/after demo_state.epoch count toward "paid" at demo_state.scale_usd_per_rlusd USD per RLUSD.
-Every other site counts only real Checkbook NYC USD.
+Option B (disclosed demo scale), demo_risk ONLY: for the GOLDEN site (demo_state._id "golden"), released XRPL Testnet RLUSD
+payments on the golden contract dated at/after demo_state.epoch count toward "paid" at demo_state.scale_usd_per_rlusd USD per
+RLUSD. sites.risk (every site, the golden included) counts only real Checkbook NYC USD.
 """
 from __future__ import annotations
 
@@ -232,9 +239,13 @@ def inputs_for(d, site: dict):
 
 
 def risk_for_site(d, site: dict, as_of: date | None = None, extra_xrpl: float | None = None,
-                  scale_override: float | None = None) -> dict:
+                  scale_override: float | None = None, demo_view: bool = False) -> dict:
+    """demo_view False (default) = sites.risk: PUBLIC RECORDS ONLY, no XRPL credit for any site (the golden included).
+    demo_view True = the golden's Option B what-if (sites.demo_risk): XRPL Testnet RLUSD at the disclosed demo scale."""
     as_of = as_of or date.today()
     contract, nonprofit, agency, demo = inputs_for(d, site)
+    if not demo_view:
+        demo = None
     xrpl = golden_xrpl(d, demo, site, contract)
     is_golden = bool(demo) and site["id"] == demo.get("golden_site_id")
     if extra_xrpl and is_golden:
@@ -250,7 +261,19 @@ def risk_for_site(d, site: dict, as_of: date | None = None, extra_xrpl: float | 
 
 
 def write_risk(d, site_id: str, risk: dict):
+    """sites.risk = public records only. Never pass a demo_view risk here."""
+    if risk.get("xrpl_counted"):
+        raise ValueError("refusing to write an XRPL-credited (demo) score to sites.risk; use write_demo_risk")
     d.sites.update_one({"id": site_id}, {"$set": {"risk": risk}})
+
+
+def write_demo_risk(d, site_id: str, risk: dict):
+    d.sites.update_one({"id": site_id}, {"$set": {"demo_risk": risk}})
+
+
+def same_score(a: dict | None, b: dict | None) -> bool:
+    a, b = a or {}, b or {}
+    return (a.get("level"), a.get("score"), a.get("reasons")) == (b.get("level"), b.get("score"), b.get("reasons"))
 
 
 def fmt_components(c: dict) -> str:
@@ -282,6 +305,8 @@ def main():
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--simulate-xrpl", type=float, metavar="RLUSD")
     ap.add_argument("--suggest-scale", action="store_true")
+    ap.add_argument("--demo-risk", action="store_true",
+                    help="with --site (golden only): write the Option B what-if to sites.demo_risk, never sites.risk")
     ap.add_argument("--as-of", help="YYYY-MM-DD (default today)")
     args = ap.parse_args()
     d = db()
@@ -291,17 +316,17 @@ def main():
         demo = d.demo_state.find_one({"_id": "golden"}) or {}
         sid = demo.get("golden_site_id", GOLDEN_SITE_ID)
         site = d.sites.find_one({"id": sid}, {"_id": 0})
-        before = risk_for_site(d, site, as_of)
+        before = risk_for_site(d, site, as_of, demo_view=True)
         if args.suggest_scale:
             amt = args.simulate_xrpl or 12.50
             print(f"golden {sid} before: {before['level']} {before['score']} {before['components']}")
             for sc in (1_000, 2_000, 2_500, 5_000, 10_000, 20_000, 25_000, 50_000, 100_000, 200_000, 250_000, 500_000):
-                a = risk_for_site(d, site, as_of, extra_xrpl=amt, scale_override=sc)
+                a = risk_for_site(d, site, as_of, extra_xrpl=amt, scale_override=sc, demo_view=True)
                 print(f"  scale ${sc:>7,}/RLUSD: +{amt:.2f} RLUSD = {money(amt * sc):>11} -> {a['level']:6} {a['score']:>3} "
                       f"{a['components']}")
             return
-        after = risk_for_site(d, site, as_of, extra_xrpl=args.simulate_xrpl)
-        print(f"DRY RUN (nothing written): golden site {sid}, contract {demo.get('golden_contract_id')}, "
+        after = risk_for_site(d, site, as_of, extra_xrpl=args.simulate_xrpl, demo_view=True)
+        print(f"DRY RUN (nothing written; demo_risk view, Option B): golden site {sid}, contract {demo.get('golden_contract_id')}, "
               f"scale 1 RLUSD = {money(demo.get('scale_usd_per_rlusd') or 0)}, epoch {demo.get('epoch')}")
         for tag, r in (("BEFORE", before), (f"AFTER +{args.simulate_xrpl:.2f} RLUSD", after)):
             print(f"--- {tag}: {r['level']} {r['score']}  {fmt_components(r['components'])}")
@@ -314,9 +339,17 @@ def main():
         site = d.sites.find_one({"id": args.site}, {"_id": 0})
         if not site:
             sys.exit(f"no site {args.site}")
-        r = risk_for_site(d, site, as_of)
-        if not args.dry_run:
-            write_risk(d, site["id"], r)
+        if args.demo_risk:
+            demo = d.demo_state.find_one({"_id": "golden"}) or {}
+            if site["id"] != demo.get("golden_site_id"):
+                sys.exit(f"--demo-risk: {args.site} is not the golden site (demo sites get demo_risk from the API)")
+            r = risk_for_site(d, site, as_of, demo_view=True)
+            if not args.dry_run:
+                write_demo_risk(d, site["id"], r)
+        else:
+            r = risk_for_site(d, site, as_of)
+            if not args.dry_run:
+                write_risk(d, site["id"], r)
         if args.json:
             print(json.dumps(r))
         else:

@@ -137,10 +137,10 @@ Cautions:
 
 - `web/` calls the API directly from the browser (`NEXT_PUBLIC_API_URL`, default `http://localhost:4000`; CORS is open). Client: `web/src/lib/api.ts`; WebSocket: `web/src/lib/live.ts`.
 - Types: `web/src/lib/contracts.ts` is a **copy** of `shared/contracts.ts`. Re-copy it when the backend changes it.
-- WebSocket `/live`: `hello` → refetch; `site_updated` → recolor that pin (and refetch the open trail); `decision` → refetch the open trail if it's for that site.
+- WebSocket `/live`: `hello` → refetch; `site_updated` → recolor that pin (a **public** score changed; never sent for Testnet payments); `decision` → refetch the open trail if it's for that site; `demo_risk_updated` → **/demo only** (see "risk vs demo_risk" below).
 - `web/` has **no API routes** anymore: it only reads the backend API. No mock data remains in `web/`.
 - The frontend never computes or overrides risk; it renders what the API sends.
-- Test a pin flip: `curl -X POST http://localhost:4000/demo/happy` (golden site `site_fbnyc`, Food Bank For NYC; its pin moves when paid). Reset: `curl -X POST http://localhost:4000/dev/reset`.
+- Test a pin flip: `curl -X POST http://localhost:4000/demo/happy` (golden site `site_fbnyc`, Food Bank For NYC; its **/demo** pin moves via `demo_risk`; `/map` keeps the public score). Reset: `curl -X POST http://localhost:4000/dev/reset`.
 
 ## iMessage via Photon (`imessage/`)
 
@@ -247,6 +247,8 @@ Deterministic, 0–100, computed by the backend: today `api/src/risk.ts` (fixtur
 
 `reasons` show the numbers behind the score; `summary` (≤25 words) only restates the reasons: templated today, Grok-written from Phase 4. Only demo sites count XRPL payments toward "paid."
 
+**risk vs demo_risk (Sun 05:10, Gagan's decision):** `risk` = public records only: `/map`, the site report and iMessage read it, and Testnet payments never change it (the golden stays 🔴 71). `demo_risk` = the Option B what-if score for the golden site and the 4 fictional demo sites, recomputed on every released demo payment and sent only as WS `demo_risk_updated {site_id, demo_risk, previous_demo_risk}`, never as `site_updated`, so "funded ✅" alerts and `/map` can't be moved by test money. `/demo` pins and "Effect on the locations" use `demo_risk ?? risk`; before → after is `previous_demo_risk` → `demo_risk`. `/dev/reset` clears every `demo_risk`. Details: `docs/API.md` banner "risk vs demo_risk".
+
 Real golden (Phase 4, Food Bank For NYC): "🔴 71: 100% of contract term elapsed (term ended 2026-06-30), 70% paid ($2,066,705 of $2,932,500); 0.35 months of cash on hand; registered 422 days late." After the live 12.50 RLUSD Testnet payment, counted at the disclosed demo scale (Option B: 1 RLUSD = $10,000): 🟡 67. It **cannot reach 🟢 honestly** (floor 47 before the payment factor), so the "funded ✅" alert (which fires on green) will not fire for the golden unless its trigger changes. Old fixture example: "🟡 59: 41% of contract term elapsed, 15% paid; HRA registered 89% of FY2025 contracts late (avg 118 days); 3.6 months of cash on hand."
 
 ## Data sources
@@ -326,6 +328,7 @@ _Synced Sat 2026-09-26 ~21:00 EDT from a review of both halves of the repo. Dead
 10. Golden pace chart (`PaceChart.tsx`) sums only the 14 loaded FY2026 checks (45%) while the score uses spent-to-date (70%): start the paid line at `spent_to_date` minus the loaded checks, or quote spent-to-date in the caption.
 11. The golden's wallet is a **demo** Testnet wallet: show `wallet.label` + a demo badge next to "verified / bank verified" (`SitePanel.tsx:187-201`, `data/tables.tsx:122-154`).
 12. `/demo` runs are now asynchronous (202 + `run_id`, WS `demo_run` running → succeeded/failed): keep buttons disabled until the run finishes (`live.ts:21` pass `demo_run`; `DemoPage.tsx:73-92`), treat 409 as "a run is already going", drop `escrow-release` from `DEMO_SCENARIOS` (`api.ts:18-39`), label escrow "simulated escrow (test token CTT)".
+14. **Wire `demo_risk` on `/demo` (Sun 05:10):** re-copy `shared/contracts.ts` (`Site.demo_risk?`, `LiveMessage` `demo_risk_updated`); `/demo` pins + "Effect on the locations" = `demo_risk ?? risk`; on WS `demo_risk_updated` set `sites[site_id].demo_risk = msg.demo_risk` (null clears) and show `previous_demo_risk` → new; pass `demo_risk_updated` through `live.ts`. Until this is wired, the `/demo` pin no longer flips (the flip used to come from `site_updated`). `/map` and site reports: keep using `risk` only.
 13. Run the web on the same laptop as the API for the judged demo: demo and dev buttons are accepted only from local callers (or set `ALLOWED_ORIGINS`).
 
 **iMessage (Noel):** `POST /notify` on :4003 is unauthenticated (anyone on the network can text from the line), so bind it to localhost or remove it. `FOLLOW a` matches anything, so require a minimum word length. Don't put the imessage terminal on the projector (it logs phone numbers).

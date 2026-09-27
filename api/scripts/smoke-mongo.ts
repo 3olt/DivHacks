@@ -91,6 +91,9 @@ function siteShapeProblems(s: Site): string[] {
   if (!r || !["green", "yellow", "red"].includes(r.level) || typeof r.score !== "number" || r.score < 0 || r.score > 100 || levelFor(r.score) !== r.level) out.push(`risk level/score ${r?.level} ${r?.score}`);
   if (!Array.isArray(r?.reasons) || !r.reasons.length || typeof r.summary !== "string" || Number.isNaN(Date.parse(r.computed_at))) out.push("risk reasons/summary/computed_at");
   if (typeof s.is_demo_data !== "boolean") out.push("is_demo_data");
+  // Sun 04:50: demo_risk (optional) is null/absent or a valid SiteRisk.
+  const dr = s.demo_risk;
+  if (dr != null && (!["green", "yellow", "red"].includes(dr.level) || typeof dr.score !== "number" || levelFor(dr.score) !== dr.level || !Array.isArray(dr.reasons) || typeof dr.summary !== "string")) out.push(`demo_risk ${dr?.level} ${dr?.score}`);
   return out;
 }
 
@@ -153,6 +156,8 @@ async function main(): Promise<void> {
   check('real sites: every seeded event title ends in "(demo event)"; demo sites are not suffixed', real.every((s) => s.events.every((e) => e.title.endsWith(" (demo event)"))) && demo.every((s) => s.events.every((e) => !e.title.endsWith("(demo event)"))), real[0]?.events);
   const golden = sites.find((s) => s.id === "site_fbnyc");
   check("golden site_fbnyc: real, Food Bank For NYC, EIN 13-3179546, is_golden, risk.components", !!golden && golden.is_demo_data === false && golden.nonprofit_ein === "13-3179546" && golden.is_golden === true && !!golden.risk.components, golden?.risk);
+  check("real sites' risk is PUBLIC RECORDS ONLY: no xrpl_counted, no Testnet/RLUSD reason (the golden included)", real.every((s) => !s.risk.xrpl_counted && !s.risk.reasons.some((x) => /testnet|rlusd/i.test(x))), real.filter((s) => s.risk.xrpl_counted || s.risk.reasons.some((x) => /testnet|rlusd/i.test(x))).map((s) => s.id));
+  check("demo_risk only on the golden or a demo site", sites.every((s) => s.demo_risk == null || s.id === "site_fbnyc" || s.is_demo_data), sites.filter((s) => s.demo_risk != null).map((s) => s.id));
 
   const shelters = await get<Site[]>("/sites?type=shelter");
   check("GET /sites?type=shelter -> only shelters (5)", shelters.status === 200 && shelters.body.length === 5 && shelters.body.every((s) => s.type === "shelter"), shelters.body.length);

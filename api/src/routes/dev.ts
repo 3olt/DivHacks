@@ -5,6 +5,7 @@ import { isRecord, queryString, sendError } from "../lib/http";
 import { scrub } from "../lib/python";
 import { nowNY } from "../lib/time";
 import { devFlipRisk } from "../risk";
+import type { ResetResult } from "../store";
 
 const LEVELS: RiskLevel[] = ["green", "yellow", "red"];
 
@@ -32,26 +33,31 @@ export function registerDevRoutes(app: FastifyInstance, ctx: AppContext): void {
   });
 
   // POST /dev/reset
-  // Fixture mode: restores sites, decisions and subscribers to the fixture state.
-  // Mongo mode: runs data/demo_reset.py (the golden site back to its pre-demo level; Testnet history is kept), restores the
-  // demo sites' fixture risk and re-scores dev-flipped sites. 409 run_in_progress while a real demo run is going.
-  // Broadcasts site_updated for every site whose risk changed (mongo mode: always the golden), so open maps snap back.
+  // Fixture mode: restores sites, decisions and subscribers to the fixture state (demo_risk cleared).
+  // Mongo mode: runs data/demo_reset.py (new demo epoch; demo_risk $unset on every site; Testnet history is kept), restores
+  // the demo sites' fixture risk after a dev flip and re-scores dev-flipped sites. 409 run_in_progress while a real demo run
+  // is going. Broadcasts demo_risk_updated {demo_risk:null, previous_demo_risk:<old>} for every site that had a demo_risk
+  // (so /demo snaps back), then site_updated ONLY for a site whose PUBLIC risk changed (normally none: dev flips only).
   app.post("/dev/reset", async (_req, reply) => {
     const active = ctx.demoRunner?.blocking();
     if (active) {
       return sendError(reply, 409, "run_in_progress", `A demo run is still in progress (${active.scenario}, ${active.run_id}); reset after it finishes`, { run_id: active.run_id });
     }
-    let changed: string[];
+    let res: ResetResult;
     try {
-      changed = await ctx.store.reset();
+      res = await ctx.store.reset();
     } catch (e) {
       reply.log.error(scrub((e as Error).message));
       return sendError(reply, 500, "reset_failed", scrub((e as Error).message).slice(0, 300));
     }
-    for (const id of changed) {
+    for (const u of res.demo_cleared) {
+      ctx.hub.broadcast({ type: "demo_risk_updated", site_id: u.site_id, demo_risk: null, previous_demo_risk: u.previous_demo_risk });
+    }
+    for (const id of res.risk_changed) {
       const site = await ctx.store.getSite(id);
       if (site) ctx.hub.broadcast({ type: "site_updated", site_id: site.id, risk: site.risk });
     }
-    return ctx.store.mode === "mongo" ? { ok: true, site_updated: changed } : { ok: true };
+    const demo_risk_cleared = res.demo_cleared.map((u) => u.site_id);
+    return ctx.store.mode === "mongo" ? { ok: true, site_updated: res.risk_changed, demo_risk_cleared } : { ok: true, demo_risk_cleared };
   });
 }

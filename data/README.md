@@ -83,6 +83,8 @@ four years after its 2022 end). So that the co-signer's `contract_not_active` ch
 
 ## Option B: XRPL payments on the golden site (DISCLOSED demo scale)
 
+> **Changed Sun 2026-09-27 05:10:** Option B no longer touches `sites.risk`. `sites.risk` is public records only for every site (the golden stays red 71). The Option B score is written to `sites.demo_risk` by `python data/risk.py --site site_fbnyc --demo-risk` (the API runs it on each released golden payment and broadcasts WS `demo_risk_updated`, never `site_updated`). `data/demo_reset.py` sets a new epoch and clears `demo_risk` everywhere. Read "red 71 -> yellow 67" below as the **demo_risk** change.
+
 For the **golden site only**, the agent's real XRPL **Testnet** RLUSD payments count toward the golden contract's "paid"
 at a disclosed demo scale: **1 RLUSD = $10,000** (`demo_state.scale_usd_per_rlusd`). Only `released`, `currency: "RLUSD"`,
 `source: "xrpl"` payments on `demo_state.golden_contract_id` dated at/after `demo_state.epoch` count. Every other site

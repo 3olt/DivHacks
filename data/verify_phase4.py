@@ -266,12 +266,10 @@ def main():
         ag = d.agency_stats.find_one({"code": s["agency_code"]})
         pts = {}
         # pace
+        # Sun 04:50: sites.risk is PUBLIC RECORDS ONLY; XRPL Testnet payments count only in sites.demo_risk (Option B).
         xrpl_usd = 0.0
-        if ds and s["id"] == ds["golden_site_id"] and c["contract_id"] == ds["golden_contract_id"]:
-            ep = datetime.fromisoformat(ds["epoch"].replace("Z", "+00:00"))
-            for p in d.payments.find({"source": "xrpl", "contract_id": c["contract_id"], "status": "released", "currency": "RLUSD"}):
-                if datetime.fromisoformat(p["date"].replace("Z", "+00:00")) >= ep:
-                    xrpl_usd += float(p["amount"]) * ds["scale_usd_per_rlusd"]
+        ok(not rk.get("xrpl_counted") and not any(re.search(r"testnet|rlusd", x, re.I) for x in rk["reasons"]),
+           f"{s['id']}: public risk mentions / counts XRPL Testnet payments")
         if c.get("spent_to_date") is None:
             pts["payment_pace"] = None
         else:

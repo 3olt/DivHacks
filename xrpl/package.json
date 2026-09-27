@@ -22,7 +22,8 @@
     "agent-revoke": "tsx scripts/agent-governance.ts revoke",
     "agent-restore": "tsx scripts/agent-governance.ts restore",
     "agent-status": "tsx scripts/agent-governance.ts status",
-    "setup-escrow": "tsx scripts/escrow-setup.ts"
+    "setup-escrow": "tsx scripts/escrow-setup.ts",
+    "demo-reset": "tsx scripts/demo-reset.ts"
   },
   "dependencies": {
     "dotenv": "^18.0.4",

@@ -5,14 +5,14 @@ import {
   agencyByCode,
   CHECKBOOK_PAYMENTS,
   CONTRACTS_BY_ID,
+  demoReleaseRisk,
   initialFixtureState,
   nonprofitByEin,
-  siteRisk,
   xrplPaymentFromDecision,
   type FixtureState,
 } from "./fixtures/index";
 import { haversineMeters } from "./lib/geo";
-import { dateNY, nowNY, toMillis } from "./lib/time";
+import { nowNY, toMillis } from "./lib/time";
 import type { Risk } from "./risk";
 
 export type StoreMode = "fixtures" | "mongo";
@@ -33,6 +33,22 @@ export interface SubscriberInput {
   channel?: Subscriber["channel"];
 }
 
+/** WS demo_risk_updated payload (minus type). previous_demo_risk = the demo view before (old demo_risk ?? risk). */
+export interface DemoRiskUpdate {
+  site_id: string;
+  demo_risk: Risk | null;
+  previous_demo_risk: Risk | null;
+}
+
+/** applyRelease: the demo_risk update to broadcast, or null with why (retry = a failed recompute a repeat event may retry). */
+export type ReleaseResult = { update: DemoRiskUpdate } | { update: null; note: string; retry: boolean };
+
+/** reset: sites whose PUBLIC risk changed (site_updated; normally none) and the demo_risk values cleared (demo_risk_updated). */
+export interface ResetResult {
+  risk_changed: string[];
+  demo_cleared: DemoRiskUpdate[];
+}
+
 export interface DataStore {
   readonly mode: StoreMode;
   listSites(q: SiteQuery): Promise<Site[]>;
@@ -48,9 +64,9 @@ export interface DataStore {
   upsertDecision(d: Decision): Promise<void>;
   /** The site a decision belongs to: by contract_id in site.contract_ids, else by payee_ein. */
   findSiteForDecision(d: Decision): Promise<Site | null>;
-  /** Recompute a site's risk after a released payment landed, save it and return it.
-   *  null = the risk did not change (mongo mode: a demo site, or the recompute failed and the old risk is kept). */
-  applyRelease(siteId: string, d: Decision): Promise<Risk | null>;
+  /** A released XRPL Testnet payment landed: recompute the site's DEMO score (sites.demo_risk), save and return it.
+   *  NEVER changes the public `risk` (Sun 04:50: risk = public records only). */
+  applyRelease(siteId: string, d: Decision): Promise<ReleaseResult>;
   setSiteRisk(siteId: string, risk: Risk): Promise<Site | null>;
   listSubscribers(siteId?: string): Promise<Subscriber[]>;
   getSubscriber(phone: string): Promise<Subscriber | null>;
@@ -59,8 +75,8 @@ export interface DataStore {
   deleteSubscriber(phone: string): Promise<boolean>;
   /** Monotonic counter for synthesized demo ids (fixture mode). */
   nextDemoSeq(): Promise<number>;
-  /** Restore the initial state. Returns the ids of sites whose risk changed (mongo mode: always includes the golden site). */
-  reset(): Promise<string[]>;
+  /** Restore the initial state: clears every demo_risk (new demo epoch). Public risk normally does not change. */
+  reset(): Promise<ResetResult>;
   /** Release connections (mongo mode). */
   close?(): Promise<void>;
 }
@@ -159,13 +175,13 @@ export class FixtureStore implements DataStore {
     return s ? clone(s) : null;
   }
 
-  async applyRelease(siteId: string, d: Decision): Promise<Risk | null> {
+  /** Same contract as mongo mode: the fixture release rule goes to demo_risk; the public risk is never changed. */
+  async applyRelease(siteId: string, d: Decision): Promise<ReleaseResult> {
     const site = this.state.sites.find((s) => s.id === siteId);
-    if (!site) return null;
-    const releasedOn = dateNY(new Date(d.created_at));
-    const when = releasedOn === dateNY() ? "today" : `on ${releasedOn}`;
-    site.risk = siteRisk(site, this.state.decisions, nowNY(), { amount: Number(d.amount), invoice_id: d.invoice_id, when });
-    return clone(site.risk);
+    if (!site) return { update: null, note: `no site ${siteId}`, retry: false };
+    const previous = clone(site.demo_risk ?? site.risk);
+    site.demo_risk = demoReleaseRisk(site, this.state.decisions, d);
+    return { update: { site_id: site.id, demo_risk: clone(site.demo_risk), previous_demo_risk: previous } };
   }
 
   async setSiteRisk(siteId: string, risk: Risk): Promise<Site | null> {
@@ -217,10 +233,13 @@ export class FixtureStore implements DataStore {
     return ++this.demoSeq;
   }
 
-  async reset(): Promise<string[]> {
+  async reset(): Promise<ResetResult> {
     const before = new Map(this.state.sites.map((s) => [s.id, JSON.stringify(s.risk)]));
+    const demo_cleared: DemoRiskUpdate[] = this.state.sites
+      .filter((s) => s.demo_risk)
+      .map((s) => ({ site_id: s.id, demo_risk: null, previous_demo_risk: clone(s.demo_risk!) }));
     this.state = initialFixtureState();
     this.demoSeq = 0;
-    return this.state.sites.filter((s) => before.get(s.id) !== JSON.stringify(s.risk)).map((s) => s.id);
+    return { risk_changed: this.state.sites.filter((s) => before.get(s.id) !== JSON.stringify(s.risk)).map((s) => s.id), demo_cleared };
   }
 }

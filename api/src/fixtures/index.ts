@@ -1,6 +1,7 @@
 // Assembles the fixture dataset. Everything here is DEMO data (is_demo_data: true where the type has it).
 import type { AgencyStats, Decision, Nonprofit, Payment, Site, Subscriber } from "../../../shared/contracts";
 import { memoHash, memoJson } from "../lib/hash";
+import { dateNY, nowNY } from "../lib/time";
 import { computeRisk, RISK_FIXTURE_COMPUTED_AT, type ReleaseInfo, type Risk, type RiskInputs } from "../risk";
 import { AGENCIES } from "./agencies";
 import { CHECKBOOK_PAYMENTS, CONTRACTS, CONTRACTS_BY_ID } from "./contracts";
@@ -65,6 +66,14 @@ export function riskInputsFor(site: Pick<Site, "contract_ids" | "nonprofit_ein" 
 
 export function siteRisk(site: SiteSeed | Site, decisions: Decision[], computedAt: string, release?: ReleaseInfo): Risk {
   return computeRisk(riskInputsFor(site, decisions), computedAt, release);
+}
+
+/** The fixture RELEASE RULE (demo_risk only): a released XRPL payment drops the payment-pace points and leads the reasons
+ *  with the payment. `decisions` must include the released decision (under the site's primary contract). */
+export function demoReleaseRisk(site: SiteSeed | Site, decisions: Decision[], d: Decision, computedAt: string = nowNY()): Risk {
+  const releasedOn = dateNY(new Date(d.created_at));
+  const when = releasedOn === dateNY() ? "today" : `on ${releasedOn}`;
+  return siteRisk(site, decisions, computedAt, { amount: Number(d.amount), invoice_id: d.invoice_id, when });
 }
 
 export interface FixtureState {

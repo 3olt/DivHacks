@@ -29,7 +29,8 @@
     "agent:revoke": "npm run agent-revoke -w xrpl --",
     "agent:restore": "npm run agent-restore -w xrpl --",
     "agent:status": "npm run agent-status -w xrpl --",
-    "setup:escrow": "npm run setup-escrow -w xrpl"
+    "setup:escrow": "npm run setup-escrow -w xrpl",
+    "demo:reset": "npm run demo-reset -w xrpl --"
   },
   "engines": {
     "node": ">=20"

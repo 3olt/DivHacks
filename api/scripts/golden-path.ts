@@ -1,8 +1,9 @@
 // End-to-end golden path against a RUNNING mongo-mode API (it makes ONE real 12.50 RLUSD Testnet payment):
-//   reset -> golden site_fbnyc is red (71) -> POST /demo/happy (real golden run) -> WS site_updated (red -> yellow 67)
-//   then WS decision (released, explorer link) -> the trail shows the XRPL payment with explorer_url (and the ledger
-//   confirms it) -> POST /demo/injection -> WS/decisions show the three refusals incl. the ledger's tefBAD_QUORUM ->
-//   POST /dev/reset -> golden back to red.
+//   reset -> golden site_fbnyc risk red (71), no demo_risk -> POST /demo/happy (real golden run) -> WS demo_risk_updated
+//   (previous_demo_risk red 71 -> demo_risk yellow 67) then WS decision (released, explorer link); NO site_updated (risk =
+//   public records only, Sun 04:50) -> GET: risk still red 71, demo_risk yellow 67 -> the trail shows the XRPL payment with
+//   explorer_url (and the ledger confirms it) -> POST /demo/injection -> WS/decisions show the three refusals incl. the
+//   ledger's tefBAD_QUORUM -> POST /dev/reset -> WS demo_risk_updated {demo_risk:null}, GET shows no demo_risk.
 //   API_URL=http://localhost:4000 npm run golden-path -w api
 // Needs the co-signer / xrpl service / officer running, or the API's demo runner auto-spawns them (DEMO_NO_SPAWN unset).
 // Prints PASS/FAIL per step and exits 1 on any failure.
@@ -86,6 +87,10 @@ class Live {
 }
 
 const isDecision = (m: LiveMessage): m is Extract<LiveMessage, { type: "decision" }> => m.type === "decision";
+type DemoRiskMsg = Extract<LiveMessage, { type: "demo_risk_updated" }>;
+const goldenSiteUpdated = (msgs: LiveMessage[], from: number) => msgs.slice(from).filter((m) => m.type === "site_updated" && m.site_id === GOLDEN_SITE).length;
+const pause = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const lv = (r: { level: string; score: number } | null | undefined) => (r ? `${r.level} ${r.score}` : String(r));
 const isRun = (m: LiveMessage, runId: string, status: string) => m.type === "demo_run" && m.run_id === runId && m.status === status;
 
 async function waitRunEnd(live: Live, runId: string, from: number): Promise<DemoRun | null> {
@@ -115,10 +120,11 @@ async function main(): Promise<void> {
   let from = live.messages.length;
   const reset = await call("POST", "/dev/reset");
   step("POST /dev/reset -> 200 (data/demo_reset.py)", reset.status === 200 && reset.body?.ok === true, reset.body);
-  step("  ...WS site_updated for the golden site", (await live.waitFor((m) => m.type === "site_updated" && m.site_id === GOLDEN_SITE, from, 30_000)) >= 0);
+  await pause(1500);
+  step("  ...no site_updated for the golden (its public risk is untouched by a reset)", goldenSiteUpdated(live.messages, from) === 0);
   const before = (await call<Site>("GET", `/sites/${GOLDEN_SITE}`)).body;
-  info(`golden before: ${before.risk.level} ${before.risk.score} "${before.risk.summary}"`);
-  step("golden site_fbnyc is red (71) after reset", before.risk.level === "red" && before.risk.score === 71, before.risk);
+  info(`golden before: risk ${lv(before.risk)} "${before.risk.summary}", demo_risk ${lv(before.demo_risk)}`);
+  step("golden site_fbnyc risk is red (71), no XRPL reason, and demo_risk is absent after reset", before.risk.level === "red" && before.risk.score === 71 && !before.risk.xrpl_counted && !before.risk.reasons.some((x) => /testnet|rlusd/i.test(x)) && before.demo_risk == null, { risk: before.risk, demo_risk: before.demo_risk });
 
   // 2. POST /demo/happy -> the real golden run
   from = live.messages.length;
@@ -135,17 +141,18 @@ async function main(): Promise<void> {
   const released = decIdx >= 0 ? (live.messages[decIdx] as Extract<LiveMessage, { type: "decision" }>).decision : null;
   step("WS decision: released 12.50 RLUSD under the golden contract, agent + co-signer, tesSUCCESS", !!released && released.amount === "12.50" && released.currency === "RLUSD" && released.ledger_result === "tesSUCCESS" && !!released.xrpl_tx_hash && released.signers.join() === "agent,cosigner" && released.checks.every((c) => c.passed), released && { outcome: released.outcome, amount: released.amount, signers: released.signers });
   if (released) info(`explorer: https://testnet.xrpl.org/transactions/${released.xrpl_tx_hash}`);
-  const suIdx = live.messages.findIndex((m, i) => i >= from && m.type === "site_updated" && m.site_id === GOLDEN_SITE);
-  const su = suIdx >= 0 ? (live.messages[suIdx] as Extract<LiveMessage, { type: "site_updated" }>) : null;
-  step("WS site_updated golden BEFORE the decision: red -> yellow 67 (data/risk.py, Option B demo scale)", !!su && suIdx < decIdx && su.risk.level === "yellow" && su.risk.score === 67, su && { suIdx, decIdx, level: su.risk.level, score: su.risk.score });
-  if (su) info(`golden after: ${su.risk.level} ${su.risk.score}; first reason: "${su.risk.reasons[0]}"`);
-  step("  ...the first reason discloses the demo scale (RLUSD 12.50 Testnet payment counted at 1 RLUSD = $10,000)", !!su && /RLUSD 12\.50 Testnet payment counted as \$125,000 at demo scale/.test(su.risk.reasons[0]));
+  const suIdx = live.messages.findIndex((m, i) => i >= from && m.type === "demo_risk_updated" && m.site_id === GOLDEN_SITE);
+  const su = suIdx >= 0 ? (live.messages[suIdx] as DemoRiskMsg) : null;
+  step("WS demo_risk_updated golden BEFORE the decision: previous_demo_risk red 71 -> demo_risk yellow 67 (data/risk.py --demo-risk, Option B)", !!su && suIdx < decIdx && su.demo_risk?.level === "yellow" && su.demo_risk.score === 67 && su.previous_demo_risk?.level === "red" && su.previous_demo_risk.score === 71, su && { suIdx, decIdx, demo_risk: lv(su.demo_risk), previous: lv(su.previous_demo_risk) });
+  if (su?.demo_risk) info(`golden demo_risk: ${lv(su.previous_demo_risk)} -> ${lv(su.demo_risk)}; first reason: "${su.demo_risk.reasons[0]}"`);
+  step("  ...the first reason discloses the demo scale (RLUSD 12.50 Testnet payment counted at 1 RLUSD = $10,000)", !!su?.demo_risk && /RLUSD 12\.50 Testnet payment counted as \$125,000 at demo scale \(1 RLUSD = \$10,000\)/.test(su.demo_risk.reasons[0]));
 
   const run1 = await waitRunEnd(live, runId, from);
+  step("NO site_updated was sent for the golden during the Testnet payment (iMessage / /map never see test money)", goldenSiteUpdated(live.messages, from) === 0);
   step("demo run finished: GET /demo/runs/:id succeeded, exit 0, lists the released decision", run1?.status === "succeeded" && run1.exit_code === 0 && !!released && run1.decision_ids.includes(released.decision_id), run1 && { status: run1.status, exit: run1.exit_code, ids: run1.decision_ids, tail: run1.log_tail.slice(-8) });
 
   const site = (await call<Site>("GET", `/sites/${GOLDEN_SITE}`)).body;
-  step("GET /sites/site_fbnyc -> yellow 67", site.risk.level === "yellow" && site.risk.score === 67, site.risk);
+  step("GET /sites/site_fbnyc -> risk still red 71 (public records only), demo_risk yellow 67", site.risk.level === "red" && site.risk.score === 71 && !site.risk.xrpl_counted && site.demo_risk?.level === "yellow" && site.demo_risk.score === 67, { risk: lv(site.risk), demo_risk: lv(site.demo_risk) });
   const trail = (await call<Trail>("GET", `/sites/${GOLDEN_SITE}/trail`)).body;
   const pay = released ? trail.payments.find((p) => p.source === "xrpl" && p.xrpl_tx_hash === released.xrpl_tx_hash) : undefined;
   step("GET /sites/site_fbnyc/trail shows the XRPL payment with explorer_url", !!pay && pay.explorer_url === `https://testnet.xrpl.org/transactions/${released!.xrpl_tx_hash}` && pay.status === "released" && pay.amount === "12.50", pay);
@@ -172,16 +179,18 @@ async function main(): Promise<void> {
   const feed = (await call<Decision[]>("GET", "/decisions?limit=10")).body;
   step("GET /decisions (newest first) shows the three refusals incl. tefBAD_QUORUM", [a, b, c].every((d) => d && feed.some((x) => x.decision_id === d.decision_id)) && feed.some((x) => x.ledger_result === "tefBAD_QUORUM"));
   const g2 = (await call<Site>("GET", `/sites/${GOLDEN_SITE}`)).body;
-  step("refusals did not change the golden pin (still yellow 67)", g2.risk.level === "yellow" && g2.risk.score === 67, g2.risk);
+  step("refusals did not change the golden (risk red 71, demo_risk yellow 67)", g2.risk.level === "red" && g2.risk.score === 71 && g2.demo_risk?.level === "yellow" && g2.demo_risk.score === 67, { risk: lv(g2.risk), demo_risk: lv(g2.demo_risk) });
 
   // 4. reset -> golden back to red
   from = live.messages.length;
   const reset2 = await call("POST", "/dev/reset");
   step("POST /dev/reset -> 200", reset2.status === 200 && reset2.body?.ok === true, reset2.body);
-  const suBack = await live.waitFor((m) => m.type === "site_updated" && m.site_id === GOLDEN_SITE && m.risk.level === "red", from, 30_000);
-  step("  ...WS site_updated: golden back to red", suBack >= 0);
+  const suBack = await live.waitFor((m) => m.type === "demo_risk_updated" && m.site_id === GOLDEN_SITE && m.demo_risk === null, from, 30_000);
+  const back = suBack >= 0 ? (live.messages[suBack] as DemoRiskMsg) : null;
+  step("  ...WS demo_risk_updated {site_fbnyc, demo_risk:null, previous_demo_risk yellow 67}", !!back && back.previous_demo_risk?.level === "yellow" && back.previous_demo_risk.score === 67, back && { previous: lv(back.previous_demo_risk) });
+  step("  ...reset2 response lists site_fbnyc in demo_risk_cleared and no public site_updated", Array.isArray(reset2.body?.demo_risk_cleared) && reset2.body.demo_risk_cleared.includes(GOLDEN_SITE) && goldenSiteUpdated(live.messages, from) === 0, reset2.body);
   const after = (await call<Site>("GET", `/sites/${GOLDEN_SITE}`)).body;
-  step("golden site_fbnyc is red (71) again", after.risk.level === "red" && after.risk.score === 71, after.risk);
+  step("golden site_fbnyc: risk red (71), demo_risk absent", after.risk.level === "red" && after.risk.score === 71 && after.demo_risk == null, { risk: lv(after.risk), demo_risk: after.demo_risk });
 
   live.ws.close();
   console.log(`\n${passed} passed, ${failed} failed (${secs()})`);

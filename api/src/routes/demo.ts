@@ -13,7 +13,8 @@ const TESTNET_ONLY: Record<string, string> = {
 };
 
 export function registerDemoRoutes(app: FastifyInstance, ctx: AppContext): void {
-  // Fixture mode: 202 {scenario, mode, decision, site_updated?}; broadcasts site_updated (if any) first, then decision.
+  // Fixture mode: 202 {scenario, mode, decision, demo_risk_updated?}; broadcasts demo_risk_updated (if any) first, then
+  // decision. A demo payment never changes the public risk and is never sent as site_updated (Sun 04:50).
   // Mongo mode: 202 {scenario, mode:"mongo", run_id, status:"started", decision:null} at once; the real Testnet run's
   // decisions arrive over WS /live as they happen (POST /events/payment from the agent), plus demo_run status messages.
   app.post<{ Params: { scenario: string } }>("/demo/:scenario", async (req, reply) => {
@@ -45,7 +46,7 @@ export function registerDemoRoutes(app: FastifyInstance, ctx: AppContext): void 
       return sendError(reply, 404, "unknown_scenario", `Unknown scenario "${scenario}"`, { scenarios: [...SCENARIOS] });
     }
     const result = await ctx.runScenario(scenario);
-    if (result.site_updated) ctx.hub.broadcast({ type: "site_updated", site_id: result.site_updated.site_id, risk: result.site_updated.risk });
+    if (result.demo_risk_updated) ctx.hub.broadcast({ type: "demo_risk_updated", ...result.demo_risk_updated });
     ctx.hub.broadcast({ type: "decision", decision: result.decision });
     return reply.code(202).send(result);
   });

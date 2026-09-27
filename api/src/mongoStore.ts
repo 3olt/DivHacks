@@ -13,15 +13,20 @@
 // Two response views keep the honesty rules for clients that only read the core fields: a contract whose end_date is a
 // disclosed demo assumption (the golden) is served with its REAL end in `end_date` (+ `end_date_demo_assumed`), and a real
 // site's seeded events carry " (demo event)" in the title (serveContract / serveSite).
-// Writes: sites.risk (via data/risk.py and data/demo_reset.py, or the dev flip), subscribers. Decisions are never written
+// Writes: sites.risk (PUBLIC RECORDS ONLY: data/risk.py, or the dev flip; never from an XRPL Testnet payment),
+// sites.demo_risk (the /demo what-if: data/risk.py --demo-risk for the golden, the fixture release rule for the demo sites;
+// $unset by POST /dev/reset and data/demo_reset.py), subscribers. Decisions are never written
 // here: the agent's Mongo record is authoritative.
 import { MongoClient, type Collection, type Db, type Document, type Filter } from "mongodb";
 import type { AgencyStats, Decision, Nonprofit, Payment, Site, Subscriber, Trail } from "../../shared/contracts";
 import { DEMO_SITE_IDS, demoSiteDocs } from "./demoSites";
+import { demoReleaseRisk } from "./fixtures/index";
+import { FIXTURE_DECISIONS } from "./fixtures/decisions";
+import { SITE_SEEDS } from "./fixtures/sites";
 import { lastJsonLine, runDataScript, scrub } from "./lib/python";
 import { nowNY, toMillis } from "./lib/time";
 import type { Risk } from "./risk";
-import type { DataStore, SiteQuery, SubscriberInput } from "./store";
+import type { DataStore, ReleaseResult, ResetResult, SiteQuery, SubscriberInput } from "./store";
 
 type Logger = { info: (msg: string) => void; warn: (msg: string) => void; error: (msg: string) => void };
 const consoleLogger: Logger = { info: (m) => console.log(m), warn: (m) => console.warn(m), error: (m) => console.error(m) };
@@ -264,33 +269,50 @@ export class MongoStore implements DataStore {
   }
 
   /**
-   * A released payment landed. Real site: re-score it with data/risk.py (`--site <id> --json`, which writes sites.risk);
-   * the golden site counts the XRPL payment at the disclosed demo scale (Option B), every other real site ignores XRPL.
-   * Demo site: its fixture risk is kept (returns null). On any failure the old risk is kept (null) and the error logged.
+   * A released XRPL Testnet payment landed (Sun 04:50: risk vs demo_risk). The PUBLIC `risk` is never touched.
+   * Golden site: data/risk.py --site <id> --demo-risk --json (Option B demo scale) writes sites.demo_risk.
+   * Demo site (site_001..site_004): the fixture release rule (api/src/risk.ts, as in fixture mode) -> sites.demo_risk.
+   * Any other real site: no demo effect (XRPL Testnet payments never score a real organization).
+   * previous_demo_risk = the site's demo view before (its old demo_risk ?? its risk).
    */
-  async applyRelease(siteId: string, d: Decision): Promise<Risk | null> {
+  async applyRelease(siteId: string, d: Decision): Promise<ReleaseResult> {
     const site = await this.getSite(siteId);
-    if (!site) return null;
-    if (site.is_demo_data) {
-      this.log.info(`released ${d.decision_id} on demo site ${siteId}: fixture risk kept (demo sites are not re-scored)`);
-      return null;
+    if (!site) return { update: null, note: `no site ${siteId}`, retry: false };
+    const previous = site.demo_risk ?? site.risk;
+    if (site.id === (await this.demoState())?.golden_site_id) {
+      const demo = await this.recomputeRisk(siteId, `released ${d.decision_id}`, true);
+      if (!demo) return { update: null, note: "demo_risk recompute failed: the previous demo_risk is kept (see the API log)", retry: true };
+      return { update: { site_id: site.id, demo_risk: demo, previous_demo_risk: previous } };
     }
-    return this.recomputeRisk(siteId, `released ${d.decision_id}`);
+    if (site.is_demo_data) {
+      const seed = SITE_SEEDS.find((s) => s.id === site.id);
+      if (!seed) return { update: null, note: `demo site ${site.id} has no fixture seed: no demo_risk`, retry: false };
+      // The fixture rule over the fixture seed; the Testnet decision is counted under the seed's primary contract.
+      const decisions = [...FIXTURE_DECISIONS, { ...d, contract_id: seed.contract_ids[0] }];
+      const demo: Risk = { ...demoReleaseRisk(seed, decisions, d), rule_version: "fixture-risk-0" };
+      await this.sites.updateOne({ id: site.id }, { $set: { demo_risk: demo } });
+      this.log.info(`released ${d.decision_id} on demo site ${siteId}: demo_risk ${previous.level} ${previous.score} -> ${demo.level} ${demo.score}`);
+      return { update: { site_id: site.id, demo_risk: demo, previous_demo_risk: previous } };
+    }
+    return { update: null, note: "real site: XRPL Testnet payments never change its public-records risk and it has no demo score", retry: false };
   }
 
-  /** Runs data/risk.py --site <id> --json (serialized); returns the stored risk, or null (old risk kept) on failure. */
-  recomputeRisk(siteId: string, why: string): Promise<Risk | null> {
+  /** Runs data/risk.py --site <id> [--demo-risk] --json (serialized); returns the stored risk (demo: demo_risk), or null
+   *  (old value kept) on failure. */
+  recomputeRisk(siteId: string, why: string, demo = false): Promise<Risk | null> {
     const run = async (): Promise<Risk | null> => {
-      const r = await runDataScript("risk.py", ["--site", siteId, "--json"]);
+      const r = await runDataScript("risk.py", ["--site", siteId, ...(demo ? ["--demo-risk"] : []), "--json"]);
       const printed = lastJsonLine(r.stdout);
+      const cmd = `risk.py --site ${siteId}${demo ? " --demo-risk" : ""}`;
       if (r.code !== 0 || !printed || typeof printed.level !== "string" || typeof printed.score !== "number") {
         const tail = scrub(`${r.stderr}\n${r.stdout}`).trim().split(/\r?\n/).slice(-3).join(" | ");
-        this.log.error(`risk.py --site ${siteId} (${why}) failed: ${r.timedOut ? "timeout" : r.error ?? `exit ${r.code}`}; old risk kept. ${tail}`);
+        this.log.error(`${cmd} (${why}) failed: ${r.timedOut ? "timeout" : r.error ?? `exit ${r.code}`}; old value kept. ${tail}`);
         return null;
       }
       const stored = await this.getSite(siteId);
-      this.log.info(`risk.py --site ${siteId} (${why}): ${stored?.risk.level} ${stored?.risk.score} in ${r.ms} ms`);
-      return stored?.risk ?? null;
+      const value = (demo ? stored?.demo_risk : stored?.risk) ?? null;
+      this.log.info(`${cmd} (${why}): ${value?.level} ${value?.score} in ${r.ms} ms`);
+      return value;
     };
     const p = this.riskQueue.then(run, run);
     this.riskQueue = p.catch(() => undefined);
@@ -359,21 +381,29 @@ export class MongoStore implements DataStore {
   }
 
   /**
-   * POST /dev/reset in mongo mode: data/demo_reset.py (demo_state.epoch = now, golden re-scored: back to its pre-demo
-   * level), the demo sites' fixture risk restored, and any site changed by a dev flip re-scored. Decisions, payments and
-   * subscribers are NOT touched (they are the real Testnet history). Returns the ids to broadcast (always the golden).
-   * Throws if demo_reset.py fails.
+   * POST /dev/reset in mongo mode: data/demo_reset.py (demo_state.epoch = now, demo_risk $unset on every site; the golden's
+   * public risk is only re-written if it differs from its public-records score), then demo_risk $unset here too, the demo
+   * sites' fixture risk restored (after a dev flip), and any site changed by a dev flip re-scored. Decisions, payments and
+   * subscribers are NOT touched (they are the real Testnet history). Returns the cleared demo scores (demo_risk_updated)
+   * and the sites whose PUBLIC risk changed (site_updated; normally none). Throws if demo_reset.py fails.
    */
-  async reset(): Promise<string[]> {
+  async reset(): Promise<ResetResult> {
     const changed = new Set<string>();
+    const withDemo = await this.sites.find({ demo_risk: { $exists: true, $ne: null } }, { projection: { _id: 0, id: 1, demo_risk: 1 } }).toArray();
+    const golden = (await this.demoState())?.golden_site_id;
+    const riskKey = (x: unknown) => {
+      const k = x as { level?: unknown; score?: unknown; reasons?: unknown } | null | undefined;
+      return JSON.stringify([k?.level, k?.score, k?.reasons]);
+    };
+    const goldenBefore = golden ? riskKey((await this.sites.findOne({ id: golden }, { projection: { _id: 0, risk: 1 } }))?.risk) : null;
     const r = await runDataScript("demo_reset.py", []);
     if (r.code !== 0) {
       const tail = scrub(`${r.stderr}\n${r.stdout}`).trim().split(/\r?\n/).slice(-3).join(" | ");
       throw new Error(`data/demo_reset.py failed (${r.timedOut ? "timeout" : r.error ?? `exit ${r.code}`}): ${tail}`);
     }
-    this.log.info(`demo_reset.py: ${scrub(r.stdout).trim().split(/\r?\n/).slice(-1)[0] ?? ""}`);
-    const golden = (await this.demoState())?.golden_site_id;
-    if (golden) changed.add(golden);
+    this.log.info(`demo_reset.py: ${scrub(r.stdout).trim().split(/\r?\n/).join(" | ")}`);
+    await this.sites.updateMany({ demo_risk: { $exists: true } }, { $unset: { demo_risk: "" } });
+    if (golden && riskKey((await this.sites.findOne({ id: golden }, { projection: { _id: 0, risk: 1 } }))?.risk) !== goldenBefore) changed.add(golden);
 
     for (const doc of demoSiteDocs()) {
       const cur = await this.sites.findOne({ id: doc.id }, { projection: { _id: 0, risk: 1 } });
@@ -387,7 +417,8 @@ export class MongoStore implements DataStore {
       if (await this.recomputeRisk(id, "dev reset after a dev flip")) changed.add(id);
       this.flipped.delete(id);
     }
-    return [...changed];
+    const demo_cleared = withDemo.map((x) => ({ site_id: x.id as string, demo_risk: null, previous_demo_risk: x.demo_risk as Risk }));
+    return { risk_changed: [...changed], demo_cleared };
   }
 
   async close(): Promise<void> {

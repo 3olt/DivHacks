@@ -12,8 +12,10 @@ import { asDecision, decisionShapeError } from "../lib/validateDecision";
  * - Mongo mode: the agent's Mongo record is AUTHORITATIVE. A body `decision` is shape-checked and its decision_id must
  *   match, but it is otherwise ignored: the API reads the stored record and broadcasts only that.
  * Then: find the site (contract_ids contains decision.contract_id, else nonprofit_ein = payee_ein).
- *   released -> recompute the site's risk (mongo: real sites via data/risk.py; demo sites keep their fixture risk)
- *               and broadcast site_updated THEN decision; if the risk did not change, decision only.
+ *   released -> (Sun 04:50: risk vs demo_risk) the public `risk` is NEVER changed and site_updated is NEVER sent.
+ *               The site's demo_risk is recomputed (mongo: the golden via data/risk.py --demo-risk, Option B demo scale;
+ *               the 4 demo sites via the fixture release rule; other real sites: no demo effect; fixture mode: the
+ *               fixture release rule), stored, and broadcast as demo_risk_updated THEN decision. No demo effect: decision only.
  *   otherwise -> broadcast decision only.
  * Events are processed one at a time in arrival order, so the WS order matches the agent's order.
  * Mongo mode: a REPLAY (same decision_id, stored record unchanged since it was last broadcast) answers
@@ -70,22 +72,24 @@ export function registerEventRoutes(app: FastifyInstance, ctx: AppContext): void
         return { site_id: null, risk: null, broadcast: ["decision"] };
       }
       if (decision.outcome === "released") {
-        const risk = await ctx.store.applyRelease(site.id, decision);
-        if (risk) {
-          ctx.hub.broadcast({ type: "site_updated", site_id: site.id, risk });
+        // Sun 04:50: a Testnet payment NEVER changes the public risk and is NEVER sent as site_updated (iMessage and /map
+        // listen to that). It only updates the /demo what-if score: demo_risk_updated, then decision.
+        const res = await ctx.store.applyRelease(site.id, decision);
+        if (res.update) {
+          const u = res.update;
+          ctx.hub.broadcast({ type: "demo_risk_updated", site_id: u.site_id, demo_risk: u.demo_risk, previous_demo_risk: u.previous_demo_risk });
           ctx.hub.broadcast({ type: "decision", decision });
           remember(decision.decision_id, fp);
-          return { site_id: site.id, risk, broadcast: ["site_updated", "decision"] };
+          return { site_id: site.id, risk: site.risk, demo_risk: u.demo_risk, previous_demo_risk: u.previous_demo_risk, broadcast: ["demo_risk_updated", "decision"] };
         }
         ctx.hub.broadcast({ type: "decision", decision });
-        // A demo site keeps its fixture risk (done); a failed recompute on a real site may be retried by a repeat event.
-        if (site.is_demo_data) remember(decision.decision_id, fp);
-        const note = site.is_demo_data ? "demo site: its fixture risk is kept (demo sites are not re-scored)" : "risk recompute failed: the previous risk is kept (see the API log)";
-        return { site_id: site.id, risk: site.risk, broadcast: ["decision"], note };
+        // A failed golden demo_risk recompute may be retried by a repeat event; anything else is done.
+        if (!res.retry) remember(decision.decision_id, fp);
+        return { site_id: site.id, risk: site.risk, demo_risk: site.demo_risk ?? null, broadcast: ["decision"], note: res.note };
       }
       ctx.hub.broadcast({ type: "decision", decision });
       remember(decision.decision_id, fp);
-      return { site_id: site.id, risk: site.risk, broadcast: ["decision"] };
+      return { site_id: site.id, risk: site.risk, demo_risk: site.demo_risk ?? null, broadcast: ["decision"] };
     });
   });
 }

@@ -663,7 +663,9 @@ function installSignalHandlers(): void {
 
 // ---------------------------------------------------------------------------------------------------------------
 // Phase 4, Option B: the golden REAL organization (Food Bank For New York City, EIN 13-3179546) paid on Testnet at its
-// DEMO wallet np_5 through the full guardrails; then (if data/risk.py exists) its site's risk before/after.
+// DEMO wallet np_5 through the full guardrails; then (if data/risk.py exists) its site's DEMO score before/after.
+// Sun 04:50 (risk vs demo_risk): sites.risk is PUBLIC RECORDS ONLY and a Testnet payment never changes it; the payment
+// moves sites.demo_risk (Option B what-if, /demo page). This prints the demo view (demo_risk ?? risk) before/after.
 
 type SiteRisk = { level: string; score: number; reasons: string[]; summary: string; computed_at: string };
 
@@ -674,28 +676,34 @@ function riskPy(): { py: string; script: string } | null {
   return { py: fs.existsSync(venv) ? venv : process.env.PYTHON ?? (process.platform === "win32" ? "python" : "python3"), script };
 }
 
-/** Runs builder A's data/risk.py for one site (a separate process with a minimal environment: no seeds; it loads the root
- *  .env itself), then reads that site's risk from Mongo. Informational only: never decides AS EXPECTED. */
+/** Runs builder A's data/risk.py --site <id> --demo-risk for the golden (a separate process with a minimal environment: no
+ *  seeds; it loads the root .env itself; it writes sites.demo_risk, never sites.risk), then reads the site's demo view from
+ *  Mongo. Informational only: never decides AS EXPECTED. */
 async function recomputeSiteRisk(db: import("mongodb").Db, siteId: string, label: string): Promise<SiteRisk | null> {
   const rp = riskPy();
   if (!rp) return null;
-  console.log(`  [${label}] ${path.relative(paths.rootDir, rp.script)} --site ${siteId} (builder A's deterministic risk score; separate process, no seeds)`);
-  const r = spawnSync(rp.py, [rp.script, "--site", siteId], { cwd: paths.rootDir, env: minimalEnv({ PYTHONIOENCODING: "utf-8" }), encoding: "utf8", timeout: 180000, windowsHide: true });
+  console.log(`  [${label}] ${path.relative(paths.rootDir, rp.script)} --site ${siteId} --demo-risk (Option B what-if -> sites.demo_risk; separate process, no seeds)`);
+  const r = spawnSync(rp.py, [rp.script, "--site", siteId, "--demo-risk"], { cwd: paths.rootDir, env: minimalEnv({ PYTHONIOENCODING: "utf-8" }), encoding: "utf8", timeout: 180000, windowsHide: true });
   const out = `${r.stdout ?? ""}${r.stderr ?? ""}`.trim().split(/\r?\n/).filter(Boolean);
   for (const l of out.slice(-6)) console.log(`    risk.py| ${l.replace(/mongodb(\+srv)?:\/\/\S+/g, "<uri>").slice(0, 300)}`);
   if (r.status !== 0) console.log(`    risk.py exited ${r.status ?? r.signal ?? r.error?.message}`);
-  const site = (await db.collection("sites").findOne({ $or: [{ id: siteId }, { _id: siteId as never }] }, { projection: { risk: 1 } })) as { risk?: SiteRisk } | null;
-  return site?.risk ?? null;
+  return readSiteRisk(db, siteId);
 }
 
-/** Reads a site's stored risk (no recompute). */
+/** Reads a site's stored DEMO view (no recompute): demo_risk ?? risk, exactly what /demo shows. */
 async function readSiteRisk(db: import("mongodb").Db, siteId: string): Promise<SiteRisk | null> {
+  const site = (await db.collection("sites").findOne({ $or: [{ id: siteId }, { _id: siteId as never }] }, { projection: { risk: 1, demo_risk: 1 } })) as { risk?: SiteRisk; demo_risk?: SiteRisk | null } | null;
+  return site?.demo_risk ?? site?.risk ?? null;
+}
+
+/** The public-records risk (sites.risk), printed so the log shows a Testnet payment never moved it. */
+async function readPublicRisk(db: import("mongodb").Db, siteId: string): Promise<SiteRisk | null> {
   const site = (await db.collection("sites").findOne({ $or: [{ id: siteId }, { _id: siteId as never }] }, { projection: { risk: 1 } })) as { risk?: SiteRisk } | null;
   return site?.risk ?? null;
 }
 
-/** NOTIFY_API=1 (a run started by the API): the API re-scores the site when it receives the payment event and broadcasts
- *  that score, so this script only READS the stored risk (a second risk.py run would overwrite the broadcast score's
+/** NOTIFY_API=1 (a run started by the API): the API recomputes the site's demo_risk when it receives the payment event and
+ *  broadcasts it (demo_risk_updated), so this script only READS the stored demo view (a second risk.py run would overwrite the broadcast score's
  *  summary / computed_at with a new Grok text and cost ~2 s per run). */
 const apiScores = () => /^(1|true|yes)$/i.test(process.env.NOTIFY_API ?? "");
 
@@ -718,11 +726,12 @@ async function golden(ctx: AgentCtx, db: import("mongodb").Db): Promise<void> {
 
   const site = ds?.golden_site_id ?? null;
   let before: SiteRisk | null = null;
-  if (site && apiScores()) {
+  let publicBefore: SiteRisk | null = null;
+  if (site && (apiScores() || riskPy())) {
     before = await readSiteRisk(db, site);
-    console.log("  [before] stored risk read from Mongo (NOTIFY_API=1: the API re-scores the site on the payment event)");
-  } else if (site && riskPy()) before = await recomputeSiteRisk(db, site, "before");
-  else if (site) console.log("  data/risk.py does not exist yet: printing the payment decision only");
+    publicBefore = await readPublicRisk(db, site);
+    console.log(`  [before] stored demo view (demo_risk ?? risk) read from Mongo${apiScores() ? " (NOTIFY_API=1: the API recomputes demo_risk on the payment event)" : ""}`);
+  } else if (site) console.log("  data/risk.py does not exist yet: printing the payment decision only");
 
   const input = jsonInput("golden.json", { invoice_id: id, amount: amt, contract_id: contractId, payee_ein: np.ein }, `golden-${id}.json`);
   const r = await processSubmission({ input, contract_id: contractId, expected_invoice_id: id, submitted_via: "seed" }, ctx);
@@ -733,13 +742,15 @@ async function golden(ctx: AgentCtx, db: import("mongodb").Db): Promise<void> {
 
   if (!site || (!riskPy() && !apiScores())) return;
   const after = apiScores() ? await readSiteRisk(db, site) : await recomputeSiteRisk(db, site, "after");
-  if (apiScores()) console.log("  [after] stored risk read from Mongo (written by the API's data/risk.py run for the payment event)");
-  console.log(`\n--- golden: site ${site} risk (builder A's data/risk.py; informational, not part of AS EXPECTED) ---`);
-  printRisk("before", before);
-  printRisk("after ", after);
+  if (apiScores()) console.log("  [after] stored demo_risk read from Mongo (written by the API's data/risk.py --demo-risk run for the payment event)");
+  const publicAfter = await readPublicRisk(db, site);
+  console.log(`\n--- golden: site ${site} demo_risk (Option B what-if for /demo; builder A's data/risk.py; informational, not part of AS EXPECTED) ---`);
+  printRisk("demo_risk before", before);
+  printRisk("demo_risk after ", after);
+  console.log(`  public risk (sites.risk, /map + site report + iMessage; Testnet payments never change it): ${publicBefore ? `${publicBefore.level} ${publicBefore.score}` : "?"} -> ${publicAfter ? `${publicAfter.level} ${publicAfter.score}` : "?"}`);
   const optionB = (after?.reasons ?? []).filter((x) => /xrpl|rlusd|demo scale|testnet/i.test(x));
   for (const x of optionB.length ? optionB : ["(no reason mentions the XRPL demo payments / demo scale)"]) console.log(`  Option B reason: ${x}`);
-  if (before && after && before.level !== after.level) console.log(`  PIN FLIP: ${before.level} -> ${after.level}`);
+  if (before && after && before.level !== after.level) console.log(`  DEMO PIN FLIP (/demo only): ${before.level} -> ${after.level}`);
   else if (before && after) console.log(`  level unchanged (${after.level}); score ${before.score} -> ${after.score}. The level flips at most once per demo epoch.`);
 }
 

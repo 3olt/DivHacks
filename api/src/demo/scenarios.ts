@@ -7,8 +7,7 @@ import { CONTRACTS_BY_ID, releasedOnLedger } from "../fixtures/index";
 import { AUTO_LIMIT, DAILY_CAP, REGISTRY_WALLETS, SWAP_REQUEST_WALLET, ATTACKER_WALLET } from "../fixtures/wallets";
 import { fakeTxHash } from "../lib/hash";
 import { nowNY, toMillis } from "../lib/time";
-import type { Risk } from "../risk";
-import type { DataStore, StoreMode } from "../store";
+import type { DataStore, DemoRiskUpdate, StoreMode } from "../store";
 
 export const SCENARIOS = ["happy", "injection", "duplicate", "over-contract", "address-swap", "over-limit", "kill-switch"] as const;
 export type Scenario = (typeof SCENARIOS)[number];
@@ -19,7 +18,8 @@ export interface DemoResult {
   scenario: Scenario;
   mode: StoreMode;
   decision: Decision;
-  site_updated?: { site_id: string; risk: Risk };
+  /** Sun 04:50: a released demo payment updates demo_risk only (never the public risk, never site_updated). */
+  demo_risk_updated?: DemoRiskUpdate;
 }
 
 export type ScenarioRunner = (scenario: Scenario) => Promise<DemoResult>;
@@ -194,8 +194,8 @@ export function fixtureScenarioRunner(store: DataStore): ScenarioRunner {
 
     if (decision.outcome === "released") {
       const site = await store.findSiteForDecision(decision);
-      const risk = site ? await store.applyRelease(site.id, decision) : null;
-      if (site && risk) result.site_updated = { site_id: site.id, risk };
+      const res = site ? await store.applyRelease(site.id, decision) : null;
+      if (res?.update) result.demo_risk_updated = res.update;
     }
     return result;
   };
