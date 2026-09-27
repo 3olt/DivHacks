@@ -18,10 +18,6 @@ export default function LedgerFeed({
   onReset: () => Promise<void>;
 }) {
   const siteFor = (d: Decision) => sites.find((s) => s.contract_ids.includes(d.contract_id)) ?? sites.find((s) => s.nonprofit_ein === d.payee_ein);
-  const paid = decisions.filter((d) => d.outcome === "released");
-  const blocked = decisions.filter((d) => d.outcome === "refused").length;
-  const pending = decisions.filter((d) => d.outcome === "pending_approval").length;
-  const released = paid.reduce((sum, d) => sum + Number(d.amount), 0);
 
   return (
     <div className="space-y-4">
@@ -30,19 +26,11 @@ export default function LedgerFeed({
         <p className="text-sm text-gray-600">Every payment the AI agent tried to make, whether it went through, and what stopped it. Updates live.</p>
       </div>
 
-      <dl className="grid grid-cols-3 gap-2 text-center">
-        <Stat label="Paid" value={`${paid.length}`} sub={formatMoney(released, "RLUSD")} />
-        <Stat label="Blocked" value={`${blocked}`} />
-        <Stat label="Needs approval" value={`${pending}`} />
-      </dl>
-
-      <DemoControls onReset={onReset} />
-
       {decisions.length === 0 ? (
         <p className="text-sm text-gray-500">No decisions yet.</p>
       ) : (
         <ul className="space-y-2">
-          {decisions.map((d) => {
+          {groupRepeats(decisions).map(({ decision: d, count }) => {
             const site = siteFor(d);
             const badge = OUTCOME_BADGES[d.outcome];
             const enforced = enforcedByLabel(d);
@@ -50,6 +38,7 @@ export default function LedgerFeed({
               <li key={d.decision_id} className="rounded-md border border-gray-200 p-3 text-sm">
                 <div className="flex items-center gap-2">
                   <span className={`rounded px-1.5 py-0.5 text-xs font-medium ${badge.className}`}>{badge.label}</span>
+                  {count > 1 && <span className="text-xs font-medium text-gray-600">×{count} attempts</span>}
                   <span className="ml-auto font-medium text-gray-900">{formatMoney(d.amount, d.currency)}</span>
                 </div>
                 {site ? (
@@ -61,7 +50,11 @@ export default function LedgerFeed({
                 )}
                 {d.refusal_reasons.length > 0 && <p className="text-xs font-medium text-red-700">{refusalLabel(d.refusal_reasons[0])}</p>}
                 {enforced && <p className="text-xs text-gray-700">{enforced}</p>}
+                {d.outcome === "held_escrow" && (
+                  <p className="text-xs text-gray-700">Money set aside for a milestone; released once the delivery is confirmed. Simulated with a test token.</p>
+                )}
                 <p className="mt-1 text-xs text-gray-500">
+                  {count > 1 ? "Latest " : ""}
                   {formatEventTime(d.created_at)} · {d.invoice_id} · signed by {d.signers.join(" + ")}
                 </p>
                 <div className="mt-1 flex flex-wrap gap-x-3 text-[11px]">
@@ -80,16 +73,23 @@ export default function LedgerFeed({
           })}
         </ul>
       )}
+
+      {decisions.length > 0 && <p className="text-[11px] text-gray-500">Repeated attempts in a row are grouped. Every attempt is listed on the open data page.</p>}
+
+      <DemoControls onReset={onReset} />
     </div>
   );
 }
 
-function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
-  return (
-    <div className="rounded-md bg-gray-50 p-2">
-      <dt className="text-xs text-gray-500">{label}</dt>
-      <dd className="text-lg font-semibold text-gray-900">{value}</dd>
-      {sub && <dd className="text-[10px] text-gray-500">{sub}</dd>}
-    </div>
-  );
+// Collapses back-to-back decisions with the same site, outcome, reason, and amount (e.g. a demo button pressed
+// several times) into one row with a count. Newest first, so the shown row is the latest attempt.
+function groupRepeats(decisions: Decision[]): { decision: Decision; count: number }[] {
+  const key = (d: Decision) => [d.contract_id, d.outcome, d.refusal_reasons[0] ?? "", d.amount].join("|");
+  const out: { decision: Decision; count: number }[] = [];
+  for (const d of decisions) {
+    const last = out.at(-1);
+    if (last && key(last.decision) === key(d)) last.count++;
+    else out.push({ decision: d, count: 1 });
+  }
+  return out;
 }
