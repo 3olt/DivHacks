@@ -51,6 +51,8 @@ Judging weights: Concept 30%, Functionality 30%, Wow Factor 20%, UX/Design 10%, 
 ### 0. Landing page (`/`)
 Product overview (`web/src/app/page.tsx`), with **Open data** links to `/data`: transparency pitch, the problem (Comptroller figures with source links), how it works, the agent's guardrails, a demo-data disclaimer, and **"Launch the map"** buttons to `/map`. TODO: add a **Live demo →** link to `/demo`; the "Run a payment from the demo controls" copy is stale (the controls moved to `/demo`).
 
+> **Clear split (Sun ~03:30):** the main map (`/map`) and the text line show **real organizations only** (the 15 real nonprofits; demo sites with `is_demo_data: true` are filtered out in `Dashboard.tsx` and `imessage/src/replies.ts`). Its Live ledger shows only agent payments to those real organizations (today: Food Bank For NYC). The **4 fictional demo nonprofits and every scenario live on `/demo`** (the agent playground). Food Bank For NYC connects the two: paying it on `/demo` moves its real pin on `/map`.
+
 ### 1. Money map (`/map`, shows delays)
 1. **Map:** NYC with pins for food pantries, grocery giveaways, shelters, youth programs, and events.
 2. **Pin color = financial status rating** (from the API's score): 🟢 0–39 financially stable · 🟡 40–69 financially strained · 🔴 70–100 financially critical.

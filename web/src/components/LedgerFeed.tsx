@@ -27,7 +27,13 @@ export default function LedgerFeed({
       </div>
 
       {decisions.length === 0 ? (
-        <p className="text-sm text-gray-500">No decisions yet.</p>
+        <p className="text-sm text-gray-500">
+          No agent payments to these organizations yet. Run one on the{" "}
+          <Link href="/demo" className="underline">
+            live demo
+          </Link>
+          .
+        </p>
       ) : (
         <ul className="space-y-2">
           {groupRepeats(decisions).map(({ decision: d, count }) => {
@@ -74,7 +80,12 @@ export default function LedgerFeed({
         </ul>
       )}
 
-      {decisions.length > 0 && <p className="text-[11px] text-gray-500">Repeated attempts in a row are grouped. Every attempt is listed on the open data page.</p>}
+      {decisions.length > 0 && (
+        <p className="text-[11px] text-gray-500">
+          Payments to the real organizations on this map (Testnet, test money). Repeated attempts in a row are grouped; every attempt, including the demo
+          scenarios, is on the live demo and the open data page.
+        </p>
+      )}
     </div>
   );
 }

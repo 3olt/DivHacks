@@ -109,9 +109,15 @@ export default function SiteReport({ id }: { id: string }) {
             </p>
           )}
           <div className="mt-4 flex flex-wrap gap-3 text-sm">
-            <Link href={`/map?site=${site.id}`} className="rounded-md bg-gray-900 px-3 py-1.5 font-medium text-white">
-              Open on the map
-            </Link>
+            {site.is_demo_data ? (
+              <Link href="/demo" className="rounded-md bg-gray-900 px-3 py-1.5 font-medium text-white">
+                Open the live demo
+              </Link>
+            ) : (
+              <Link href={`/map?site=${site.id}`} className="rounded-md bg-gray-900 px-3 py-1.5 font-medium text-white">
+                Open on the map
+              </Link>
+            )}
             <Link href="/data" className="rounded-md border border-gray-300 px-3 py-1.5 font-medium text-gray-800 hover:border-gray-900">
               All records (open data)
             </Link>

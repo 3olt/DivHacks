@@ -153,6 +153,10 @@ export default function DemoPage() {
         </div>
 
         <div className="space-y-6">
+          <p className="rounded-md bg-amber-50 p-3 text-xs text-amber-900">
+            <strong>This is the agent playground.</strong> The four &quot;(demo)&quot; nonprofits exist only here: fictional organizations with Testnet wallets,
+            so the agent has someone to pay and to block. Food Bank For NYC is a real organization with a demo wallet; paying it moves its pin on the main map.
+          </p>
           <p className="rounded-md bg-gray-50 p-3 text-xs text-gray-600">
             Each payment needs <strong>3 signature weights</strong> on the XRP Ledger: agent 1 + independent co-signer 2 (officer 1 for large payments). The agent
             can&apos;t pay alone.{" "}

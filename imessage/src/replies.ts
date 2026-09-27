@@ -32,6 +32,7 @@ type Site = {
   zip: string;
   events: { title: string; starts_at: string }[];
   risk: Risk;
+  is_demo_data?: boolean;
 };
 type Subscriber = { phone: string; zip: string; interests: string[]; site_ids: string[] };
 type Trail = {
@@ -108,7 +109,7 @@ async function findSubscriber(phone: string): Promise<Subscriber | undefined> {
 async function followPlace(phone: string, query: string): Promise<string> {
   // Words of 3+ letters only, so "FOLLOW a" can't match everything.
   const words = query.toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter((w) => w.length >= 3);
-  const sites = await getJson<Site[]>("/sites");
+  const sites = (await getJson<Site[]>("/sites")).filter((s) => !s.is_demo_data);
   const match = sites
     .map((s) => ({ s, name: s.name.toLowerCase() }))
     .filter(({ name }) => words.length > 0 && words.every((w) => name.includes(w)))
@@ -128,7 +129,8 @@ async function followPlace(phone: string, query: string): Promise<string> {
 async function recommend(phone: string, text: string, prefix: string, known?: Subscriber): Promise<string> {
   const subscriber = known ?? (await findSubscriber(phone));
   if (!subscriber) return NOT_SUBSCRIBED;
-  const sites = await getJson<Site[]>("/sites");
+  // Residents only get real organizations; the fictional demo sites are for the agent demo.
+  const sites = (await getJson<Site[]>("/sites")).filter((s) => !s.is_demo_data);
   const followed = await Promise.all(subscriber.site_ids.slice(0, 2).map(siteFacts));
   const nearby = nearbySites(sites, subscriber).map(nearbyFacts);
   const today = new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "long", month: "short", day: "numeric", year: "numeric" });

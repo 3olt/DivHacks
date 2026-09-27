@@ -148,7 +148,7 @@ export default function Landing() {
             : every site, contract, payment, and agent decision, plus live XRP Ledger transactions, downloadable as CSV or JSON.
           </p>
           <p className="mx-auto mt-8 max-w-2xl text-xs text-gray-500">
-            Built at DivHacks 2026. The map shows 15 real NYC nonprofits built from public records (NYC Comptroller, Checkbook NYC, IRS 990 filings) plus 4 labelled demo sites. Agent payments run on the XRP Ledger Testnet (test money, no real value), and the example card above uses demo data. Public-record sources are linked wherever they&apos;re used.
+            Built at DivHacks 2026. The map shows 15 real NYC nonprofits built from public records (NYC Comptroller, Checkbook NYC, IRS 990 filings); their events are demo. The live demo adds 4 fictional nonprofits so the payment agent has someone to pay and to block. Agent payments run on the XRP Ledger Testnet (test money, no real value), and the example card above uses demo data. Public-record sources are linked wherever they&apos;re used.
           </p>
         </section>
       </main>

@@ -36,7 +36,8 @@ export default function Dashboard({ initialSiteId = null }: { initialSiteId?: st
     let cancelled = false;
     async function loadSites() {
       try {
-        const data = await fetchSites();
+        // The main map is real data only; the fictional demo sites live on /demo.
+        const data = (await fetchSites()).filter((s) => !s.is_demo_data);
         if (!cancelled) {
           setSites(data);
           setApiError(false);
@@ -47,7 +48,8 @@ export default function Dashboard({ initialSiteId = null }: { initialSiteId?: st
     }
     async function loadDecisions() {
       try {
-        const data = await fetchDecisions(50);
+        // Most agent runs are demo scenarios; fetch more so the real organizations' payments are included.
+        const data = await fetchDecisions(200);
         if (!cancelled) setDecisions(data);
       } catch {
         // the map error banner already covers an unreachable API
@@ -133,6 +135,8 @@ export default function Dashboard({ initialSiteId = null }: { initialSiteId?: st
   }
 
   const selectedSite = sites.find((s) => s.id === selectedId) ?? null;
+  // Only payments to the real organizations shown on this map (demo-site runs are on /demo).
+  const realDecisions = decisions.filter((d) => sites.some((s) => s.contract_ids.includes(d.contract_id) || s.nonprofit_ein === d.payee_ein));
   const visibleSites = sites.filter((s) => !hiddenTypes.has(s.type));
   const counts = visibleSites.reduce<Record<string, number>>((acc, s) => ({ ...acc, [s.risk.level]: (acc[s.risk.level] ?? 0) + 1 }), {});
   const typeCounts = sites.reduce<Partial<Record<SiteType, number>>>((acc, s) => ({ ...acc, [s.type]: (acc[s.type] ?? 0) + 1 }), {});
@@ -171,7 +175,7 @@ export default function Dashboard({ initialSiteId = null }: { initialSiteId?: st
                 );
               })}
           </div>
-          {sites.some((s) => s.is_demo_data) && <p className="mt-3 text-[11px] text-gray-500">Includes demo data.</p>}
+          <p className="mt-3 text-[11px] text-gray-500">Real nonprofits from public records. Events are demo.</p>
           {apiError && <p className="mt-3 text-[11px] text-red-600">Can&apos;t reach the API. Is it running on :4000?</p>}
         </div>
       </div>
@@ -188,7 +192,7 @@ export default function Dashboard({ initialSiteId = null }: { initialSiteId?: st
         ) : (
           <div className="space-y-4 p-5">
             <TextUs />
-            <LedgerFeed decisions={decisions} sites={sites} onOpenSite={openSite} />
+            <LedgerFeed decisions={realDecisions} sites={sites} onOpenSite={openSite} />
           </div>
         )}
       </aside>
