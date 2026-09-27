@@ -18,7 +18,8 @@
 // $unset by POST /dev/reset and data/demo_reset.py), subscribers. Decisions are never written
 // here: the agent's Mongo record is authoritative.
 import { MongoClient, type Collection, type Db, type Document, type Filter } from "mongodb";
-import type { AgencyStats, Decision, Nonprofit, Payment, Site, Subscriber, Trail } from "../../shared/contracts";
+import type { AgencyStats, Decision, DecisionSummary, Nonprofit, Payment, Site, Subscriber, Trail } from "../../shared/contracts";
+import { summarizeDecisions, type SinceQuery, type SummaryDecision, type SummarySite } from "./decisionSummary";
 import { DEMO_SITE_IDS, demoSiteDocs } from "./demoSites";
 import { demoReleaseRisk } from "./fixtures/index";
 import { FIXTURE_DECISIONS } from "./fixtures/decisions";
@@ -34,7 +35,8 @@ const consoleLogger: Logger = { info: (m) => console.log(m), warn: (m) => consol
 const NO_ID = { _id: 0 } as const;
 /** Decisions: _id dropped; the agent's `audit` subdocument is never served. The one audit field lifted out is
  *  `approved_from` (additive, public): an officer-approved over-limit execution names the pending decision it executed,
- *  whose decision_hash its on-ledger memo carries. */
+ *  whose decision_hash its on-ledger memo carries. Every other top-level field is served as stored, including the demo
+ *  labels scenario / run_id / step / steps_total (Sun 06:15, written top-level by the demo CLI). */
 const SERVE_DECISION: Document[] = [
   { $addFields: { approved_from: { $cond: [{ $eq: [{ $type: "$audit.approved_from" }, "string"] }, "$audit.approved_from", "$$REMOVE"] } } },
   { $project: { _id: 0, audit: 0 } },
@@ -249,6 +251,38 @@ export class MongoStore implements DataStore {
     // created_at is ISO UTC ("...Z", 1 s resolution) on every agent record, so the string sort is chronological;
     // ties (same second) fall back to insertion order (_id), latest first.
     return (await this.db.collection("decisions").aggregate([NEWEST_FIRST, { $limit: limit }, ...SERVE_DECISION]).toArray()) as unknown as Decision[];
+  }
+
+  /** GET /decisions/summary: every decision (a small projection; no cap) since the bound, grouped per site. "epoch" =
+   *  demo_state.epoch (set by POST /dev/reset -> data/demo_reset.py); no epoch on file = every decision. */
+  async decisionSummary(q: SinceQuery): Promise<DecisionSummary> {
+    const demo = (await this.db.collection("demo_state").findOne({ _id: "golden" as never }, { projection: { epoch: 1, golden_site_id: 1, golden_contract_id: 1 } })) as {
+      epoch?: string;
+      golden_site_id?: string;
+      golden_contract_id?: string;
+    } | null;
+    const epochMs = typeof demo?.epoch === "string" && Number.isFinite(toMillis(demo.epoch)) ? toMillis(demo.epoch) : null;
+    const sinceMs = q.kind === "iso" ? q.ms : q.kind === "epoch" ? epochMs : null;
+    const [sites, rows] = await Promise.all([
+      this.sites.find({}, { projection: { _id: 0, id: 1, name: 1, is_demo_data: 1, contract_ids: 1, nonprofit_ein: 1 } }).toArray(),
+      this.db
+        .collection("decisions")
+        .find({}, { projection: { _id: 0, decision_id: 1, contract_id: 1, payee_ein: 1, amount: 1, currency: 1, outcome: 1, created_at: 1, "audit.approved_from": 1 } })
+        .toArray(),
+    ]);
+    const decisions: SummaryDecision[] = rows.map((r) => ({
+      decision_id: String(r.decision_id),
+      contract_id: String(r.contract_id ?? ""),
+      payee_ein: String(r.payee_ein ?? ""),
+      amount: String(r.amount ?? ""),
+      currency: String(r.currency ?? ""),
+      outcome: String(r.outcome ?? ""),
+      created_at: String(r.created_at ?? ""),
+      approved_from: typeof r.audit?.approved_from === "string" ? r.audit.approved_from : undefined,
+    }));
+    const extra = new Map<string, string>();
+    if (demo?.golden_contract_id && demo.golden_site_id) extra.set(demo.golden_contract_id, demo.golden_site_id);
+    return summarizeDecisions(sites as unknown as SummarySite[], decisions, { sinceMs, sinceMode: q.kind, extraContracts: extra });
   }
 
   async getDecision(id: string): Promise<Decision | null> {

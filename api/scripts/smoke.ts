@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import { config } from "dotenv";
 import WebSocket from "ws";
 import { CHECK_NAMES, REFUSAL_CODES } from "../../shared/contracts";
-import type { AgencyStats, Decision, LiveMessage, Site, Subscriber, Trail } from "../../shared/contracts";
+import type { AgencyStats, Decision, DecisionBuckets, DecisionSummary, LiveMessage, Site, Subscriber, Trail } from "../../shared/contracts";
 
 config({ path: path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../.env"), quiet: true });
 const EVENTS_TOKEN = process.env.EVENTS_TOKEN || "";
@@ -84,6 +84,39 @@ function haversine(a: [number, number], b: [number, number]): number {
 const t = (s: string) => Date.parse(/^\d{4}-\d{2}-\d{2}$/.test(s) ? `${s}T00:00:00Z` : s);
 const isSortedAsc = (xs: number[]) => xs.every((x, i) => i === 0 || xs[i - 1] <= x);
 const levelFor = (score: number) => (score >= 70 ? "red" : score >= 40 ? "yellow" : "green");
+
+// GET /decisions/summary (Sun 06:15): an independent re-count over GET /decisions (integer cents; the API sums exact decimals).
+const BUCKET_OF: Record<string, keyof DecisionBuckets> = { released: "paid", refused: "stopped", pending_approval: "pending", held_escrow: "held" };
+const BUCKET_KEYS = ["paid", "stopped", "pending", "held"] as const;
+type Tally = Record<(typeof BUCKET_KEYS)[number], { count: number; cents: Record<string, number> }>;
+const emptyTally = (): Tally => ({ paid: { count: 0, cents: {} }, stopped: { count: 0, cents: {} }, pending: { count: 0, cents: {} }, held: { count: 0, cents: {} } });
+function tally(decs: Decision[], keep: (d: Decision) => boolean): Tally {
+  const out = emptyTally();
+  for (const d of decs) {
+    const k = BUCKET_OF[d.outcome];
+    if (!k || !keep(d)) continue;
+    out[k].count++;
+    out[k].cents[d.currency] = (out[k].cents[d.currency] ?? 0) + Math.round(Number(d.amount) * 100);
+  }
+  return out;
+}
+function tallyOfBuckets(list: DecisionBuckets[]): Tally {
+  const out = emptyTally();
+  for (const b of list) for (const k of BUCKET_KEYS) {
+    out[k].count += b[k].count;
+    for (const [c, v] of Object.entries(b[k].amounts)) out[k].cents[c] = (out[k].cents[c] ?? 0) + Math.round(Number(v) * 100);
+  }
+  return out;
+}
+const sameTally = (a: Tally, b: Tally) => BUCKET_KEYS.every((k) => a[k].count === b[k].count && JSON.stringify(Object.entries(a[k].cents).sort()) === JSON.stringify(Object.entries(b[k].cents).sort()));
+/** The documented site rule: contract_id in site.contract_ids, else payee_ein = nonprofit_ein (real sites first, then id). */
+function siteOf(sites: Site[], d: Decision): string | null {
+  const ordered = [...sites].sort((a, b) => Number(a.is_demo_data) - Number(b.is_demo_data) || a.id.localeCompare(b.id));
+  return ordered.find((s) => s.contract_ids.includes(d.contract_id))?.id ?? ordered.find((s) => s.nonprofit_ein === d.payee_ein)?.id ?? null;
+}
+const bucketsShapeOk = (b: DecisionBuckets) =>
+  BUCKET_KEYS.every((k) => Number.isInteger(b?.[k]?.count) && Object.entries(b[k].amounts ?? {}).every(([c, v]) => ["RLUSD", "XRP", "CTT"].includes(c) && /^\d+\.\d{2,}$/.test(String(v)))) &&
+  Number.isInteger(b.pending.approved_later) && b.pending.approved_later <= b.pending.count;
 
 class LiveClient {
   readonly messages: LiveMessage[] = [];
@@ -328,9 +361,49 @@ async function main() {
   }
   const lim = await call<Decision[]>("GET", "/decisions?limit=2");
   check("?limit=2 -> 2", lim.status === 200 && lim.body.length === 2 && lim.body[0].decision_id === decs[0].decision_id);
-  for (const bad of ["0", "abc", "201", "-1", "2.5"]) {
+  for (const bad of ["0", "abc", "1001", "-1", "2.5"]) {
     const r = await call("GET", `/decisions?limit=${bad}`);
-    check(`?limit=${bad} -> 400 invalid_limit`, r.status === 400 && r.body?.error === "invalid_limit", r.body);
+    check(`?limit=${bad} -> 400 invalid_limit`, r.status === 400 && r.body?.error === "invalid_limit" && /1 to 1000/.test(r.body?.message ?? ""), r.body);
+  }
+  const lim1000 = await call<Decision[]>("GET", "/decisions?limit=1000");
+  check("?limit=1000 -> 200 (max raised from 200 to 1000), every decision", lim1000.status === 200 && lim1000.body.length >= decs.length && lim1000.body.length <= 1000, lim1000.body?.length);
+  const allDecs = lim1000.body;
+
+  // ---- decisions summary (Sun 06:15) ----
+  const sum0 = await call<DecisionSummary>("GET", "/decisions/summary");
+  const s0 = sum0.body;
+  check(
+    "GET /decisions/summary -> 200 {since:null, since_mode:epoch (fixtures: everything in memory), generated_at, sites, unassigned, totals}",
+    sum0.status === 200 && Object.keys(s0).join() === "since,since_mode,generated_at,sites,unassigned,totals" && s0.since === null && s0.since_mode === "epoch" && !Number.isNaN(Date.parse(s0.generated_at)),
+    sum0.body,
+  );
+  check(
+    "summary: every site once (sorted by id) with {site_id, name, is_demo_data, paid, stopped, pending, held}; buckets {count, amounts{cur: decimal string}}",
+    s0.sites.map((s) => s.site_id).join() === [...sites.map((s) => s.id)].sort().join() &&
+      s0.sites.every((s) => Object.keys(s).join() === "site_id,name,is_demo_data,paid,stopped,pending,held" && bucketsShapeOk(s)) &&
+      bucketsShapeOk(s0.unassigned) && bucketsShapeOk(s0.totals),
+    s0.sites[0],
+  );
+  check("summary totals = a re-count of GET /decisions?limit=1000 by outcome and currency", sameTally(tallyOfBuckets([s0.totals]), tally(allDecs, () => true)), { api: s0.totals, recount: tally(allDecs, () => true) });
+  check("summary: sites + unassigned = totals", sameTally(tallyOfBuckets([...s0.sites, s0.unassigned]), tallyOfBuckets([s0.totals])));
+  check(
+    "summary per site = re-count by contract_ids, then payee_ein",
+    s0.sites.every((s) => sameTally(tallyOfBuckets([s]), tally(allDecs, (d) => siteOf(sites, d) === s.site_id))) && sameTally(tallyOfBuckets([s0.unassigned]), tally(allDecs, (d) => siteOf(sites, d) === null)),
+  );
+  const goldenSum = s0.sites.find((s) => s.site_id === "site_001");
+  check("summary site_001 (fixture golden) has paid RLUSD and stopped decisions", !!goldenSum && goldenSum.paid.count > 0 && Number(goldenSum.paid.amounts.RLUSD) > 0 && goldenSum.stopped.count > 0, goldenSum);
+  const sAll = await call<DecisionSummary>("GET", "/decisions/summary?since=all");
+  check("GET /decisions/summary?since=all -> since null, since_mode all, same totals (fixtures)", sAll.status === 200 && sAll.body.since === null && sAll.body.since_mode === "all" && sameTally(tallyOfBuckets([sAll.body.totals]), tallyOfBuckets([s0.totals])), sAll.body?.since_mode);
+  const sFuture = await call<DecisionSummary>("GET", "/decisions/summary?since=2100-01-01T00:00:00Z");
+  check("GET /decisions/summary?since=2100-01-01T00:00:00Z -> since_mode iso, since set, every bucket 0", sFuture.status === 200 && sFuture.body.since_mode === "iso" && t(sFuture.body.since ?? "") === Date.parse("2100-01-01T00:00:00Z") && BUCKET_KEYS.every((k) => sFuture.body.totals[k].count === 0 && Object.keys(sFuture.body.totals[k].amounts).length === 0), sFuture.body?.totals);
+  const cut = "2026-09-24T00:00:00-04:00";
+  const sCut = await call<DecisionSummary>("GET", `/decisions/summary?since=${encodeURIComponent(cut)}`);
+  check(`GET /decisions/summary?since=${cut} -> totals = re-count of decisions created at/after it`, sCut.status === 200 && sameTally(tallyOfBuckets([sCut.body.totals]), tally(allDecs, (d) => t(d.created_at) >= t(cut))), sCut.body?.totals);
+  const sPlus = await call<DecisionSummary>("GET", "/decisions/summary?since=2026-09-24T04:00:00+00:00");
+  check("GET /decisions/summary?since=...+00:00 with an unencoded + (decoded as a space) -> same as the encoded form", sPlus.status === 200 && t(sPlus.body.since ?? "") === t(cut) && sameTally(tallyOfBuckets([sPlus.body.totals]), tallyOfBuckets([sCut.body.totals])), sPlus.body);
+  for (const bad of ["yesterday", "2026-09-27T10:00:00", "2026-13-45", "1727400000"]) {
+    const r = await call("GET", `/decisions/summary?since=${bad}`);
+    check(`GET /decisions/summary?since=${bad} -> 400 invalid_since`, r.status === 400 && r.body?.error === "invalid_since", r.body);
   }
 
   // ---- subscribers ----
@@ -457,7 +530,8 @@ async function main() {
     check("GET /subscribers without x-api-token -> 401 (SUBSCRIBERS_TOKEN set)", noTok.status === 401);
   }
   // Phase 5: escrow runs on XRPL Testnet only; fixture mode answers 409 testnet_only (the placeholder is gone).
-  for (const s of ["escrow", "escrow-release"]) {
+  // Sun 06:15: the edge-case scenarios (and golden / uncredentialed) are real Testnet runs only.
+  for (const s of ["escrow", "escrow-release", "golden", "uncredentialed", "tamper", "expired-contract", "unknown-contract", "low-balance"]) {
     const r = await call("POST", `/demo/${s}`);
     check(`POST /demo/${s} (fixtures) -> 409 testnet_only`, r.status === 409 && r.body?.error === "testnet_only" && /mongo mode/.test(r.body?.message ?? ""), r.body);
   }
@@ -520,6 +594,15 @@ async function main() {
   check("POST /demo/<Object.prototype name> -> 404 unknown_scenario", protoRes.every((r) => r.status === 404 && r.body?.error === "unknown_scenario"), protoRes.map((r) => r.status));
   const unknown = await call("POST", "/demo/nope");
   check("POST /demo/nope -> 404 unknown_scenario with list", unknown.status === 404 && unknown.body?.error === "unknown_scenario" && Array.isArray(unknown.body.scenarios) && unknown.body.scenarios.length === 7, unknown.body);
+
+  // Summary after the demo clicks and pushed events: still = a re-count of GET /decisions (per site too).
+  const endDecs = (await call<Decision[]>("GET", "/decisions?limit=1000")).body;
+  const sEnd = (await call<DecisionSummary>("GET", "/decisions/summary")).body;
+  check(
+    "summary after the demo clicks: totals and every site = re-count of GET /decisions?limit=1000",
+    sameTally(tallyOfBuckets([sEnd.totals]), tally(endDecs, () => true)) && sEnd.sites.every((s) => sameTally(tallyOfBuckets([s]), tally(endDecs, (d) => siteOf(sites, d) === s.site_id))) && sEnd.totals.paid.count > s0.totals.paid.count,
+    { before: s0.totals.paid, after: sEnd.totals.paid },
+  );
 
   // ---- reset ----
   const reset = await call("POST", "/dev/reset");

@@ -6,8 +6,11 @@
 //   - a contract that did not exist at startup is admitted ONLY if it is flagged is_demo_data, pays an EIN in the
 //     pinned registry, and has a small budget (<= LATE_CONTRACT_MAX_BUDGET_RLUSD); at most LATE_CONTRACT_MAX_COUNT
 //     per co-signer lifetime. Once admitted it is pinned too. Anything else -> contract_not_found.
-//     (This keeps `npm run demo over-contract` working against an already-running co-signer. The damage a forged
-//     late contract can do is bounded by that budget, AUTO_LIMIT, the daily caps and the registry-wallet allowlist.)
+//     (This keeps `npm run demo over-contract` (DEMO-OC-*) and `npm run demo expired-contract` (DEMO-EXP-*, a term that
+//     already ended) working against an already-running co-signer. The rule is by those properties, never by id prefix.
+//     Admission does not skip any check: an admitted contract whose term has ended is still refused contract_not_active
+//     by check 4. The damage a forged late contract can do is bounded by that budget, AUTO_LIMIT, the daily caps and the
+//     registry-wallet allowlist.)
 // The agent's own audit uses liveContractResolver (no pin; record-keeping only).
 import type { Db } from "mongodb";
 import { canonicalJson, sha256Hex } from "../../../shared/hash";

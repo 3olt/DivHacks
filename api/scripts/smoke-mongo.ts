@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import { config } from "dotenv";
 import WebSocket from "ws";
 import { CHECK_NAMES } from "../../shared/contracts";
-import type { AgencyStats, Decision, LiveMessage, Site, Trail } from "../../shared/contracts";
+import type { AgencyStats, Decision, DecisionBuckets, DecisionSummary, LiveMessage, Site, Trail } from "../../shared/contracts";
 
 config({ path: path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../.env"), quiet: true });
 const API = (process.env.SMOKE_API_URL ?? process.env.API_URL ?? "http://localhost:4000").replace(/\/+$/, "");
@@ -77,6 +77,39 @@ function haversine(a: [number, number], b: [number, number]): number {
   return 2 * 6_371_008.8 * Math.asin(Math.sqrt(h));
 }
 
+// GET /decisions/summary (Sun 06:15): an independent re-count over GET /decisions (integer cents; the API sums exact decimals).
+const BUCKET_OF: Record<string, keyof DecisionBuckets> = { released: "paid", refused: "stopped", pending_approval: "pending", held_escrow: "held" };
+const BUCKET_KEYS = ["paid", "stopped", "pending", "held"] as const;
+type Tally = Record<(typeof BUCKET_KEYS)[number], { count: number; cents: Record<string, number> }>;
+const emptyTally = (): Tally => ({ paid: { count: 0, cents: {} }, stopped: { count: 0, cents: {} }, pending: { count: 0, cents: {} }, held: { count: 0, cents: {} } });
+function tally(decs: Decision[], keep: (d: Decision) => boolean): Tally {
+  const out = emptyTally();
+  for (const d of decs) {
+    const k = BUCKET_OF[d.outcome];
+    if (!k || !keep(d)) continue;
+    out[k].count++;
+    out[k].cents[d.currency] = (out[k].cents[d.currency] ?? 0) + Math.round(Number(d.amount) * 100);
+  }
+  return out;
+}
+function tallyOfBuckets(list: DecisionBuckets[]): Tally {
+  const out = emptyTally();
+  for (const b of list) for (const k of BUCKET_KEYS) {
+    out[k].count += b[k].count;
+    for (const [c, v] of Object.entries(b[k].amounts)) out[k].cents[c] = (out[k].cents[c] ?? 0) + Math.round(Number(v) * 100);
+  }
+  return out;
+}
+const sameTally = (a: Tally, b: Tally) => BUCKET_KEYS.every((k) => a[k].count === b[k].count && JSON.stringify(Object.entries(a[k].cents).sort()) === JSON.stringify(Object.entries(b[k].cents).sort()));
+/** The documented site rule: contract_id in site.contract_ids, else payee_ein = nonprofit_ein (real sites first, then id). */
+function siteOf(sites: Site[], d: Decision): string | null {
+  const ordered = [...sites].sort((a, b) => Number(a.is_demo_data) - Number(b.is_demo_data) || a.id.localeCompare(b.id));
+  return ordered.find((s) => s.contract_ids.includes(d.contract_id))?.id ?? ordered.find((s) => s.nonprofit_ein === d.payee_ein)?.id ?? null;
+}
+const bucketsShapeOk = (b: DecisionBuckets) =>
+  BUCKET_KEYS.every((k) => Number.isInteger(b?.[k]?.count) && Object.entries(b[k].amounts ?? {}).every(([c, v]) => ["RLUSD", "XRP", "CTT"].includes(c) && /^\d+\.\d{2,}$/.test(String(v)))) &&
+  Number.isInteger(b.pending.approved_later) && b.pending.approved_later <= b.pending.count;
+
 function siteShapeProblems(s: Site): string[] {
   const out: string[] = [];
   const x = s as unknown as Record<string, unknown>;
@@ -115,6 +148,11 @@ function decisionShapeProblems(d: Decision): string[] {
   if (!(eight || (d.currency === "CTT" && escrowChecks))) out.push(d.currency === "CTT" ? "checks (8 CHECK_NAMES or escrow_*)" : "checks (8, CHECK_NAMES order)");
   if (typeof d.source_tag !== "number") out.push("source_tag");
   if (d.outcome === "released" && (!d.xrpl_tx_hash || d.ledger_result !== "tesSUCCESS")) out.push("released without tx/tesSUCCESS");
+  // Sun 06:15 demo labels (optional, top-level, served as stored): typed when present.
+  if (d.scenario !== undefined && typeof d.scenario !== "string") out.push("scenario");
+  if (d.run_id !== undefined && typeof d.run_id !== "string") out.push("run_id");
+  if (d.step !== undefined && !(Number.isInteger(d.step) && d.step >= 1)) out.push("step");
+  if (d.steps_total !== undefined && !(Number.isInteger(d.steps_total) && d.steps_total >= 1)) out.push("steps_total");
   return out;
 }
 
@@ -266,9 +304,75 @@ async function main(): Promise<void> {
   check("real decisions include a ledger tefBAD_QUORUM and a CTT escrow decision", all.body.some((d) => d.ledger_result === "tefBAD_QUORUM" && d.enforced_by === "ledger") && all.body.some((d) => d.currency === "CTT"));
   const five = await get<Decision[]>("/decisions?limit=5");
   check("GET /decisions?limit=5 -> 5, same head as the default", five.body.length === 5 && five.body.map((d) => d.decision_id).join() === decs.body.slice(0, 5).map((d) => d.decision_id).join());
-  for (const q of ["0", "201", "abc", "1.5"]) {
+  for (const q of ["0", "1001", "abc", "1.5"]) {
     const r = await get(`/decisions?limit=${q}`);
     check(`GET /decisions?limit=${q} -> 400 invalid_limit`, r.status === 400 && r.body?.error === "invalid_limit");
+  }
+
+  // ---- decisions summary (Sun 06:15) ----
+  // Read summary, decisions, summary again; retry if a demo run wrote a decision in between (the two summaries differ).
+  let sEpoch: DecisionSummary | null = null;
+  let sAllSum: DecisionSummary | null = null;
+  let every: Decision[] = [];
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const a = await get<DecisionSummary>("/decisions/summary");
+    const aAll = await get<DecisionSummary>("/decisions/summary?since=all");
+    const list = await get<Decision[]>("/decisions?limit=1000");
+    const b = await get<DecisionSummary>("/decisions/summary?since=all");
+    const c = await get<DecisionSummary>("/decisions/summary");
+    if (a.status !== 200 || aAll.status !== 200 || list.status !== 200) {
+      check("GET /decisions/summary + /decisions?limit=1000 -> 200", false, { a: a.status, all: aAll.status, list: list.status, body: a.body });
+      break;
+    }
+    [sEpoch, sAllSum, every] = [a.body, aAll.body, list.body];
+    if (JSON.stringify(aAll.body.totals) === JSON.stringify(b.body?.totals) && JSON.stringify(a.body.totals) === JSON.stringify(c.body?.totals)) break;
+    console.log("  (a decision was recorded during the summary check; retrying)");
+  }
+  if (sEpoch && sAllSum) {
+    check(`GET /decisions?limit=1000 -> 200 (max raised to 1000): ${every.length} decisions, newest first`, every.length <= 1000 && every.length >= all.body.length && every.every((d, i, a) => i === 0 || t(a[i - 1].created_at) >= t(d.created_at)));
+    const complete = every.length < 1000; // otherwise GET /decisions is capped and cannot be the reference
+    check(
+      "GET /decisions/summary -> {since (demo_state.epoch) , since_mode:epoch, generated_at, sites, unassigned, totals}",
+      Object.keys(sEpoch).join() === "since,since_mode,generated_at,sites,unassigned,totals" && sEpoch.since_mode === "epoch" && (sEpoch.since === null || !Number.isNaN(t(sEpoch.since))) && !Number.isNaN(t(sEpoch.generated_at)),
+      { since: sEpoch.since, since_mode: sEpoch.since_mode },
+    );
+    check(
+      `summary: every site once (${sEpoch.sites.length}, sorted by id, = GET /sites) with {site_id, name, is_demo_data, paid, stopped, pending, held}; buckets {count, amounts}`,
+      sEpoch.sites.map((s) => s.site_id).join() === [...sites.map((s) => s.id)].sort().join() &&
+        sEpoch.sites.every((s) => Object.keys(s).join() === "site_id,name,is_demo_data,paid,stopped,pending,held" && bucketsShapeOk(s)) &&
+        bucketsShapeOk(sEpoch.unassigned) && bucketsShapeOk(sEpoch.totals),
+      sEpoch.sites.find((s) => !bucketsShapeOk(s)),
+    );
+    const sinceMs = sEpoch.since === null ? -Infinity : t(sEpoch.since);
+    const nSince = every.filter((d) => t(d.created_at) >= sinceMs).length;
+    check(
+      `summary (since the epoch ${sEpoch.since}) totals = a manual re-count of GET /decisions since the epoch (${nSince} decisions)`,
+      complete && sameTally(tallyOfBuckets([sEpoch.totals]), tally(every, (d) => t(d.created_at) >= sinceMs)),
+      { complete, api: sEpoch.totals, recount: tally(every, (d) => t(d.created_at) >= sinceMs) },
+    );
+    check("summary (epoch): sites + unassigned = totals", sameTally(tallyOfBuckets([...sEpoch.sites, sEpoch.unassigned]), tallyOfBuckets([sEpoch.totals])));
+    check(
+      `summary?since=all totals = a manual re-count of every decision (${every.length})`,
+      complete && sAllSum.since === null && sAllSum.since_mode === "all" && sameTally(tallyOfBuckets([sAllSum.totals]), tally(every, () => true)),
+      { api: sAllSum.totals, recount: tally(every, () => true) },
+    );
+    const wrong = sAllSum.sites.filter((s) => !sameTally(tallyOfBuckets([s]), tally(every, (d) => siteOf(sites, d) === s.site_id))).map((s) => s.site_id);
+    check(
+      "summary?since=all per site (and unassigned) = re-count by contract_ids, then payee_ein",
+      complete && wrong.length === 0 && sameTally(tallyOfBuckets([sAllSum.unassigned]), tally(every, (d) => siteOf(sites, d) === null)),
+      wrong,
+    );
+    const approvedIds = new Set(every.filter((d) => d.outcome === "released" && d.approved_from).map((d) => d.approved_from));
+    const approvedLater = every.filter((d) => d.outcome === "pending_approval" && approvedIds.has(d.decision_id)).length;
+    check(`summary?since=all pending.approved_later = pending decisions an officer-approved execution names (${approvedLater})`, sAllSum.totals.pending.approved_later === approvedLater, sAllSum.totals.pending);
+    const g = sAllSum.sites.find((s) => s.site_id === "site_fbnyc");
+    check("summary?since=all: golden site_fbnyc has paid RLUSD; a demo site has simulated-escrow CTT", !!g && g.paid.count > 0 && Number(g.paid.amounts.RLUSD) > 0 && sAllSum.sites.some((s) => s.is_demo_data && (s.held.amounts.CTT !== undefined || s.paid.amounts.CTT !== undefined)), g?.paid);
+  }
+  const sFuture = await get<DecisionSummary>("/decisions/summary?since=2100-01-01T00:00:00Z");
+  check("GET /decisions/summary?since=2100-01-01T00:00:00Z -> since_mode iso, every bucket 0", sFuture.status === 200 && sFuture.body.since_mode === "iso" && t(sFuture.body.since ?? "") === Date.parse("2100-01-01T00:00:00Z") && BUCKET_KEYS.every((k) => sFuture.body.totals[k].count === 0), sFuture.body?.totals);
+  for (const q of ["yesterday", "2026-09-27T10:00:00", "2026-02-30T25:00:00Z"]) {
+    const r = await get(`/decisions/summary?since=${q}`);
+    check(`GET /decisions/summary?since=${q} -> 400 invalid_since`, r.status === 400 && r.body?.error === "invalid_since", r.body);
   }
 
   // ---- xrpl accounts, subscribers, demo runs ----
@@ -303,7 +407,7 @@ async function main(): Promise<void> {
     check("POST /dev/flip in mongo mode -> 403 dev_route_disabled (DEV_ROUTES unset)", flip.status === 403 && flip.body?.error === "dev_route_disabled");
   }
   const unknown = await post("/demo/nope");
-  check("POST /demo/nope -> 404 unknown_scenario with the mongo list (incl. golden, uncredentialed, escrow)", unknown.status === 404 && ["happy", "golden", "uncredentialed", "escrow", "escrow-release"].every((s) => unknown.body?.scenarios?.includes(s)));
+  check("POST /demo/nope -> 404 unknown_scenario with the mongo list (incl. golden, uncredentialed, escrow, tamper, expired-contract, unknown-contract, low-balance)", unknown.status === 404 && ["happy", "golden", "uncredentialed", "escrow", "escrow-release", "tamper", "expired-contract", "unknown-contract", "low-balance"].every((s) => unknown.body?.scenarios?.includes(s)));
   const noop = await post("/demo/escrow-release");
   check("POST /demo/escrow-release -> 202 no-op with a message (no run started)", noop.status === 202 && noop.body?.status === "noop" && noop.body?.run_id === null && noop.body?.decision === null && typeof noop.body?.message === "string");
   const proto: { name: string; status: number }[] = [];

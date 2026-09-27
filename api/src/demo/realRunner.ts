@@ -29,6 +29,15 @@ export const REAL_SCENARIOS: Record<string, string> = {
   "over-limit": "over-limit",
   "kill-switch": "kill-switch",
   escrow: "escrow",
+  // Sun 06:15 edge cases (every step is refused; no money moves):
+  /** [SIMULATED COMPROMISED AGENT] malformed payments to the co-signer: wrong SourceTag, wrong currency/issuer, a stale replay. */
+  tamper: "tamper",
+  /** An invoice under a demo contract whose term has ended -> the co-signer refuses contract_not_active. */
+  "expired-contract": "expired-contract",
+  /** An invoice citing a contract not on file -> the builder refuses; a simulated compromised agent pushes it -> the co-signer refuses. */
+  "unknown-contract": "unknown-contract",
+  /** An invoice larger than the agent's RLUSD working balance -> the pre-flight refuses agent_balance_insufficient. */
+  "low-balance": "low-balance",
 };
 /** Accepted but does nothing in mongo mode: the real escrow run already includes the officer-approved release. */
 export const NOOP_SCENARIOS: Record<string, string> = {
@@ -135,6 +144,10 @@ export class RealDemoRunner {
     const args = ["--import", "tsx", path.join(XRPL_DIR, "scripts", "demo.ts"), cli];
     if (this.opts.noSpawn) args.push("no-spawn");
     const env = osEnv({
+      // Sun 06:15 (Q4): the demo CLI stamps every decision it records with scenario = DEMO_SCENARIO (the API name, so
+      // "happy" stays "happy" though it runs "golden") and run_id = DEMO_RUN_ID (this run), plus step / steps_total.
+      DEMO_RUN_ID: run_id,
+      DEMO_SCENARIO: scenario,
       NOTIFY_API: "1",
       API_URL: this.opts.apiUrl,
       EVENTS_TOKEN: this.opts.eventsToken,

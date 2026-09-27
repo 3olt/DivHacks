@@ -9,6 +9,9 @@
 // Two SIMULATED COMPROMISED-AGENT modes exist only for the injection demo (clearly labelled in the decision):
 //   compromised_cosigner    obeys an injected address and still asks the co-signer  -> the co-signer refuses
 //   compromised_agent_only  obeys it and submits with its own signature only       -> the LEDGER refuses (tefBAD_QUORUM)
+// (Sun, phase 6) compromised_cosigner + `tamper` (the tamper demo): the simulated compromised agent edits the autofilled
+// transaction before signing it (wrong SourceTag / a look-alike token from another issuer / an old Sequence + expired
+// LastLedgerSequence) and asks the co-signer anyway -> the co-signer refuses (check 8).
 import { Wallet, multisign, hashes, decode, type Client, type Payment as XrplPayment } from "xrpl";
 import type { Db } from "mongodb";
 import type { Check, Decision, Invoice, Payment, RefusalCode } from "../../../shared/contracts";
@@ -59,8 +62,35 @@ export interface Attempt {
 
 export type PayMode =
   | { kind: "normal" }
-  | { kind: "compromised_cosigner"; destination: string }
+  | { kind: "compromised_cosigner"; destination: string; tamper?: TxTamper }
   | { kind: "compromised_agent_only"; destination: string };
+
+/** SIMULATED COMPROMISED AGENT only (npm run demo tamper): how it edits the autofilled Payment before the agent signs it. */
+export type TxTamper =
+  /** Another SourceTag than AGENT_SOURCE_TAG. */
+  | { kind: "source_tag"; source_tag: number }
+  /** Same currency code, but issued by another account (a look-alike token), not the RLUSD issuer. */
+  | { kind: "currency"; issuer: string }
+  /** Replay-style stale transaction: an already-consumed Sequence and an expired LastLedgerSequence. */
+  | { kind: "stale" };
+
+function applyTamper(tx: XrplPayment, t: TxTamper): string {
+  if (t.kind === "source_tag") {
+    const was = tx.SourceTag;
+    tx.SourceTag = t.source_tag;
+    return `SourceTag ${String(was)} -> ${t.source_tag}`;
+  }
+  if (t.kind === "currency") {
+    const a = tx.Amount as { currency: string; issuer: string; value: string };
+    tx.Amount = { currency: a.currency, issuer: t.issuer, value: a.value };
+    return `Amount issuer ${a.issuer} -> ${t.issuer} (same currency code, a look-alike token)`;
+  }
+  const seq = Number(tx.Sequence);
+  const lls = Number(tx.LastLedgerSequence);
+  tx.Sequence = seq - 1;
+  tx.LastLedgerSequence = lls - 40;
+  return `Sequence ${seq} -> ${seq - 1} (already consumed on-ledger), LastLedgerSequence ${lls} -> ${lls - 40} (already passed)`;
+}
 
 export type CosignResponse =
   | { ok: true; signer: "cosigner"; signer_address: string; signed_blob: string; checks: Check[] }
@@ -146,11 +176,12 @@ export async function payInvoice(invoice: Invoice, ctx: AgentCtx, opts: { reason
     const agentOnly = mode.kind === "compromised_agent_only";
     st.stage = "autofill";
     const prepared = await client.autofill(tx, agentOnly ? 1 : 2);
+    if (mode.kind === "compromised_cosigner" && mode.tamper) log(`agent: [SIMULATED COMPROMISED AGENT] tampers with the transaction before signing: ${applyTamper(prepared, mode.tamper)}`);
     const lls = prepared.LastLedgerSequence;
     if (typeof lls !== "number") throw new Error("autofill did not set LastLedgerSequence");
     const agentBlob = ctx.agentWallet.sign(prepared, true).tx_blob;
     st.agentSigned = true;
-    log(`agent: built Payment ${invoice.amount} RLUSD -> ${destination}${hit && mode.kind === "normal" ? ` (${hit.key}, EIN ${invoice.payee_ein})` : " (NOT a registry wallet)"}; memo ${memo.bytes} bytes; Sequence ${prepared.Sequence}, LastLedgerSequence ${lls}; agent_account holds ${held} RLUSD`);
+    log(`agent: built Payment ${invoice.amount} RLUSD -> ${destination}${hit && destination === hit.np.address ? ` (${hit.key}, EIN ${invoice.payee_ein})` : " (NOT a registry wallet)"}; memo ${memo.bytes} bytes; Sequence ${prepared.Sequence}, LastLedgerSequence ${lls}; agent_account holds ${held} RLUSD`);
 
     // 3a. SIMULATED compromised agent: skip the co-signer and submit with the agent's signature alone.
     if (agentOnly) {

@@ -1,6 +1,7 @@
 // Data access behind one interface: FixtureStore (in-memory demo data, API_MODE=fixtures) and MongoStore
 // (./mongoStore.ts, the Phase 4 collections in MongoDB Atlas, API_MODE=mongo). All methods are async. Returned objects are copies.
-import type { AgencyStats, Decision, Site, SiteType, Subscriber, Trail } from "../../shared/contracts";
+import type { AgencyStats, Decision, DecisionSummary, Site, SiteType, Subscriber, Trail } from "../../shared/contracts";
+import { summarizeDecisions, type SinceQuery } from "./decisionSummary";
 import {
   agencyByCode,
   CHECKBOOK_PAYMENTS,
@@ -59,6 +60,8 @@ export interface DataStore {
   getAgencyStats(code: string): Promise<AgencyStats | null>;
   /** Newest first. */
   listDecisions(limit: number): Promise<Decision[]>;
+  /** GET /decisions/summary (Sun 06:15): per-site paid / stopped / pending / held totals over every decision since the bound. */
+  decisionSummary(q: SinceQuery): Promise<DecisionSummary>;
   getDecision(id: string): Promise<Decision | null>;
   /** Insert or replace by decision_id. */
   upsertDecision(d: Decision): Promise<void>;
@@ -155,6 +158,11 @@ export class FixtureStore implements DataStore {
 
   async listDecisions(limit: number): Promise<Decision[]> {
     return clone(newestFirst(this.state.decisions).slice(0, limit));
+  }
+
+  /** Fixture mode: "epoch" = everything in memory (POST /dev/reset restores the fixture decisions), so no lower bound. */
+  async decisionSummary(q: SinceQuery): Promise<DecisionSummary> {
+    return summarizeDecisions(this.state.sites, this.state.decisions, { sinceMs: q.kind === "iso" ? q.ms : null, sinceMode: q.kind });
   }
 
   async getDecision(id: string): Promise<Decision | null> {

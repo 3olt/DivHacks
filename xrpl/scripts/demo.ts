@@ -37,6 +37,24 @@
 //                  incl. the on-ledger credential carrying the REAL EIN) -> released to np_5, its DEMO WALLET on Testnet (the
 //                  organization has not onboarded). Then, if data/risk.py exists, the golden site's risk before/after (the
 //                  XRPL payment counts at the disclosed demo scale). Not in `all`: it depends on builder A's live data.
+// Phase 6 (Sun, edge cases the guardrails handle; nothing is submitted, no money moves; invoice ids INV-P6-<KIND>-<stamp>):
+//   tamper           a SIMULATED COMPROMISED AGENT sends the co-signer 3 malformed DEMO_AMOUNT payments to np_1 (credentialed
+//                    registry payee): (A) wrong SourceTag -> bad_source_tag; (B) a look-alike token (same currency code,
+//                    issued by the attacker account) -> bad_currency; (C) a stale replay (already-consumed Sequence + expired
+//                    LastLedgerSequence) -> tx_not_fresh. All enforced_by "cosigner"
+//   expired-contract a fresh demo contract DEMO-EXP-<stamp> (np_2, small budget) whose term ended last month; its invoice ->
+//                    (a) the builder refuses contract_not_active (agent policy, nothing signed); (b) a SIMULATED COMPROMISED
+//                    AGENT pushes it to the co-signer anyway -> the co-signer (late-admits the small demo contract, still
+//                    runs check 4) refuses contract_not_active
+//   unknown-contract an invoice citing contract DEMO-UNK-<stamp>, which is not on file -> (a) the builder refuses
+//                    contract_not_found; (b) a SIMULATED COMPROMISED AGENT pushes it to the co-signer -> contract_not_found
+//   low-balance      an invoice for (agent_account's RLUSD working balance + 100) under np_1's valid contract -> the agent's
+//                    pre-flight refuses agent_balance_insufficient before anything is signed (a leaked agent key can only
+//                    ever reach the small working balance, never the treasury)
+//   phase6           tamper, expired-contract, unknown-contract, low-balance
+// Decision labels (Sun, Q4): every decision this CLI records carries scenario, run_id, step, steps_total (additive, not in
+// decision_hash). DEMO_RUN_ID / DEMO_SCENARIO (set by the API's POST /demo/:scenario) override the defaults
+// ("cli_<UTC stamp>" / the CLI scenario name; DEMO_SCENARIO applies when a single scenario runs, e.g. happy -> golden).
 // Officer clicks: the officer service requires the officer's click credential (OFFICER_CLICK_TOKEN, only in
 // xrpl/.env.officer). This process never has it; it runs the officer's click CLI (scripts/officer-click.ts) as a separate
 // process to stand in for the human (labelled in the output). manual-officer waits for a real human instead.
@@ -53,6 +71,7 @@
 //      npm run demo injection | duplicate | over-contract | phase2
 //      npm run demo address-swap | uncredentialed | phase3a
 //      npm run demo over-limit | kill-switch | escrow | all
+//      npm run demo tamper | expired-contract | unknown-contract | low-balance | phase6
 //      modifiers: keep (leave auto-spawned services running), no-spawn (require externally started services),
 //                 manual-officer (address-swap waits for a human to run "npm run officer:resolve -- <id> reject";
 //                 over-limit waits for a human to run "npm run officer:click -- approve <decision_id>")
@@ -86,9 +105,15 @@ import { classifySignerList, CTT_CURRENCY } from "../src/lib/governance";
 import { agentCttBalance, createMilestoneEscrow, ensureAgentCttLine, releaseMilestoneEscrow, LABEL as ESCROW_LABEL } from "../src/agent/escrow";
 import type { GovOutcome } from "../src/officer/governance";
 import { readDemoState } from "../src/lib/golden";
+import type { TxTamper } from "../src/agent/payInvoice";
+import type { DecisionLabels } from "../src/agent/record";
+import { findContract } from "../src/lib/mongo";
+import { rlusd, sourceTag } from "../src/lib/xrpl";
+import type { RefusalCode } from "../../shared/contracts";
 
 const ALL = ["happy", "injection", "duplicate", "over-contract", "uncredentialed", "address-swap", "over-limit", "kill-switch", "escrow"];
-const SCENARIOS = ["happy", "injection", "duplicate", "over-contract", "phase2", "address-swap", "uncredentialed", "phase3a", "over-limit", "kill-switch", "escrow", "golden", "all"];
+const PHASE6 = ["tamper", "expired-contract", "unknown-contract", "low-balance"];
+const SCENARIOS = ["happy", "injection", "duplicate", "over-contract", "phase2", "address-swap", "uncredentialed", "phase3a", "over-limit", "kill-switch", "escrow", "golden", ...PHASE6, "phase6", "all"];
 const FORMATS = ["json", "txt", "pdf", "png", "scan"] as const;
 type Format = (typeof FORMATS)[number];
 const MODIFIERS = new Set(["keep", "no-spawn", "manual-officer", ...FORMATS]);
@@ -182,6 +207,7 @@ function show(label: string, r: Shown, expect: string, ok: boolean): void {
   else if (r.explorer_url && d.outcome === "held_escrow") console.log(`HELD IN ESCROW (${d.ledger_result}; not paid yet): ${r.explorer_url}`);
   else if (r.explorer_url) console.log(`on-ledger but NOT PAID (${d.ledger_result}): ${r.explorer_url}`);
   if (r.recorded) console.log(`recorded: mongo ${r.recorded.mongo}; decisions.local.jsonl appended; notify API ${r.recorded.notified}`);
+  if (d.run_id) console.log(`labels: scenario ${d.scenario}, run_id ${d.run_id}, step ${d.step}/${d.steps_total}`);
   console.log(`${ok ? "AS EXPECTED" : "UNEXPECTED"}: expected ${expect}`);
   rows.push({
     scenario: SCEN, step: label, outcome: d.outcome, enforced_by: String(d.enforced_by), engine_result: d.ledger_result ?? "-",
@@ -190,6 +216,33 @@ function show(label: string, r: Shown, expect: string, ok: boolean): void {
 }
 
 const has = (d: Decision, ...codes: string[]) => codes.every((c) => d.refusal_reasons.includes(c as never));
+
+// ---------------------------------------------------------------------------------------------------------------
+// Decision labels (Sun, Q4): scenario, run_id, step, steps_total on every decision this CLI records (Recorder hook).
+// Additive fields, NOT in DECISION_HASH_FIELDS: they never change decision_hash or the on-ledger memo.
+
+const LABEL_RE = /^[A-Za-z0-9_.:-]{1,80}$/;
+const envLabel = (k: string) => {
+  const v = process.env[k]?.trim();
+  return v && LABEL_RE.test(v) ? v : undefined;
+};
+const RUN_ID = envLabel("DEMO_RUN_ID") ?? `cli_${stamp()}`;
+/** Decisions each scenario records when every step runs. */
+const STEPS_TOTAL: Record<string, number> = {
+  happy: 1, golden: 1, injection: 3, duplicate: 2, "over-contract": 2, uncredentialed: 1, "address-swap": 3,
+  "over-limit": 2, "kill-switch": 2, escrow: 4, tamper: 3, "expired-contract": 2, "unknown-contract": 2, "low-balance": 1,
+};
+let labelScenario = "";
+const stepOf = new Map<string, number>(); // decision_id -> step (a decision recorded twice keeps its step)
+
+function labelsFor(decisionId: string): DecisionLabels {
+  let step = stepOf.get(decisionId);
+  if (step === undefined) {
+    step = stepOf.size + 1;
+    stepOf.set(decisionId, step);
+  }
+  return { scenario: labelScenario, run_id: RUN_ID, step, steps_total: Math.max(STEPS_TOTAL[SCEN] ?? step, step) };
+}
 
 // ---------------------------------------------------------------------------------------------------------------
 // scenarios
@@ -501,6 +554,10 @@ async function overLimit(ctx: AgentCtx, db: MongoHandle["db"]): Promise<void> {
     row("over-limit (b): officer approval -> 3-signer payment", `no decision (${String(exec.error ?? "")}: ${String(exec.message ?? "")})`, null, null, false, "released with agent + officer + co-signer");
     return;
   }
+  // The executed decision was recorded by the xrpl service (another process): add this run's labels to it in Mongo.
+  const lab = labelsFor(d.decision_id);
+  Object.assign(d, lab);
+  await db.collection(COLL.decisions).updateOne({ decision_id: d.decision_id }, { $set: lab }).catch((e) => console.log(`labels: could not add to ${d.decision_id} (${(e as Error).message.slice(0, 120)})`));
   const onLedger = d.xrpl_tx_hash && d.outcome === "released" ? await ledgerSigners(ctx, d.xrpl_tx_hash) : [];
   console.log(`on-ledger Signers of ${d.xrpl_tx_hash}: ${onLedger.join(" + ") || "(none)"}`);
   const approvedFrom = await db.collection(COLL.decisions).findOne({ decision_id: d.decision_id }, { projection: { _id: 0, "audit.approved_from": 1 } });
@@ -621,6 +678,128 @@ async function escrowScenario(ctx: AgentCtx): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------------------------------------------
+// Phase 6 (Sun): edge cases the guardrails already handle, now with a button each. Nothing here is submitted to the
+// ledger and no money moves. Simulated steps are labelled exactly like the injection demo's.
+
+const SIM = "[SIMULATED COMPROMISED AGENT - red-team demo, not the real agent's behaviour]";
+
+function demoInvoice(np: { ein: string }, invoice_id: string, contract_id: string, amt: string, extra: Partial<Invoice> = {}): Invoice {
+  return {
+    invoice_id, contract_id, payee_ein: np.ein, amount: amt, currency: "RLUSD", period: { from: "2026-09-01", to: "2026-09-30" },
+    description: "edge-case demo invoice (testnet-scale amount)", submitted_via: "seed", created_at: iso(), is_demo_data: true, ...extra,
+  };
+}
+
+/** Refused by the co-signer for `code`; nothing signed by the co-signer, nothing submitted. */
+const cosignerRefused = (d: Decision, code: RefusalCode) =>
+  d.outcome === "refused" && d.enforced_by === "cosigner" && has(d, code) && d.signers.join() === "agent" && !d.xrpl_tx_hash;
+/** Refused by the agent's own policy (payment builder / pre-flight) before anything was signed. */
+const agentRefused = (d: Decision, code: RefusalCode) =>
+  d.outcome === "refused" && d.enforced_by === null && has(d, code) && d.signers.length === 0 && !d.xrpl_tx_hash;
+
+async function tamper(ctx: AgentCtx): Promise<void> {
+  const np = ctx.reg.nonprofits.np_1;
+  const st = stamp();
+  const amt = amount("1.00");
+  const tag = sourceTag();
+  const attacker = ctx.reg.attacker;
+  if (attacker === ctx.reg.rlusd.issuer) throw new Error("refusing: the attacker address is the RLUSD issuer");
+  console.log(`\n=== tamper: ${SIM} the agent sends the co-signer 3 malformed ${amt} RLUSD payments to ${np.name} (a credentialed registry payee) ===`);
+  const cases: { k: string; t: TxTamper; code: RefusalCode; what: string }[] = [
+    { k: "A", t: { kind: "source_tag", source_tag: tag === 12345678 ? 87654321 : 12345678 }, code: "bad_source_tag", what: `a wrong SourceTag (not the agent's ${tag})` },
+    { k: "B", t: { kind: "currency", issuer: attacker }, code: "bad_currency", what: `a look-alike token: the same currency code, issued by the attacker account ${attacker} instead of the RLUSD issuer` },
+    { k: "C", t: { kind: "stale" }, code: "tx_not_fresh", what: "a stale replay: an already-consumed Sequence and an expired LastLedgerSequence" },
+  ];
+  for (const c of cases) {
+    const id = `INV-P6-TAMPER-${st}-${c.k}`;
+    console.log(`\n(${c.k}) ${SIM} ${c.what}`);
+    const r = await payInvoice(demoInvoice(np, id, np.contract_id, amt, { description: `tamper demo (${c.k}): ${c.what}` }), ctx, {
+      reasoning: `${SIM} Tampered with the payment for invoice ${id} to np_1's registry wallet: ${c.what}. It asked the co-signer to co-sign anyway.`,
+      mode: { kind: "compromised_cosigner", destination: np.address, tamper: c.t },
+      audit: { simulated: "compromised_agent", tamper: c.t },
+    });
+    show(`tamper (${c.k}): ${c.t.kind === "source_tag" ? "wrong SourceTag" : c.t.kind === "currency" ? "look-alike token (attacker issuer)" : "stale replay (old Sequence, expired LLS)"}`, r,
+      `refused by the co-signer: ${c.code}; nothing co-signed, nothing submitted`, cosignerRefused(r.decision, c.code));
+  }
+}
+
+/** YYYY-MM-DD (UTC) */
+const ymd = (d: Date) => d.toISOString().slice(0, 10);
+
+async function expiredContract(ctx: AgentCtx, db: MongoHandle["db"]): Promise<void> {
+  const np = ctx.reg.nonprofits.np_2;
+  const st = stamp();
+  const contract_id = `DEMO-EXP-${st}`;
+  const amt = amount("5.00");
+  const budget = Math.min(Number(amt) * 2, 25).toFixed(2);
+  if (Number(budget) < Number(amt)) throw new Error(`DEMO_AMOUNT ${amt} is above the co-signer's late demo contract cap (25.00)`);
+  // The term ended last month: [first day 3 months ago .. last day of last month]; the invoice bills last month.
+  const now = new Date();
+  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 0));
+  const start = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth() - 2, 1));
+  const period = { from: ymd(new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), 1))), to: ymd(end) };
+  console.log(`\n=== expired-contract: new demo contract ${contract_id} for ${np.name}, term ${ymd(start)}..${ymd(end)} (ENDED), budget ${budget} RLUSD; an invoice for ${amt} RLUSD arrives today ===`);
+  const doc: ContractDoc = {
+    contract_id, agency_code: "HRA", nonprofit_ein: np.ein, amount: budget, start_date: ymd(start), end_date: ymd(end),
+    registered_date: null, spent_to_date: "0.00", purpose: "Demo contract whose term has ended (fictional; created by npm run demo expired-contract)",
+    source: "demo: xrpl expired-contract scenario (not a real contract)", source_url: "https://github.com/3olt/DivHacks/blob/main/xrpl/README.md",
+    xrpl_budget_rlusd: budget, xrpl_budget_note: "Testnet-scale stand-in for the contract's remaining balance (RLUSD). This whole contract is demo data.",
+    is_demo_data: true,
+  };
+  await db.collection<ContractDoc>(COLL.contracts).insertOne({ ...doc });
+  console.log(`mongo: inserted demo contract ${contract_id} (is_demo_data, budget ${budget} RLUSD, term ended ${ymd(end)})`);
+  const id = `INV-P6-EXP-${st}`;
+  const description = `${period.from.slice(0, 7)} grocery giveaway supplies under demo contract ${contract_id} (testnet-scale amount). Proof: distribution sign-in sheets.`;
+
+  console.log(`\n(a) the real agent: Grok -> payment builder (checks the contract term)`);
+  const a = await processSubmission({ input: jsonInput("duplicate.json", { invoice_id: id, contract_id, amount: amt, period, description }, `expired-contract-${id}.json`), contract_id, expected_invoice_id: id, submitted_via: "seed" }, ctx);
+  show("expired-contract (a): normal agent", a, "refused by the payment builder: contract_not_active (agent policy, nothing signed)", agentRefused(a.decision, "contract_not_active"));
+
+  console.log(`\n(b) ${SIM} ignores the builder's refusal and asks the co-signer to co-sign the payment under the ended contract`);
+  const b = await payInvoice(demoInvoice(np, id, contract_id, amt, { period, description }), ctx, {
+    reasoning: `${SIM} Ignored the payment builder's contract_not_active refusal for invoice ${id} and built the payment under ${contract_id} (term ended ${ymd(end)}) to np_2's registry wallet. It asked the co-signer to co-sign.`,
+    mode: { kind: "compromised_cosigner", destination: np.address },
+    audit: { simulated: "compromised_agent" },
+  });
+  show("expired-contract (b): SIMULATED compromised agent -> co-signer", b, "refused by the co-signer: contract_not_active (check 4 on the pinned contract term)", cosignerRefused(b.decision, "contract_not_active"));
+}
+
+async function unknownContract(ctx: AgentCtx, db: MongoHandle["db"]): Promise<void> {
+  const np = ctx.reg.nonprofits.np_2;
+  const st = stamp();
+  const contract_id = `DEMO-UNK-${st}`;
+  const amt = amount("5.00");
+  if (await findContract(db, contract_id)) throw new Error(`contract ${contract_id} unexpectedly exists`);
+  const id = `INV-P6-UNK-${st}`;
+  const description = `September 2026 grocery giveaway supplies under contract ${contract_id} (testnet-scale amount). Proof: distribution sign-in sheets.`;
+  console.log(`\n=== unknown-contract: ${np.name} bills ${amt} RLUSD citing contract ${contract_id}, which is NOT on file ===`);
+
+  console.log(`\n(a) the real agent: Grok -> payment builder (looks the contract up)`);
+  const a = await processSubmission({ input: jsonInput("duplicate.json", { invoice_id: id, contract_id, amount: amt, description }, `unknown-contract-${id}.json`), contract_id, expected_invoice_id: id, submitted_via: "seed" }, ctx);
+  show("unknown-contract (a): normal agent", a, "refused by the payment builder: contract_not_found (agent policy, nothing signed)", agentRefused(a.decision, "contract_not_found"));
+
+  console.log(`\n(b) ${SIM} puts ${contract_id} in the memo anyway and asks the co-signer to co-sign a payment to np_2's registry wallet`);
+  const b = await payInvoice(demoInvoice(np, id, contract_id, amt, { description }), ctx, {
+    reasoning: `${SIM} Ignored the payment builder's contract_not_found refusal for invoice ${id} and built a payment citing contract ${contract_id} (not on file) to np_2's registry wallet. It asked the co-signer to co-sign.`,
+    mode: { kind: "compromised_cosigner", destination: np.address },
+    audit: { simulated: "compromised_agent" },
+  });
+  show("unknown-contract (b): SIMULATED compromised agent -> co-signer", b, "refused by the co-signer: contract_not_found (memo ctr is not a pinned or admissible contract)", cosignerRefused(b.decision, "contract_not_found"));
+}
+
+async function lowBalance(ctx: AgentCtx): Promise<void> {
+  const np = ctx.reg.nonprofits.np_1;
+  const R = rlusd();
+  const held = await tokenBalance(ctx.client, ctx.reg.agent_account, R.issuer, R.currency);
+  const treasury = await tokenBalance(ctx.client, ctx.reg.city_treasury, R.issuer, R.currency).catch(() => NaN);
+  const amt = (Math.ceil((held + 100) * 100) / 100).toFixed(2);
+  const id = `INV-P6-LOW-${stamp()}`;
+  console.log(`\n=== low-balance: ${np.name} bills ${amt} RLUSD under its valid contract ${np.contract_id}; agent_account holds only its working balance ${held} RLUSD ===`);
+  console.log(`  the agent only ever holds a small working balance (city_treasury ${ctx.reg.city_treasury} holds ${Number.isFinite(treasury) ? treasury : "?"} RLUSD and is not reachable with the agent key), so a leaked agent key cannot drain the treasury`);
+  const r = await processSubmission({ input: jsonInput("happy.json", { invoice_id: id, amount: amt, description: `September 2026 pantry operations under HRA emergency food contract ${np.contract_id}: bulk food purchase (testnet-scale amount).` }, `low-balance-${id}.json`), contract_id: np.contract_id, expected_invoice_id: id, submitted_via: "seed" }, ctx);
+  show("low-balance: invoice > the agent's working balance", r, `refused by the agent's pre-flight: agent_balance_insufficient (${amt} > ${held} RLUSD; nothing signed, nothing submitted)`,
+    agentRefused(r.decision, "agent_balance_insufficient"));
+}
 
 // ---------------------------------------------------------------------------------------------------------------
 // Interrupt safety: children this process started, and whether the kill switch is engaged by this run.
@@ -819,7 +998,9 @@ async function main(): Promise<number> {
   console.log(`agent signer: ${agentWallet.address} (weight 1); agent_account ${reg.agent_account} (multisig, quorum 3, master key disabled)`);
   if (DEMO_AMOUNT) console.log(`DEMO_AMOUNT=${DEMO_AMOUNT}: every invoice uses this amount (except over-limit: OVER_LIMIT_AMOUNT ${OVER_LIMIT_AMOUNT})`);
 
-  const run = scenario === "phase2" ? ["injection", "duplicate", "over-contract"] : scenario === "phase3a" ? ["uncredentialed", "address-swap"] : scenario === "all" ? ALL : [scenario];
+  const run = scenario === "phase2" ? ["injection", "duplicate", "over-contract"] : scenario === "phase3a" ? ["uncredentialed", "address-swap"] : scenario === "phase6" ? PHASE6 : scenario === "all" ? ALL : [scenario];
+  const apiScenario = envLabel("DEMO_SCENARIO");
+  console.log(`decision labels: run_id ${RUN_ID}${apiScenario && run.length === 1 ? `, scenario ${apiScenario} (DEMO_SCENARIO)` : ""}`);
   installSignalHandlers();
   const spawned: ChildProcess[] = [];
   let child: ChildProcess | null = null;
@@ -862,9 +1043,11 @@ async function main(): Promise<number> {
     const pre = await preflight(client, reg, url);
     if (pre.length) throw new Error(`not ready, refusing to run the demo (nothing was lifted automatically):\n  - ${pre.join("\n  - ")}`);
     console.log("preflight: agent_account's signer list is CANONICAL, master key disabled, no payee change hold in force for the demo EINs");
-    const ctx: AgentCtx = { agentWallet, client, db: mongo.db, recorder: new Recorder(mongo.db), reg, cosignerUrl: url, log: (m) => console.log(m) };
+    const ctx: AgentCtx = { agentWallet, client, db: mongo.db, recorder: new Recorder(mongo.db, (d) => labelsFor(d.decision_id)), reg, cosignerUrl: url, log: (m) => console.log(m) };
     for (const s of run) {
       SCEN = s;
+      labelScenario = apiScenario && run.length === 1 ? apiScenario : s;
+      stepOf.clear();
       try {
         if (s === "happy") await happy(ctx);
         else if (s === "uncredentialed") await uncredentialed(ctx);
@@ -876,6 +1059,10 @@ async function main(): Promise<number> {
         else if (s === "kill-switch") await killSwitch(ctx);
         else if (s === "escrow") await escrowScenario(ctx);
         else if (s === "golden") await golden(ctx, mongo.db);
+        else if (s === "tamper") await tamper(ctx);
+        else if (s === "expired-contract") await expiredContract(ctx, mongo.db);
+        else if (s === "unknown-contract") await unknownContract(ctx, mongo.db);
+        else if (s === "low-balance") await lowBalance(ctx);
       } catch (e) {
         const msg = (e as Error).message.replace(/mongodb(\+srv)?:\/\/\S+/g, "<uri>");
         console.error(`\nscenario ${s} FAILED: ${msg}`);

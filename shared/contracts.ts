@@ -147,6 +147,18 @@ export interface Decision {
    *  executed. Its `decision_hash` is that pending decision's hash (the on-ledger memo commits to what the officer
    *  approved), so verify it against the pending decision, not against this record's own fields. */
   approved_from?: string;
+  // ---- additive (Sun, Q4): demo run labels. Set by the xrpl demo CLI (xrpl/scripts/demo.ts) on every decision it records;
+  // absent on decisions recorded elsewhere (older runs, the xrpl service). NOT part of DECISION_HASH_FIELDS: they never
+  // change decision_hash or the on-ledger memo.
+  /** The scenario the decision belongs to: the API scenario name when the API started the run (DEMO_SCENARIO, e.g. "happy"),
+   *  otherwise the demo CLI scenario name (e.g. "injection", "tamper"). */
+  scenario?: string;
+  /** The API's run_id (DEMO_RUN_ID) when the API started the run, else "cli_" + the run's UTC stamp (e.g. "cli_20260927-101500"). */
+  run_id?: string;
+  /** 1-based position of this decision within its scenario in this run. */
+  step?: number;
+  /** How many decisions the scenario records when every step runs (a scenario that stops early records fewer). */
+  steps_total?: number;
 }
 
 export interface Payment {
@@ -215,6 +227,43 @@ export type LiveMessage =
   // demo_risk null). previous_demo_risk = the site's demo view before the update (its old demo_risk ?? its risk), so /demo can
   // show before -> after. Testnet payments are NEVER sent as site_updated (that is public records only).
   | { type: "demo_risk_updated"; site_id: string; demo_risk: SiteRisk | null; previous_demo_risk: SiteRisk | null };
+
+/** GET /decisions/summary (added Sun 06:15): one bucket = the decisions with one outcome. `amounts` are decimal strings
+ *  summed per currency (RLUSD and the simulated escrow's test token CTT are never added together). */
+export interface DecisionBucket {
+  count: number;
+  amounts: Partial<Record<Currency, string>>;
+}
+/** paid = outcome released · stopped = refused · pending = pending_approval · held = held_escrow (simulated escrow, CTT). */
+export interface DecisionBuckets {
+  paid: DecisionBucket;
+  stopped: DecisionBucket;
+  /** approved_later = how many of these the officer already approved: their execution is a separate `released`
+   *  decision (approved_from = the pending decision_id), counted under paid. Still waiting = count - approved_later. */
+  pending: DecisionBucket & { approved_later: number };
+  held: DecisionBucket;
+}
+export interface DecisionSummarySite extends DecisionBuckets {
+  site_id: string;
+  name: string;
+  is_demo_data: boolean;
+}
+export interface DecisionSummary {
+  /** The lower bound applied to created_at (inclusive), ISO 8601 with offset; null = every decision. */
+  since: string | null;
+  /** How `since` was chosen: "epoch" = the last demo reset (mongo: demo_state.epoch; fixtures: everything in memory, since a
+   *  reset restores the fixture decisions), "all" = no bound, "iso" = the ?since= timestamp. */
+  since_mode: "epoch" | "all" | "iso";
+  generated_at: string;
+  /** Every site (sorted by id), including sites with no decisions (all buckets 0). Assignment: contract_id in
+   *  site.contract_ids, else payee_ein = site.nonprofit_ein (the demo contracts DEMO-OC-* / DEMO-EXP-* land on their payee's
+   *  demo site); the same rule POST /events/payment uses. */
+  sites: DecisionSummarySite[];
+  /** Decisions that match no site (e.g. an invoice citing a contract that is not on file, for a payee with no site). */
+  unassigned: DecisionBuckets;
+  /** All decisions since `since` = the sum of every site + unassigned. */
+  totals: DecisionBuckets;
+}
 
 /** "unknown" (additive): the run did not exit within RUN_LOCK_MAX_MS (default 10 min), so the API released its
  *  one-run lock without killing the child; a later exit still updates it to succeeded / failed. */

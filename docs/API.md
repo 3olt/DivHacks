@@ -2,6 +2,12 @@
 
 The REST + WebSocket API the map (`web/`) builds against. Types live in **[`shared/contracts.ts`](../shared/contracts.ts)**; copy that file into `web/src/lib/contracts.ts` and import the types from there. Every example response below was copied from the running server (long arrays trimmed where marked `// ...`).
 
+> **Changed (Sun 06:15): edge-case scenarios, decision labels, per-site summary.** All additive; nothing removed or renamed. Re-copy `shared/contracts.ts` (new: `Decision.scenario? / run_id? / step? / steps_total?`, `DecisionSummary`, `DecisionBuckets`, `DecisionBucket`, `DecisionSummarySite`).
+> - **New `GET /decisions/summary?since=epoch|all|<ISO>`** (default `epoch` = since the last `POST /dev/reset`): per-site `paid` / `stopped` / `pending` / `held` counts + amounts per currency over **every** decision since the bound (no cap), for "Effect on the locations". Same site rule as the live loop. [Section below](#get-decisionssummary).
+> - **`GET /decisions?limit=` max raised from 200 to 1000** (default still 50; `limit=1001` is 400 `invalid_limit`).
+> - **Decision labels (Q4):** decisions recorded by the demo CLI carry optional top-level **`scenario`** (the API name, e.g. `"happy"`, `"tamper"`), **`run_id`** (= `DemoRun.run_id` when `POST /demo/:scenario` started it, else `"cli_<UTC stamp>"`), **`step`** (1-based) and **`steps_total`**. They are **not** in `decision_hash`. Older decisions don't have them: keep the invoice-id prefix parsing as the fallback.
+> - **4 new real scenarios (mongo mode; fixture mode answers 409 `testnet_only`)**: `tamper` (3 steps: `bad_source_tag`, `bad_currency`, `tx_not_fresh`, all by the co-signer), `expired-contract` (2 steps: agent policy then co-signer, `contract_not_active`), `unknown-contract` (2 steps: agent policy then co-signer, `contract_not_found`), `low-balance` (1 step: `agent_balance_insufficient`, agent pre-flight). Every step is refused and **no money moves**; steps whose `agent_reasoning` starts with `[SIMULATED COMPROMISED AGENT` are staged red-team steps (label them "Simulated hack"). Details: [demo scenarios](#demo-scenarios).
+
 > **Changed (Sun 04:50): `risk` vs `demo_risk`.** Additive fields + one new WS message; nothing removed from `Site`.
 > - **`site.risk` = PUBLIC RECORDS ONLY** (Checkbook NYC, Comptroller, IRS 990), for every site including the golden `site_fbnyc` (red 71). **XRPL Testnet payments NEVER change it** and are **never sent as `site_updated`** (iMessage and /map listen to `site_updated`; test money must never reach them). `site_updated` now only means a public score changed (data refresh, dev flip).
 > - **New optional `site.demo_risk: SiteRisk | null`** = the /demo what-if score after released Testnet demo payments: the golden (`data/risk.py --demo-risk`, Option B demo scale 1 RLUSD = $10,000, disclosed in its first reason "RLUSD 12.50 Testnet payment counted as $125,000 at demo scale (1 RLUSD = $10,000)") and the 4 fictional demo sites `site_001`..`site_004` (the fixture release rule). Absent/null = no demo effect.
@@ -57,7 +63,7 @@ The REST + WebSocket API the map (`web/`) builds against. Types live in **[`shar
 ## Contents
 
 - [Run it](#run-it) · [Conventions](#conventions) · [Endpoint index](#endpoint-index)
-- Endpoints: [health](#get-health) · [sites](#get-sites) · [site](#get-sitesid) · [trail](#get-sitesidtrail) · [agency stats](#get-agenciescodestats) · [decisions](#get-decisions) · [subscribers](#subscribers) · [payment events](#post-eventspayment) · [demo](#post-demoscenario) · [dev helpers](#dev-helpers)
+- Endpoints: [health](#get-health) · [sites](#get-sites) · [site](#get-sitesid) · [trail](#get-sitesidtrail) · [agency stats](#get-agenciescodestats) · [decisions](#get-decisions) · [decisions summary](#get-decisionssummary) · [subscribers](#subscribers) · [payment events](#post-eventspayment) · [demo](#post-demoscenario) · [dev helpers](#dev-helpers)
 - [WebSocket `/live`](#websocket-live) (protocol + browser client)
 - [Mongo mode (Phase 5): real example responses](#mongo-mode-phase-5-real-example-responses)
 - Reference tables: [refusal codes](#refusal-codes) · [checks](#checks) · [outcomes, enforcers, signers](#outcomes-enforcers-signers) · [risk levels](#risk-levels) · [demo scenarios](#demo-scenarios)
@@ -91,7 +97,7 @@ In `web/`, put the base URL in `web/.env.local` as `NEXT_PUBLIC_API_URL=http://l
 
 **CORS is fully open**: any origin, methods `GET, POST, DELETE, OPTIONS`, preflight answered with 204. The browser can call the API directly; no Next.js proxy route is needed. Exception (mongo mode only): `POST /demo/*` and `POST /dev/*` answer 403 `origin_not_allowed` to a non-loopback browser `Origin` (unless listed in `ALLOWED_ORIGINS`) and 403 `remote_not_allowed` to a non-loopback client (unless `DEMO_ALLOW_REMOTE=1`).
 
-**Smoke test** (fixture mode, 125 assertions over every endpoint, the filters and the WebSocket): with the server running with `API_MODE=fixtures`, `npm run smoke:api` (set `API_URL` if it is not on :4000). It calls `POST /dev/reset` at the start and the end, and sends `EVENTS_TOKEN` / `SUBSCRIBERS_TOKEN` from the root `.env` when set. **Mongo mode:** `npm run smoke:mongo` (76 read-only assertions: every GET shape, the `$geoWithin`/`$geoNear` filters, WS hello, the guards) and `npm run golden-path` (end to end on Testnet, 29 steps: `demo_risk_updated` red 71 -> yellow 67, no `site_updated`, `risk` still red 71).
+**Smoke test** (fixture mode, 147 assertions over every endpoint, the filters, the WebSocket and the decisions summary re-count): with the server running with `API_MODE=fixtures`, `npm run smoke:api` (set `API_URL` if it is not on :4000). It calls `POST /dev/reset` at the start and the end, and sends `EVENTS_TOKEN` / `SUBSCRIBERS_TOKEN` from the root `.env` when set. **Mongo mode:** `npm run smoke:mongo` (89 read-only assertions: every GET shape, the `$geoWithin`/`$geoNear` filters, WS hello, the guards, and `GET /decisions/summary` = a manual re-count of `GET /decisions?limit=1000` since the epoch, for `since=all` and per site) and `npm run golden-path` (end to end on Testnet, 29 steps: `demo_risk_updated` red 71 -> yellow 67, no `site_updated`, `risk` still red 71).
 
 ## Conventions
 
@@ -115,7 +121,8 @@ In `web/`, put the base URL in `web/.env.local` as `NEXT_PUBLIC_API_URL=http://l
 | GET | [`/sites/:id`](#get-sitesid) | `Site` | panel |
 | GET | [`/sites/:id/trail`](#get-sitesidtrail) | `Trail` (agency, contracts, payments, nonprofit, decisions) | panel ("money trail") |
 | GET | [`/agencies/:code/stats`](#get-agenciescodestats) | `AgencyStats` | panel |
-| GET | [`/decisions`](#get-decisions) `?limit=` | `Decision[]` newest first | "Fixes / live ledger" feed |
+| GET | [`/decisions`](#get-decisions) `?limit=` (1..1000) | `Decision[]` newest first | "Fixes / live ledger" feed |
+| GET | [`/decisions/summary`](#get-decisionssummary) `?since=epoch\|all\|<ISO>` (Sun 06:15) | `DecisionSummary` `{since, since_mode, generated_at, sites[], unassigned, totals}` | /demo "Effect on the locations" |
 | POST | [`/subscribers`](#post-subscribers) | `Subscriber` (201 new / 200 updated) | sign-up form |
 | DELETE | [`/subscribers/:phone`](#delete-subscribersphone) | 204 | unsubscribe |
 | GET | [`/subscribers`](#get-subscribers) `?site_id=` | `Subscriber[]` (header `x-api-token` when `SUBSCRIBERS_TOKEN` is set) | Photon service (Phase 6) |
@@ -487,7 +494,40 @@ The money trail for the panel: **agency -> contracts -> payments -> nonprofit**,
 
 ## `GET /decisions`
 
-The "Fixes / live ledger" feed: the payment agent's decisions, **newest first** (`created_at` has 1-second resolution; decisions in the same second are ordered by arrival, latest first, the same order the WS delivered them). `limit` is an integer 1..200 (default 50); anything else is 400 `invalid_limit`. New decisions also arrive live over [`/live`](#websocket-live).
+The "Fixes / live ledger" feed: the payment agent's decisions, **newest first** (`created_at` has 1-second resolution; decisions in the same second are ordered by arrival, latest first, the same order the WS delivered them). `limit` is an integer 1..1000 (default 50; the max was 200 until Sun 06:15); anything else is 400 `invalid_limit`. New decisions also arrive live over [`/live`](#websocket-live). For complete per-site totals use [`GET /decisions/summary`](#get-decisionssummary) (no cap) instead of summing this list.
+
+**Demo labels (added Sun 06:15, optional, top-level):** every decision the demo CLI (`xrpl/scripts/demo.ts`) records carries `scenario` (string: the API scenario name when `POST /demo/:scenario` started the run, so `happy` stays `"happy"` though it runs the CLI's `golden`; else the CLI scenario name, e.g. `"injection"`), `run_id` (string: the `run_id` of that `POST /demo/:scenario` / `GET /demo/runs/:run_id`, else `"cli_" + the run's UTC stamp`, e.g. `"cli_20260927-102111"`), `step` (number, 1-based) and `steps_total` (number of decisions the scenario records when every step runs). Show "`scenario` · step `step` of `steps_total`" and group by `run_id`. They are **not** part of `decision_hash` (below) and never on-ledger. Decisions recorded before Sun 06:15 (and by the xrpl service outside a demo run) don't have them: fall back to the invoice-id prefix. Real example (the `tamper` scenario's step 2, checks trimmed):
+
+```jsonc
+{
+  "decision_id": "dec_20260927102114b5a8",
+  "invoice_id": "INV-P6-TAMPER-20260927-102113-B",
+  "contract_id": "CT1-069-20261409087",
+  "payee_ein": "00-0000001",
+  "amount": "1.00",
+  "currency": "RLUSD",
+  "agent_reasoning": "[SIMULATED COMPROMISED AGENT - red-team demo, not the real agent's behaviour] Tampered with the payment for invoice INV-P6-TAMPER-20260927-102113-B to np_1's registry wallet: a look-alike token: the same currency code, issued by the attacker account rK7duxM9smjdXH7nEUBJfKMjC3Sv9BTM6v instead of the RLUSD issuer. It asked the co-signer to co-sign anyway.",
+  "rule_version": "p2-grok-1",
+  "source_tag": 26092026,
+  "created_at": "2026-09-27T10:21:14Z",
+  "outcome": "refused",
+  "refusal_reasons": ["bad_currency"],
+  "checks": [
+    // ... 7 checks passed (credential, registry wallet, not paid, contract amount, auto-limit, caps, exclusions)
+    { "name": "tx_format_valid", "passed": false, "detail": "Amount is not RLUSD issued by rQhWct2fv4Vc4KRjRgMrxa8xPN9Zx9iLKV" }
+  ],
+  "enforced_by": "cosigner",
+  "decision_hash": "73f831c886bbd9d6a15880eb60264bc28b3812ec66827a73c7b3c3f23dda5251",
+  "xrpl_tx_hash": null,
+  "ledger_result": null,
+  "signers": ["agent"],
+  "scenario": "tamper",
+  "run_id": "cli_20260927-102111",
+  "step": 2,
+  "steps_total": 3,
+  "is_demo_data": true
+}
+```
 
 Every decision has **all 8 checks** in [`CHECK_NAMES`](#checks) order. `refusal_reasons` are [`REFUSAL_CODES`](#refusal-codes) (empty when released); the first one is the headline reason. `decision_hash` is the SHA-256 (lowercase hex) of the UTF-8 canonical JSON (keys sorted recursively, no whitespace, strings escaped the way `JSON.stringify` does, so non-ASCII characters are not `\u`-escaped) of **only the pre-signing fields**: `decision_id, invoice_id, contract_id, payee_ein, amount, currency, agent_reasoning, rule_version, source_tag, created_at` (`DECISION_HASH_FIELDS` in `shared/hash.ts`). It is what the on-ledger memo's `dh` field commits to. `checks`, `outcome`, `refusal_reasons`, `enforced_by`, `signers`, `xrpl_tx_hash` and `ledger_result` are excluded: the transaction carries `dh` in its memo, so `dh` cannot depend on the transaction, and those fields are proven by the ledger itself. `memo_hash` (on XRPL `Payment`s) is the SHA-256 of the MemoData JSON string `{"inv","ctr","ein","dh","rv"}` exactly as written on-ledger (keys in that order, no whitespace; hash the UTF-8 JSON text that the transaction's hex `MemoData` decodes to, not the hex).
 
@@ -611,12 +651,77 @@ Another fixture decision, the one the **ledger** stopped (an agent-only transact
 ```
 
 ```jsonc
-// 400  GET /decisions?limit=500
+// 400  GET /decisions?limit=5000
 {
   "error": "invalid_limit",
-  "message": "limit must be an integer from 1 to 200"
+  "message": "limit must be an integer from 1 to 1000"
 }
 ```
+
+## `GET /decisions/summary`
+
+**Added Sun 06:15.** Per-site totals over **every** decision since a bound (no cap, unlike `GET /decisions`), for the /demo "Effect on the locations" panel. Read-only, both modes, same shape.
+
+| Query | Meaning |
+|---|---|
+| `since=epoch` (default; also when omitted) | Since the last demo reset: mongo = `demo_state.epoch`, which `POST /dev/reset` (`data/demo_reset.py`) sets to now; no epoch on file = every decision. **Fixture mode:** every decision in memory (a reset restores the fixture decisions), so `since` is `null`. |
+| `since=all` | Every decision (`since: null`). |
+| `since=<ISO 8601>` | Decisions with `created_at` at/after it (inclusive). A date (`2026-09-27` = 00:00 UTC) or a date-time **with `Z` or an offset** (`2026-09-27T10:00:00Z`; encode `+` as `%2B`, an unencoded `+` is also accepted). A time without a zone, or anything else, is 400 `invalid_since`. |
+
+Response `DecisionSummary` (`shared/contracts.ts`):
+- `since`: the lower bound applied, ISO with offset, or `null` (no bound). `since_mode`: `"epoch"` \| `"all"` \| `"iso"`. `generated_at`: now.
+- `sites[]`: **every** site (sorted by `id`, same ids as `GET /sites`), including sites with no decisions (all zeros): `{site_id, name, is_demo_data, paid, stopped, pending, held}`.
+- A **bucket** is `{count, amounts}`: `paid` = outcome `released`, `stopped` = `refused`, `pending` = `pending_approval`, `held` = `held_escrow` (simulated escrow). `amounts` maps currency -> decimal string (`"RLUSD": "189.50"`, `"CTT": "5.00"`, exact sums, at least 2 decimals; a currency with no decisions is absent). **RLUSD and CTT (the simulated escrow's test token) are never added together.** `stopped` sums the amounts that were attempted and refused (no money moved).
+- `pending.approved_later`: how many of the `pending` decisions the officer already approved; their execution is a separate `released` decision (`approved_from` = the pending id), already counted under `paid`. Still waiting = `pending.count - pending.approved_later`.
+- **Site assignment** = the live loop's rule (`POST /events/payment`): the site whose `contract_ids` contain the decision's `contract_id` (plus the golden contract for the golden site), else the site whose `nonprofit_ein` is the `payee_ein` (real sites first). So the per-run demo contracts `DEMO-OC-*`, `DEMO-EXP-*` and the not-on-file `DEMO-UNK-*` land on their payee's demo site (np_2 -> `site_002`). `unassigned` = decisions that match no site. `totals` = every site + `unassigned`.
+
+```jsonc
+// 200  GET /decisions/summary   (mongo mode, real: 11 decisions since the last reset: test runs of tamper, expired-contract, unknown-contract, low-balance and injection)
+{
+  "since": "2026-09-27T05:18:53-04:00",
+  "since_mode": "epoch",
+  "generated_at": "2026-09-27T06:23:28-04:00",
+  "sites": [
+    {
+      "site_id": "site_001",
+      "name": "Burnside Heights Community Pantry (demo)",
+      "is_demo_data": true,
+      "paid": { "count": 0, "amounts": {} },
+      "stopped": { "count": 7, "amounts": { "RLUSD": "189.50" } },
+      "pending": { "count": 0, "amounts": {}, "approved_later": 0 },
+      "held": { "count": 0, "amounts": {} }
+    },
+    {
+      "site_id": "site_002",
+      "name": "Mott Haven Saturday Grocery Giveaway (demo)",
+      "is_demo_data": true,
+      "paid": { "count": 0, "amounts": {} },
+      "stopped": { "count": 4, "amounts": { "RLUSD": "4.00" } },
+      "pending": { "count": 0, "amounts": {}, "approved_later": 0 },
+      "held": { "count": 0, "amounts": {} }
+    },
+    // ... 17 more sites (site_003, site_004, site_fbnyc and the other real sites), every bucket { "count": 0, "amounts": {} }
+  ],
+  "unassigned": {
+    "paid": { "count": 0, "amounts": {} },
+    "stopped": { "count": 0, "amounts": {} },
+    "pending": { "count": 0, "amounts": {}, "approved_later": 0 },
+    "held": { "count": 0, "amounts": {} }
+  },
+  "totals": {
+    "paid": { "count": 0, "amounts": {} },
+    "stopped": { "count": 11, "amounts": { "RLUSD": "193.50" } },
+    "pending": { "count": 0, "amounts": {}, "approved_later": 0 },
+    "held": { "count": 0, "amounts": {} }
+  }
+}
+// 200  GET /decisions/summary?since=all   (same shape: since null, since_mode "all"; at the time 268 decisions, e.g.
+//      site_fbnyc paid RLUSD, a demo site held/paid CTT, totals.pending.approved_later 8)
+// 400  GET /decisions/summary?since=yesterday
+{ "error": "invalid_since", "message": "since must be \"epoch\" (default: since the last demo reset), \"all\", or an ISO 8601 date / date-time with Z or an offset (e.g. 2026-09-27T10:00:00Z; encode \"+\" as %2B)" }
+```
+
+Front-end use: fetch it on load, on every WS `decision` and on `demo_run` finished (it is cheap), and after `POST /dev/reset`. The /demo pins' colors still come from `demo_risk ?? risk` (unchanged).
 
 ## Subscribers
 
@@ -840,7 +945,7 @@ Errors: 400 `missing_decision_id`, 400 `invalid_decision` (malformed `decision`)
 
 For the demo buttons. Runs one scenario and returns **202** `{ scenario, mode, decision, demo_risk_updated? }` (fixture mode; `demo_risk_updated` = `{site_id, demo_risk, previous_demo_risk}`, replaced `site_updated` on Sun 04:50). It also broadcasts over `/live`: `demo_risk_updated` first (only when a payment was released, i.e. `happy`), then `decision`. A demo payment never sends `site_updated`. Scenarios: `happy`, `injection`, `duplicate`, `over-contract`, `address-swap`, `over-limit`, `kill-switch` (what each shows: [table below](#demo-scenarios)). No body needed.
 
-In fixture mode the decision is synthesized. **Mongo mode (Phase 5): this endpoint starts the real scenario on XRPL Testnet** (`xrpl/scripts/demo.ts` in a child process, the agent's own process; the API holds no key) and answers **202 at once with `decision: null`**; the decisions reach the map and feed over WS `/live` as the agent records them (a run takes ~20 s for `happy`, ~15 s for `injection`, 1-2 min for `escrow` / `over-limit` / `kill-switch`). Show a spinner until the `demo_run` message with a final `status`, or poll `GET /demo/runs/:run_id`. Scenario map (mongo): `happy` -> `golden` (the real golden pin), `golden`, `injection` (3 decisions: agent policy, co-signer, ledger `tefBAD_QUORUM`), `duplicate`, `over-contract`, `uncredentialed`, `address-swap`, `over-limit` (the CLI's labelled officer click approves it), `kill-switch` (always restores), `escrow` (real CTT escrow incl. the officer-approved release), `escrow-release` (202 no-op). The runner passes `DEMO_AMOUNT` through when the API runs with it (never for `golden`, whose 12.50 moves the pin; `over-limit` always uses 30.00). The child is detached with its log in `xrpl/data/api-demo-<run_id>.local.log`: stopping the API never kills a run (a killed kill-switch run could leave the agent key revoked).
+In fixture mode the decision is synthesized. **Mongo mode (Phase 5): this endpoint starts the real scenario on XRPL Testnet** (`xrpl/scripts/demo.ts` in a child process, the agent's own process; the API holds no key) and answers **202 at once with `decision: null`**; the decisions reach the map and feed over WS `/live` as the agent records them (a run takes ~20 s for `happy`, ~15 s for `injection`, 1-2 min for `escrow` / `over-limit` / `kill-switch`). Show a spinner until the `demo_run` message with a final `status`, or poll `GET /demo/runs/:run_id`. Scenario map (mongo): `happy` -> `golden` (the real golden pin), `golden`, `injection` (3 decisions: agent policy, co-signer, ledger `tefBAD_QUORUM`), `duplicate`, `over-contract`, `uncredentialed`, `address-swap`, `over-limit` (the CLI's labelled officer click approves it), `kill-switch` (always restores), `escrow` (real CTT escrow incl. the officer-approved release), `escrow-release` (202 no-op), and (Sun 06:15) `tamper`, `expired-contract`, `unknown-contract`, `low-balance` (edge cases: every step refused, nothing moves; ~8-11 s each). The runner passes `DEMO_RUN_ID` = the run_id and `DEMO_SCENARIO` = the posted name to the child, so every decision of the run carries `run_id` and `scenario` ([labels](#get-decisions)). The runner passes `DEMO_AMOUNT` through when the API runs with it (never for `golden`, whose 12.50 moves the pin; `over-limit` always uses 30.00). The child is detached with its log in `xrpl/data/api-demo-<run_id>.local.log`: stopping the API never kills a run (a killed kill-switch run could leave the agent key revoked).
 
 ```jsonc
 // 202  POST /demo/happy   (mongo mode)
@@ -869,7 +974,7 @@ In fixture mode the decision is synthesized. **Mongo mode (Phase 5): this endpoi
 }
 ```
 
-The mongo-mode unknown-scenario 404 lists `happy, golden, injection, duplicate, over-contract, uncredentialed, address-swap, over-limit, kill-switch, escrow, escrow-release`.
+The mongo-mode unknown-scenario 404 lists `happy, golden, injection, duplicate, over-contract, uncredentialed, address-swap, over-limit, kill-switch, escrow, tamper, expired-contract, unknown-contract, low-balance, escrow-release`. Fixture mode answers **409 `testnet_only`** for `escrow`, `escrow-release`, `golden`, `uncredentialed`, `tamper`, `expired-contract`, `unknown-contract`, `low-balance` (they are the co-signer's and the agent's real checks on Testnet; nothing is synthesized).
 
 ```jsonc
 // 202  POST /demo/happy
@@ -1309,6 +1414,15 @@ Score components (explainable, not a trained model; each shows up as one entry i
 | `address-swap` | A "we changed our wallet" request: 72 h hold + bank re-confirmation + officer approval; payments during the hold are refused | `refused`, `payee_change_on_hold`, enforced by `hold` |
 | `over-limit` | Human-in-the-loop only above AUTO_LIMIT | `pending_approval`, `over_auto_limit_needs_officer` (42.00 RLUSD > AUTO_LIMIT 25) |
 | `kill-switch` | The agent's key is revoked on-ledger (signer list rewritten by co-signer + officer); its next payment fails on the ledger | `refused`, `ledger_rejected`, enforced by `ledger`, `ledger_result: "tefBAD_SIGNATURE"` (the fixture's expected code; the real one comes from Phase 3) |
+
+**Edge-case scenarios (added Sun 06:15; mongo mode only, real XRPL Testnet checks; fixture mode: 409 `testnet_only`).** Every step is **refused** (`outcome: "refused"`, `xrpl_tx_hash: null`, `ledger_result: null`) and **no money moves**. A step whose `agent_reasoning` starts with **`[SIMULATED COMPROMISED AGENT`** is a staged red-team step (show it as "Simulated hack"): it plays a leaked/compromised agent that ignores its own policy, to show the co-signer (a separate process and key) still refuses. Amounts: `DEMO_AMOUNT` (1.00 in rehearsals) except `low-balance`. `<stamp>` = UTC `YYYYMMDD-HHMMSS`, as in the other scenarios. Real results below are from test runs at 10:21-10:23 UTC, re-verified through the API (`POST /demo/<name>` as the /demo buttons do, `DEMO_NO_SPAWN=1`, `DEMO_AMOUNT=1.00`) at 10:30-10:31 UTC: every run `succeeded` with every step AS EXPECTED, the labels matched the run, the agent account's RLUSD balance was unchanged and WS `/live` sent no `site_updated`. ~Time = POST to `GET /demo/runs/:run_id` finished.
+
+| Scenario | Demonstrates | Steps: expected outcome · `enforced_by` · refusal code (`step`/`steps_total`) | Invoice ids | Contract / site | ~Time |
+|---|---|---|---|---|---|
+| `tamper` | A compromised agent sends the co-signer malformed payments to a credentialed demo payee (np_1); the co-signer re-checks the raw transaction | 1/3 **Simulated hack**: wrong SourceTag -> refused · `cosigner` · `bad_source_tag` (`tx_format_valid` failed: "SourceTag 12345678 is not 26092026"). 2/3 **Simulated hack**: look-alike token (same currency code, issued by the attacker) -> refused · `cosigner` · `bad_currency` ("Amount is not RLUSD issued by r…"). 3/3 **Simulated hack**: stale replay (already-consumed Sequence, expired LastLedgerSequence) -> refused · `cosigner` · `tx_not_fresh`. Nothing submitted. | `INV-P6-TAMPER-<stamp>-A` / `-B` / `-C` | np_1's contract -> `site_001` | ~8 s (no Grok call) |
+| `expired-contract` | An invoice under a contract whose term has ended (a fresh demo contract per run, `DEMO-EXP-<stamp>`, `is_demo_data`, payee np_2, term already over) | 1/2 agent policy: the payment builder refuses -> refused · `null` · `contract_not_active` (nothing signed). 2/2 **Simulated hack**: the compromised agent pushes it to the co-signer anyway -> refused · `cosigner` · `contract_not_active` ("Contract DEMO-EXP-… is NOT active today …: term 2026-06-01..2026-08-31"). | `INV-P6-EXP-<stamp>` (both steps) | `DEMO-EXP-<stamp>` -> np_2 -> `site_002` | ~11 s (1 Grok call) |
+| `unknown-contract` | An invoice citing a contract id that is not on file | 1/2 agent policy: the builder refuses -> refused · `null` · `contract_not_found` (nothing signed). 2/2 **Simulated hack**: a payment with that contract id in the memo is pushed to the co-signer -> refused · `cosigner` · `contract_not_found`. | `INV-P6-UNK-<stamp>` (both steps) | `DEMO-UNK-<stamp>` (not on file) -> payee np_2 -> `site_002` | ~11 s (1 Grok call) |
+| `low-balance` | The agent only holds a small RLUSD working balance, so a leaked key can't drain the treasury: an invoice larger than that balance (balance + 100, valid demo contract) | 1/1 agent pre-flight -> refused · `null` · `agent_balance_insufficient` before anything is signed (checks "not evaluated: … agent_account … holds 83.5 RLUSD, less than the 183.50 RLUSD invoice …"; all 8 checks are `passed: false` with a detail starting `not evaluated:`: show the co-signer as not reached). The amount follows the live balance, so it differs per run. | `INV-P6-LOW-<stamp>` | np_1's contract -> `site_001` | ~11 s (1 Grok call) |
 
 Each `happy` run releases 12.50 RLUSD. Once the agent's released total over the last 24 h would pass DAILY_CAP (100 RLUSD: after a reset, 8 runs fit and the 9th is refused), `happy` honestly returns a `refused` decision with `daily_cap_exceeded_agent` instead (no `demo_risk_updated`). `POST /dev/reset` clears it.
 

@@ -21,6 +21,10 @@ nonprofits are demo data (`is_demo_data: true`).
   REAL organization (Food Bank For New York City, EIN 13-3179546; it has not onboarded), onboarded with the Phase 3 flow and paid
   through all 8 checks by `npm run demo golden`; its XRPL payments count toward the real contract's "paid" at a DISCLOSED demo
   scale (Option B).**
+- **Phase 6 (Sun, [below](#phase-6-edge-cases-and-decision-labels)): four edge-case scenarios the guardrails already handled
+  but no button showed (`tamper`, `expired-contract`, `unknown-contract`, `low-balance`; `phase6` runs all four; nothing is
+  submitted, no money moves), and run labels on every decision the demo CLI records (`scenario`, `run_id`, `step`,
+  `steps_total`; not part of `decision_hash`).**
 
 ## Architecture
 
@@ -151,8 +155,10 @@ wallet outside the pinned allowlist. It re-reads the registry on every `/cosign`
 deleted in the database -> `registry_drift`, and checks 2/4 keep using the pinned terms. A contract created **after** startup
 is admitted only if it is flagged `is_demo_data`, pays an EIN in the pinned registry and has `xrpl_budget_rlusd` <= 25.00
 (at most 20 per co-signer lifetime); it is pinned from then on, and the check detail says it was admitted late. Anything else
--> `contract_not_found` until a restart. (This is what lets `demo over-contract` run against an already-running co-signer;
-a forged late contract is bounded by that budget, `AUTO_LIMIT`, the daily caps and the registry-wallet allowlist.) In this hackathon setup **the agent process has the same MongoDB credentials**, so a change while
+-> `contract_not_found` until a restart. (This is what lets `demo over-contract` (`DEMO-OC-<stamp>`) and `demo
+expired-contract` (`DEMO-EXP-<stamp>`, a term that already ended) run against an already-running co-signer. The rule is by those
+properties, never by id prefix, and admission skips no check: an admitted contract whose term ended is still refused
+`contract_not_active` by check 4. A forged late contract is bounded by that budget, `AUTO_LIMIT`, the daily caps and the registry-wallet allowlist.) In this hackathon setup **the agent process has the same MongoDB credentials**, so a change while
 the co-signer runs is treated as possible tampering. **In production the co-signer uses a DB user the agent cannot write**
 (and Phase 3 moves the credential itself on-ledger).
 
@@ -169,8 +175,8 @@ every detail starts with `[agent-side audit: ...]`. They are a record, not enfor
 | `onboarding` | `onboard-nonprofit` | per EIN: steps, `bank {provider, account_ref (HMAC of the Nessie account id), name/address match, micro_deposit {ref, commitment_sha256, sent_at, attempts, verified_at}, verified}`, challenge id + public key, credential index / tx hashes, `simulated[]` | **no Nessie ids and no micro-deposit salt**: those are in the gitignored city-side file `xrpl/data/onboarding-bank.local.json` (never printed) |
 | `onboarding_challenges` | `onboard-nonprofit` | `{challenge_id, ein, wallet, nonce, issued_at, expires_at, message, status issued/used}` | one-time wallet-ownership challenges |
 | `payee_change_requests` | xrpl service (`POST /payees/:ein/change-request`), officer (`officer-resolve`) | `PayeeChangeRequest` (shared/contracts) | holds + officer-signed resolutions; the co-signer keeps its own copy of what it saw |
-| `contracts` | `seed-registry`, `demo over-contract` | `Contract` + `xrpl_budget_rlusd` + `xrpl_budget_note` + `is_demo_data` | the 4 fixture contracts + one `DEMO-OC-<stamp>` per over-contract run. The co-signer pins the terms at startup (read-only) |
-| `decisions` | the agent process, every attempt | `Decision` + `is_demo_data` + `audit {...}` | `audit` holds the proposal, verifier meta (model, latency), destination, delivered_amount, memo JSON, co-signer HTTP status, ... |
+| `contracts` | `seed-registry`, `demo over-contract`, `demo expired-contract` | `Contract` + `xrpl_budget_rlusd` + `xrpl_budget_note` + `is_demo_data` | the 4 fixture contracts + one `DEMO-OC-<stamp>` per over-contract run + one `DEMO-EXP-<stamp>` (term ended last month, np_2) per expired-contract run. The co-signer pins the terms at startup (read-only) |
+| `decisions` | the agent process, every attempt | `Decision` + `is_demo_data` + `audit {...}` | `audit` holds the proposal, verifier meta (model, latency), destination, delivered_amount, memo JSON, co-signer HTTP status, ... Since Sun (Q4) every decision the demo CLI records also carries `scenario`, `run_id`, `step`, `steps_total` ([labels](#decision-labels-q4)) |
 | `payments` | the agent process, every attempt | `Payment` (`source: "xrpl"`, `status` = the decision's outcome) | `xrpl_tx_hash` / `explorer_url` only when the tx is on-ledger; `currency: "CTT"` for the simulated escrow. A `pending_approval` row whose approval executed carries `approval_status: "executed"`, `superseded_by` (the executed payment's `payment_id`) and `settled_by_tx`: count only the executed row |
 | `pending_approvals` | agent (pending), officer (approved), xrpl service (executed / failed) | `PendingApproval` (shared/contracts) | one per over-limit decision; no signatures; single use; expires after 24 h. The officer does not trust it: it checks it against the co-signer's own record (`GET :4002/over-limit/:decision_id`) |
 | `escrow_milestones` | the agent process | `EscrowMilestone` (shared/contracts) | SIMULATED escrow of CTT (test token, not RLUSD); held / released / cancelled |
@@ -210,7 +216,7 @@ npm run demo duplicate    # released, then the same invoice -> invoice_already_p
 npm run demo over-contract  # fresh DEMO-OC contract (np_3, budget 20): invoice A released, invoice B -> contract_amount_exceeded
 npm run demo phase2       # injection, duplicate, over-contract in sequence
 npm run verify -w xrpl    # read-only on-ledger check of the latest released payment (or pass a tx hash after --)
-npm run test:checks       # offline unit tests (186): 8 checks incl. on-ledger credential facts + holds, invoice ids, amounts, pinning,
+npm run test:checks       # offline unit tests (188): 8 checks incl. on-ledger credential facts + holds, invoice ids, amounts, pinning,
                           #   scrubbing, builder, hold record + officer signatures, wallet challenge, EIN-only matching, URI, micro-deposit,
                           #   governance, escrow (incl. the officer release approval), exact-match approvals + the co-signer's record
 npm run redteam           # LIVE negative tests against a real co-signer on :4012 (28 results; nothing is submitted). Refuses
@@ -227,6 +233,12 @@ npm run demo over-limit   # 30.00 -> pending_approval -> agent presses the offic
 npm run demo kill-switch  # officer revokes the agent key -> the agent's payment fails on-ledger (tefBAD_SIGNATURE) -> restore
 npm run demo escrow       # SIMULATED escrow (CTT test token, not RLUSD): create -> wrong report refused -> no officer approval refused -> officer approves -> release
 npm run demo golden       # Phase 4: the golden REAL organization (Food Bank For NYC, EIN 13-3179546) paid 12.50 at np_5, its DEMO wallet on Testnet; risk before/after
+# Phase 6 (edge cases; nothing submitted, no money moves)
+npm run demo tamper            # SIMULATED compromised agent: wrong SourceTag / look-alike token / stale replay -> co-signer refuses each
+npm run demo expired-contract  # DEMO-EXP contract whose term ended: builder refuses, then the co-signer refuses (contract_not_active)
+npm run demo unknown-contract  # invoice cites a contract not on file: builder refuses, then the co-signer refuses (contract_not_found)
+npm run demo low-balance       # invoice = agent working balance + 100: pre-flight refuses agent_balance_insufficient
+npm run demo phase6            # the four above
 npm run agent:revoke      # officer CLI (signs itself, no officer service needed): SignerListSet {cosigner:2, officer:1} (kill switch)
 npm run agent:restore     # officer CLI: back to {agent:1, cosigner:2, officer:1} (idempotent)
 npm run agent:status      # read-only: CANONICAL / REVOKED + master-key flag
@@ -258,6 +270,7 @@ agent process then controls the co-signer's lifetime, so use `no-spawn` with a s
 | `over-contract` | a fresh `DEMO-OC-<stamp>` contract for np_3 with `xrpl_budget_rlusd` 20.00 is inserted in Mongo (no co-signer restart: it is admitted as a small late demo contract and pinned); invoice A 12.00, invoice B 10.00 | `released`, then `refused` `contract_amount_exceeded` |
 
 `tef` results never reach a ledger, so (c) has no explorer page; the evidence is the `engine_result` in `Decision.ledger_result`.
+The Phase 6 edge cases are [below](#phase-6-edge-cases-and-decision-labels).
 
 ### Budget for the live demo
 
@@ -767,6 +780,10 @@ hardware key (production). The officer's **key** remains what the ledger and the
 | Escrow released without an independent check | **officer** signs a release approval bound to the on-ledger escrow; **co-signer** holds the preimage and reveals it only with that approval (and never while the kill switch is engaged) | `demo escrow` | wrong report -> `verifier_rejected`; right report without the officer -> `escrow_release_not_approved`; after the officer's approval -> EscrowFinish tesSUCCESS (simulated, CTT) |
 | Interrupted kill switch / unresolved hold left behind | demo preflight refuses to run (the officer resolves it); Ctrl+C during the kill switch restores first | every `npm run demo` | `not ready, refusing to run the demo` + the officer command |
 | Daily caps, exclusions, registry drift, stale / extra-field txs | **co-signer** | `npm run redteam`, `npm run test:checks` | `daily_cap_exceeded_*`, `payee_excluded`, `registry_drift`, `tx_not_fresh`, `bad_tx_fields` |
+| Compromised agent tampers with the tx (SourceTag, look-alike token, stale replay) | **co-signer** check 8 | `demo tamper` | `bad_source_tag`; `bad_currency`; `tx_not_fresh` |
+| Contract term ended | agent policy (builder), then **co-signer** check 4 on the pinned term | `demo expired-contract` | `contract_not_active` (both) |
+| Contract not on file | agent policy (builder), then **co-signer** checks 2 + 4 | `demo unknown-contract` | `contract_not_found` (both) |
+| Invoice larger than the agent's working balance (a leaked key can't drain the treasury) | agent pre-flight; the treasury itself is a separate account the agent key cannot sign for | `demo low-balance` | `agent_balance_insufficient` |
 
 ## Keys: who holds what
 
@@ -861,3 +878,43 @@ codes are already in `REFUSAL_CODES` in `shared/contracts.ts` (additive; re-copy
   (additive; accepted by `api/src/lib/validateDecision.ts` since Phase 5, so NOTIFY_API forwards CTT decisions).
 - `decisions.audit` is an extension of the stored document (not part of the `Decision` type): verifier meta, proposal,
   destination, co-signer HTTP status, memo JSON, and `backfilled_from` / `reconciled_at` where applicable.
+
+## Phase 6: edge cases and decision labels
+
+Added Sun 2026-09-27 morning for the website's demo buttons (API: `POST /demo/<name>`, mongo mode only; the names are the CLI
+names). Nothing in these four scenarios is submitted to the ledger and no money moves. Simulated steps are labelled exactly
+like the injection demo's: the output line and `agent_reasoning` start with `[SIMULATED COMPROMISED AGENT`.
+
+| Scenario | Invoice id(s) | Steps (decisions) | Expected | `enforced_by` | Duration |
+|---|---|---|---|---|---|
+| `tamper` | `INV-P6-TAMPER-<stamp>-A` / `-B` / `-C` | a **SIMULATED COMPROMISED AGENT** asks the co-signer to co-sign 3 malformed `DEMO_AMOUNT` payments to np_1's registry wallet (credentialed): (A) SourceTag 12345678 instead of `AGENT_SOURCE_TAG`; (B) a look-alike token: the RLUSD currency code issued by the demo attacker account; (C) a stale replay: an already-consumed Sequence and an expired LastLedgerSequence | (A) `refused` `bad_source_tag`; (B) `refused` `bad_currency`; (C) `refused` `tx_not_fresh`. Each: signers `agent`, nothing co-signed, nothing submitted; only check 8 `tx_format_valid` fails | `cosigner` (all 3) | ~5 s |
+| `expired-contract` | `INV-P6-EXP-<stamp>` | a fresh demo contract `DEMO-EXP-<stamp>` (np_2, `is_demo_data`, budget 2x the amount, <= 25) whose term ended last month (e.g. 2026-06-01..2026-08-31); the invoice bills last month. (a) the real agent: Grok -> builder; (b) a **SIMULATED COMPROMISED AGENT** ignores the builder and asks the co-signer (which late-admits the small demo contract and still runs check 4) | (a) `refused` `contract_not_active`, nothing signed; (b) `refused` `contract_not_active` (check 4: "NOT active today ... term ...") | (a) `null` (agent policy); (b) `cosigner` | ~10 s |
+| `unknown-contract` | `INV-P6-UNK-<stamp>` | the invoice cites `DEMO-UNK-<stamp>`, which is not in `contracts`. (a) the real agent: Grok -> builder; (b) a **SIMULATED COMPROMISED AGENT** puts that id in the memo and asks the co-signer (payment to np_2's registry wallet) | (a) `refused` `contract_not_found`, nothing signed; (b) `refused` `contract_not_found` (checks 2 + 4) | (a) `null`; (b) `cosigner` | ~8 s |
+| `low-balance` | `INV-P6-LOW-<stamp>` | reads agent_account's RLUSD working balance and bills (balance + 100) under np_1's valid contract; Grok + the builder accept it; the agent's pre-flight compares it with the balance before signing | `refused` `agent_balance_insufficient`, signers `[]`, 8 checks `not evaluated: ... preflight ...`, nothing signed or submitted. Story: the agent only holds a small working balance; `city_treasury` is a separate account the agent key cannot sign for, so a leaked key can't drain it | `null` (agent policy) | ~7 s |
+| `phase6` | all of the above | the four in sequence | 8 decisions, 8/8 AS EXPECTED | | ~35 s |
+
+`<stamp>` = UTC `YYYYMMDD-HHMMSS` like the other scenarios. `expired-contract` / `unknown-contract` / `low-balance` call Grok
+(a few seconds each); `tamper` does not. The co-signer's late-contract allowance (20 per co-signer lifetime) is shared by
+`over-contract` and `expired-contract` runs; a restart resets it.
+
+Verified 2026-09-27 ~10:21-10:24 UTC against a freshly restarted co-signer (`DEMO_AMOUNT=1.00 ... no-spawn`): `tamper` 3/3,
+`expired-contract` 2/2, `unknown-contract` 2/2, `low-balance` 1/1 (183.50 vs a working balance of 83.5), `phase6` 8/8 (with
+`DEMO_RUN_ID` set), `injection` 3/3 with labels; `decision_hash` recomputed with `shared/hash.ts` matched for all 11 labelled
+decisions, with and without the label fields.
+
+### Decision labels (Q4)
+
+Every decision the demo CLI records (all scenarios, old and new) carries four additive fields (`shared/contracts.ts`
+`Decision`), in Mongo, in `decisions.local.jsonl` and in the `POST /events/payment` body:
+
+| Field | Value |
+|---|---|
+| `scenario` | `DEMO_SCENARIO` when the API started a single-scenario run (so the website's `happy`, which runs the CLI's `golden`, is labelled `happy`); otherwise the CLI scenario name (`injection`, `tamper`, ...; inside a group such as `phase6` or `all`, each decision gets its own scenario's name) |
+| `run_id` | `DEMO_RUN_ID` (the API's run id) when set, else `cli_<UTC stamp>` of the run |
+| `step` | 1-based position of the decision within its scenario in this run |
+| `steps_total` | decisions the scenario records when every step runs: happy/golden/uncredentialed/low-balance 1; duplicate/over-contract/kill-switch/over-limit/expired-contract/unknown-contract 2; injection/address-swap/tamper 3; escrow 4. A scenario that stops early records fewer |
+
+They are **not** in `DECISION_HASH_FIELDS`, so they never change `decision_hash` or the on-ledger memo. `DEMO_RUN_ID` /
+`DEMO_SCENARIO` must match `[A-Za-z0-9_.:-]{1,80}` (otherwise ignored). The officer-approved over-limit execution is recorded by
+the xrpl service; the demo CLI adds its labels (step 2) to that Mongo document afterwards, so the WS `decision` message for it
+has no labels but `GET /decisions` does.

@@ -14,10 +14,20 @@ export interface RecordResult {
   notified: "off" | "sent" | `failed: ${string}`;
 }
 
+/** Demo run labels (Decision.scenario / run_id / step / steps_total; additive, not covered by decision_hash). */
+export type DecisionLabels = Required<Pick<Decision, "scenario" | "run_id" | "step" | "steps_total">>;
+
 export class Recorder {
-  constructor(private db: Db | null) {}
+  /** `labels` (the demo CLI): called once per recorded decision; its result is merged INTO the decision object (so the
+   *  caller's copy, Mongo, the JSONL backup and the API notification all carry it). */
+  constructor(
+    private db: Db | null,
+    private labels?: (decision: Decision) => DecisionLabels | null,
+  ) {}
 
   async record(decision: Decision, payment: Payment, audit: Record<string, unknown>): Promise<RecordResult> {
+    const l = this.labels?.(decision);
+    if (l) Object.assign(decision, l);
     fs.appendFileSync(decisionsLogPath, JSON.stringify({ decision, payment, xrpl: audit }) + "\n");
     let mongo: RecordResult["mongo"] = "skipped (no database)";
     if (this.db) {

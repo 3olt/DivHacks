@@ -10,6 +10,11 @@ const TESTNET_ONLY: Record<string, string> = {
   "escrow-release": "escrow runs on XRPL Testnet only: start the API in mongo mode (API_MODE=mongo). In mongo mode POST /demo/escrow runs the whole escrow, including the officer-approved release.",
   golden: "golden (the real Food Bank For NYC contract) runs on XRPL Testnet only: start the API in mongo mode (API_MODE=mongo)",
   uncredentialed: "uncredentialed runs on XRPL Testnet only: start the API in mongo mode (API_MODE=mongo)",
+  // Sun 06:15 edge cases: the co-signer's / agent's real checks on Testnet, no fixture synthesis.
+  tamper: "tamper (malformed payments sent to the co-signer) runs on XRPL Testnet only: start the API in mongo mode (API_MODE=mongo)",
+  "expired-contract": "expired-contract runs on XRPL Testnet only: start the API in mongo mode (API_MODE=mongo)",
+  "unknown-contract": "unknown-contract runs on XRPL Testnet only: start the API in mongo mode (API_MODE=mongo)",
+  "low-balance": "low-balance (reads the agent account's real RLUSD balance) runs on XRPL Testnet only: start the API in mongo mode (API_MODE=mongo)",
 };
 
 export function registerDemoRoutes(app: FastifyInstance, ctx: AppContext): void {

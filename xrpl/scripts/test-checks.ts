@@ -28,7 +28,7 @@ import { matchNonprofitByEin, newMicroDeposit, verifyMicroDeposit } from "../src
 import { checkGovernanceTx, classifySignerList, signerEntriesFor, CTT_TRUST_LIMIT, type GovContext } from "../src/lib/governance";
 import { checkEscrowCancel, checkEscrowCreate, checkEscrowFinish, conditionFromPreimage, escrowMemo, fulfillmentMatches, newPreimage, signReleaseApproval, verifyReleaseApproval, type EscrowFacts } from "../src/lib/escrow";
 import { cosignerRecordProblems, matchApprovedTx } from "../src/officer/approvals";
-import { sha256Hex } from "../../shared/hash";
+import { sha256Hex, computeDecisionHash, DECISION_HASH_FIELDS } from "../../shared/hash";
 import { accountRef } from "../src/onboarding/bankLocal";
 
 const agent = Wallet.generate();
@@ -498,6 +498,14 @@ console.log("\n--- Phase 3 fixes: Nessie ids stay out of Mongo ---");
   const id = "5f8d0d55b54764421b7156c3";
   const r1 = accountRef("a".repeat(32), "nessie", id);
   assert("bank: account_ref is an HMAC (64 hex), does not contain the account id, depends on the per-EIN key", /^[0-9a-f]{64}$/.test(r1) && !r1.includes(id) && r1 !== accountRef("b".repeat(32), "nessie", id) && r1 === accountRef("a".repeat(32), "nessie", id));
+}
+
+console.log("\n--- Sun (Q4): decision labels are not part of decision_hash ---");
+{
+  const core = { decision_id: "dec_20260927102113aaaa", invoice_id: "INV-P6-TAMPER-20260927-102113-A", contract_id: "CT1-069-20261409087", payee_ein: "00-0000001", amount: "1.00", currency: "RLUSD" as const, agent_reasoning: "x", rule_version: "p2-grok-1", source_tag: 26092026, created_at: "2026-09-27T10:21:13Z" };
+  const h = computeDecisionHash(core);
+  assert("labels: scenario/run_id/step/steps_total do not change decision_hash", computeDecisionHash({ ...core, scenario: "tamper", run_id: "run_x", step: 1, steps_total: 3 } as typeof core) === h && !(DECISION_HASH_FIELDS as readonly string[]).some((k) => ["scenario", "run_id", "step", "steps_total"].includes(k)));
+  assert("labels: a hashed field still changes it", computeDecisionHash({ ...core, amount: "10.00" }) !== h);
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);
