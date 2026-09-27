@@ -5,20 +5,18 @@ import { useState } from "react";
 import type { Contract, Decision, Payment, Site, Trail } from "@/lib/contracts";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/risk";
 import { OUTCOME_BADGES, enforcedByLabel, formatDate, formatEventTime, formatMoney, nextEvent, refusalLabel } from "@/lib/format";
-import FollowSiteButton from "./FollowSiteButton";
+import TextUs from "./TextUs";
 
 export default function SitePanel({
   site,
   trail,
   trailError,
   onClose,
-  onNeedSignup,
 }: {
   site: Site;
   trail: Trail | null;
   trailError: boolean;
   onClose: () => void;
-  onNeedSignup: () => void;
 }) {
   const next = nextEvent(site.events);
 
@@ -93,7 +91,7 @@ export default function SitePanel({
       </Section>
 
       <Section title="iMessage alerts">
-        <FollowSiteButton siteId={site.id} siteName={site.name} onNeedSignup={onNeedSignup} />
+        <TextUs siteName={site.name} />
       </Section>
     </div>
   );

@@ -65,6 +65,7 @@ export default function MapView({
             key={site.id}
             position={[lat, lng]}
             icon={pinIcon(site.risk.level, site.id === selectedId)}
+            title={site.name}
             ref={(m) => {
               if (m) markers.current.set(site.id, m);
               else markers.current.delete(site.id);

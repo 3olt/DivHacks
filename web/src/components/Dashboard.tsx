@@ -9,7 +9,7 @@ import { SITE_TYPE_LABELS } from "@/lib/format";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/risk";
 import LedgerFeed from "./LedgerFeed";
 import SitePanel from "./SitePanel";
-import SignupForm from "./SignupForm";
+import TextUs from "./TextUs";
 
 const MapView = dynamic(() => import("./MapView"), { ssr: false });
 
@@ -21,7 +21,6 @@ export default function Dashboard({ initialSiteId = null }: { initialSiteId?: st
   const [trailErrorFor, setTrailErrorFor] = useState<string | null>(null);
   const [popupOpen, setPopupOpen] = useState(false);
   const [decisions, setDecisions] = useState<Decision[]>([]);
-  const [tab, setTab] = useState<"ledger" | "alerts">("ledger");
   const [hiddenTypes, setHiddenTypes] = useState<Set<SiteType>>(new Set());
 
   // Read inside WS callbacks without reconnecting when the selection changes.
@@ -184,40 +183,12 @@ export default function Dashboard({ initialSiteId = null }: { initialSiteId?: st
             site={selectedSite}
             trail={trail?.site_id === selectedSite.id ? trail : null}
             trailError={trailErrorFor === selectedSite.id}
-            onClose={closePanel} onNeedSignup={() => {
-              closePanel();
-              setTab("alerts");
-            }}
+            onClose={closePanel}
           />
         ) : (
-          <div className="p-5">
-            <div className="mb-4 flex gap-1 rounded-md bg-gray-100 p-1 text-sm" role="tablist">
-              {(
-                [
-                  ["ledger", "Live ledger"],
-                  ["alerts", "Get alerts"],
-                ] as const
-              ).map(([key, label]) => (
-                <button
-                  key={key}
-                  role="tab"
-                  aria-selected={tab === key}
-                  onClick={() => setTab(key)}
-                  className={`flex-1 rounded px-3 py-1.5 font-medium ${tab === key ? "bg-white text-gray-900 shadow-sm" : "text-gray-600"}`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-            {tab === "ledger" ? (
-              <LedgerFeed decisions={decisions} sites={sites} onOpenSite={openSite} />
-            ) : (
-              <div className="space-y-3">
-                <h2 className="text-lg font-semibold text-gray-900">Get iMessage alerts</h2>
-                <p className="text-sm text-gray-600">Sign up to hear about free food and events you qualify for, texted through Photon.</p>
-                <SignupForm />
-              </div>
-            )}
+          <div className="space-y-4 p-5">
+            <TextUs />
+            <LedgerFeed decisions={decisions} sites={sites} onOpenSite={openSite} />
           </div>
         )}
       </aside>

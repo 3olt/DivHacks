@@ -25,8 +25,8 @@ const STEPS = [
     body: "An AI agent pays verified invoices on the XRP Ledger. Every attempt is public: paid, blocked, or waiting for approval, with the reason, who signed, and an audit fingerprint.",
   },
   {
-    title: "Get alerts you qualify for",
-    body: "Sign up with your phone to get iMessage alerts about free food and events near you, and when their funding becomes strained.",
+    title: "Text us for help nearby",
+    body: "Text your ZIP code to our iMessage line. An assistant (Grok) replies with free food, shelters, and events near you, answers questions, and alerts you when a place you follow changes.",
   },
 ];
 

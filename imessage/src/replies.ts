@@ -1,6 +1,8 @@
-// Replies to inbound iMessages, and the welcome text after sign-up.
-// - "STOP": unsubscribes the sender (DELETE /subscribers/:phone), as promised on the sign-up form.
+// Replies to inbound iMessages. Alerts are text-only: there is no web sign-up.
+// - "HELP": lists what you can text.
+// - "STOP": unsubscribes the sender (DELETE /subscribers/:phone).
 // - "10453" or "JOIN 10453": subscribes by ZIP (channel "imessage") and replies with what's nearby.
+// - "FOLLOW <place name>": follows a map location (funded alerts + answers about it).
 // - Anything else: Grok answers from the sites the sender follows plus nearby sites that match their
 //   interests (same ZIP first, then same borough), using only facts from the API.
 const API_URL = process.env.API_URL || "http://localhost:4000";
@@ -41,8 +43,11 @@ type Trail = {
 };
 
 const NOT_SUBSCRIBED =
-  "Welcome to GlassLedger! Text your 5-digit ZIP code (for example 10453) to see free food and community services near you, or sign up on the GlassLedger map.";
-const NEARBY_LIMIT = 3;
+  "Welcome to GlassLedger! Text your 5-digit ZIP code (for example 10453) to see free food, shelters, and community events near you. Text HELP for options.";
+const HELP_TEXT =
+  "GlassLedger by text:\n• Your ZIP (e.g. 10453): places near you\n• FOLLOW <place name>: alerts for that place\n• Ask anything, like \"free food this weekend?\"\n• STOP: unsubscribe";
+const NEARBY_LIMIT = 4;
+const FOLLOW = /^\s*follow\s+(.+?)\s*$/i;
 const JOIN = /^\s*(?:join\s+)?(\d{5})\s*$/i;
 const FALLBACK = "Sorry, I couldn't look that up right now. Please try again in a minute.";
 
@@ -69,7 +74,11 @@ async function answer(senderId: string, text: string): Promise<string> {
     return "You're unsubscribed from GlassLedger alerts. Sign up again on the map anytime.";
   }
 
+  if (/^\s*(help|info|\?)\s*$/i.test(text)) return HELP_TEXT;
   if (!phone) return NOT_SUBSCRIBED;
+
+  const follow = FOLLOW.exec(text);
+  if (follow) return followPlace(phone, follow[1]);
 
   const join = JOIN.exec(text);
   if (join && !boroughOf(join[1])) return "That doesn't look like an NYC ZIP code. Please text a 5-digit NYC ZIP, for example 10453.";
@@ -88,19 +97,27 @@ async function answer(senderId: string, text: string): Promise<string> {
   return recommend(phone, text, "", subscriber);
 }
 
-// Welcome text after a web sign-up: a greeting plus Grok's picks near the subscriber.
-export async function welcomeFor(phone: string, firstName: string): Promise<string> {
-  const greeting = `Hi${firstName ? `, ${firstName}` : ""}! You're signed up for GlassLedger alerts. `;
-  try {
-    return await recommend(phone, "What's near me that I might want to go to?", greeting);
-  } catch (err) {
-    console.error("[replies] welcome lookup failed", err);
-    return `${greeting}We'll text you about free food and events near you, and when their funding becomes strained.`;
-  }
-}
-
 async function findSubscriber(phone: string): Promise<Subscriber | undefined> {
   return (await getJson<Subscriber[]>("/subscribers")).find((s) => s.phone === phone);
+}
+
+// "FOLLOW burnside heights" -> the site whose name best matches (all query words must appear in the name).
+async function followPlace(phone: string, query: string): Promise<string> {
+  const words = query.toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter(Boolean);
+  const sites = await getJson<Site[]>("/sites");
+  const match = sites
+    .map((s) => ({ s, name: s.name.toLowerCase() }))
+    .filter(({ name }) => words.length > 0 && words.every((w) => name.includes(w)))
+    .sort((a, b) => a.name.length - b.name.length)[0]?.s;
+  if (!match) return `I couldn't find a place called "${query.slice(0, 60)}". Use the name shown on the GlassLedger map, for example FOLLOW Burnside Heights.`;
+  const res = await fetch(`${API_URL}/subscribers`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phone, site_ids: [match.id], channel: "imessage" }),
+  });
+  if (!res.ok) return FALLBACK;
+  const next = upcoming(match);
+  return `You're following ${match.name} ${statusEmoji(match.risk.level)}. We'll text you when it gets paid and is 🟢 financially stable again.${next ? ` Next: ${next.title}, ${next.when}.` : ""}`;
 }
 
 // Answers using the sites they follow (full money trail) plus nearby matches (summary only, to save tokens).
@@ -110,7 +127,8 @@ async function recommend(phone: string, text: string, prefix: string, known?: Su
   const sites = await getJson<Site[]>("/sites");
   const followed = await Promise.all(subscriber.site_ids.slice(0, 2).map(siteFacts));
   const nearby = nearbySites(sites, subscriber).map(nearbyFacts);
-  const facts = { my_zip: subscriber.zip, my_interests: subscriber.interests, followed, nearby };
+  const today = new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "long", month: "short", day: "numeric", year: "numeric" });
+  const facts = { today, my_zip: subscriber.zip, my_interests: subscriber.interests, followed, nearby };
   // Nothing to talk about: skip Grok (saves credits).
   if (followed.length === 0 && nearby.length === 0) return prefix + summaryAnswer(facts);
   const question = text.trim().toLowerCase().slice(0, 300);
@@ -271,7 +289,7 @@ async function askGrok(question: string, facts: unknown): Promise<string | null>
         {
           role: "system",
           content:
-            "You are GlassLedger's iMessage assistant for NYC residents. You point people to free food and community services near them and explain, in plain language, the financial health of each one's city funding. " +
+            "You are GlassLedger's iMessage assistant for NYC residents. You help people find free food (pantries, grocery giveaways, food drives), shelters, youth programs, and community events near them, and explain, in plain language, the financial health of each one's city funding. " +
             "Facts: 'followed' = places the user follows; 'nearby' = places near their ZIP that match their interests. When they ask what's near them or what to go to, recommend up to 3 nearby places with the next event's 'when' text exactly as given, and mention if one is financially critical. " +
             "Answer ONLY from the JSON facts provided. If the facts don't answer the question, say so. Keep replies under 80 words, plain text, no markdown. " +
             "Status is a financial status rating of the site's city funding, shown as an emoji: 🟢 = financially stable; 🟡 = financially strained; 🔴 = financially critical. It is not a prediction that an event will be cancelled. Show status with that emoji right after the place's name, never the words green/yellow/red. Emojis other than these three are not allowed. Amounts in RLUSD are testnet demo payments, not real dollars. " +

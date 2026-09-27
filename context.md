@@ -71,15 +71,15 @@ Opened from **"Full report →"** in the side panel (`web/src/components/report/
 - `risk.components`: per-factor points (payment pace /40, registration /20, agency /20, cash /20) so the score can be shown as a stacked bar. `api/src/risk.ts` already computes them.
 - **Target vs actual reach** per site, from NYC Open Data already probed in `data/raw/samples/`: neighborhood need from Emergency Food Supply Gap (`4kc9-zrs2`: supply gap lbs, % food insecure, by NTA); people served from Community Food Connection (`mpqk-skis`) and site `capacity` from Verified Locations: Sites (`y9si-s7ab`).
 
-### 2. Event alerts sign-up (for individuals)
-Separate from the map. Individuals sign up so they can get notified about events and benefits **they qualify for**.
-- Sidebar form: phone (required), ZIP (required), first name, age, street address, borough, household size, preferred language, interests (the API's site types), household benefits (optional: SNAP, WIC, TANF, Medicaid, SSI), iMessage consent (required).
-- Fields are checked against real NYC sign-ups: Plentiful (pantry reservations: name, phone, ZIP, household size, birthday) and the Uniform TEFAP Intake Form (name, address, ZIP, county, household size, and SNAP/WIC/SSI participation; NY adds TANF and Medicaid for categorical eligibility). Dietary needs and accessibility were left out because neither form asks for them.
-- "Follow this location" in a pin's panel adds that site to the person's alerts.
-- Photon free plan requires the person to text the line first, so the confirmation shows **"Text 'hi' to (628) 789-6792"**.
-- **Where the data lives:** phone, ZIP, interests and followed sites go to the API (`POST /subscribers`). Name, age, address, household size and language are eligibility data; the API's `Subscriber` type has no field for them yet, so they're kept in `web/` (in memory) for now.
-- **Open product decision (Gagan):** the backend flags the profile as personal data; storing it in the API is a product call before anything is built.
-- **Request to backend:** add an optional `profile` field on `Subscriber` (first name, age, street address, borough, household size, language, benefits) so eligibility matching can move to the API. This is personal data: never shown on the map, never logged, not in fixtures.
+### 2. Text-only alerts and help (iMessage via Photon + Grok)
+There is **no web sign-up** (removed 2026-09-26). Everything for individuals happens by text to **(628) 789-6792**:
+- **Your ZIP** (`10453` or `JOIN 10453`): subscribes (`POST /subscribers`, `channel: "imessage"`) and replies with nearby places.
+- **`FOLLOW <place name>`**: follows a map location (matched by name); the follower gets "✅ … is financially stable again" when it's paid and turns 🟢.
+- **`HELP`**: lists the options. **`STOP`**: unsubscribes.
+- **Anything else** (e.g. "any food drives this weekend?"): Grok answers from the places they follow plus nearby places, with today's date, next event times, and 🟢/🟡/🔴 status.
+- The web app only points people to the line: a "Get alerts by text" card above the Live ledger, and in each site's panel a "Text FOLLOW <site>" link that opens Messages with the text filled in.
+- Photon free plan: the person must text the line first, and the number must be on the Photon Users list (max 10).
+- **Removed with the web sign-up:** the intake profile (name, age, address, household size, language, benefits) and the `Subscriber.profile` request to the backend. The API's `Subscriber` (phone, zip, interests, site_ids, channel) is all that's stored.
 
 ## Repo layout & owners
 
@@ -105,13 +105,13 @@ Ports: api 4000 · xrpl service 4001 · co-signer 4002 · imessage 4003 · web 3
 - `web/` calls the API directly from the browser (`NEXT_PUBLIC_API_URL`, default `http://localhost:4000`; CORS is open). Client: `web/src/lib/api.ts`; WebSocket: `web/src/lib/live.ts`.
 - Types: `web/src/lib/contracts.ts` is a **copy** of `shared/contracts.ts`. Re-copy it when the backend changes it.
 - WebSocket `/live`: `hello` → refetch; `site_updated` → recolor that pin (and refetch the open trail); `decision` → refetch the open trail if it's for that site.
-- The only Next.js API routes left are sign-up proxies: `POST /api/subscribe` and `POST /api/subscribe/follow` (save to the API, then send an iMessage). No mock data remains in `web/`.
+- `web/` has **no API routes** anymore: it only reads the backend API. No mock data remains in `web/`.
 - The frontend never computes or overrides risk; it renders what the API sends.
 - Test a pin flip: `curl -X POST http://localhost:4000/demo/happy` (golden site `site_001` goes yellow → green). Reset: `curl -X POST http://localhost:4000/dev/reset`.
 
 ## iMessage via Photon (`imessage/`)
 
-**Flow:** sign-up form → `POST /api/subscribe` (web) → `POST {API}/subscribers` + `POST http://localhost:4003/notify` → Spectrum sends the iMessage.
+**Flow:** a person texts the line → Spectrum delivers it to `imessage/` → `replies.ts` (commands or Grok, with facts from the API) → Spectrum sends the reply. "Funded ✅" alerts come from WS `/live` (`fundedAlerts.ts`).
 
 **Setup (needed for real texts):**
 1. Sign up at https://app.photon.codes with the hackathon promo code and connect iMessage in the dashboard.
@@ -129,15 +129,14 @@ Without keys the service runs in **dry-run** mode: it logs messages instead of s
 | Method | Path | Purpose |
 |---|---|---|
 | POST | `/notify` | `{ phone: "+12125551234", text }` → sends an iMessage (403 `not_allowed` if the number isn't enrolled) |
-| POST | `/welcome` | `{ phone, first_name? }` → sends a greeting plus Grok's nearby picks (used by the web sign-up) |
 | GET | `/health` | `{ mode: "live" \| "dry-run" }` |
 
-**Placeholders to fill in later:**
-- **Nearby recommendations (Grok, per the subscriber's selections):** the welcome after web sign-up (`POST /welcome` on the iMessage service) and every reply include up to 3 places near the subscriber's ZIP that match their interests (same ZIP first, then same borough from the ZIP prefix), with the next event time and funding status as 🟢 / 🟡 / 🔴. Texting a ZIP (`10453` or `JOIN 10453`) subscribes by ZIP (`channel: "imessage"`) with no website needed; non-NYC ZIPs are rejected without calling Grok, and when nothing is nearby the reply skips Grok.
+**How the text assistant works:**
+- **Nearby recommendations (Grok):** every reply includes up to 4 places near the subscriber's ZIP that match their interests (same ZIP first, then same borough from the ZIP prefix), with the next event time and funding status as 🟢 / 🟡 / 🔴. Texting a ZIP (`10453` or `JOIN 10453`) subscribes by ZIP (`channel: "imessage"`) with no website needed; non-NYC ZIPs are rejected without calling Grok, and when nothing is nearby the reply skips Grok.
 - Inbound replies: **built** in `imessage/src/replies.ts`. "STOP" unsubscribes (`DELETE /subscribers/:phone`). Anything else (e.g. "why?") is answered by **Grok** (`grok-4.3`, `reasoning_effort: none`, ~1 s) using only facts from the API for the sites the sender follows (`/subscribers`, `/sites/:id`, `/sites/:id/trail`). The prompt forbids wallet addresses and treats the user's text as untrusted (tested against a prompt injection). Needs `XAI_API_KEY` in `imessage/.env` (never commit it).
 - **Grok budget (~$5 of credit):** ~900 tokens per call (compact facts, max 150 output tokens, max 3 sites). Same question + unchanged data is cached for 30 min. Limits: 5 Grok answers per phone per hour, 150 per day overall (`GROK_PER_PHONE_PER_HOUR`, `GROK_DAILY_CAP`). Past a limit, or if Grok errors, the reply is the free risk summary from the API. Every call logs its token count (`[grok] call N/150 today, X tokens`).
 - "Funded ✅" alerts: **built** in `imessage/src/fundedAlerts.ts`. The service listens to WS `/live`; when a site changes to green it texts everyone from `GET /subscribers?site_id=` ("✅ <site> is financially stable again. <summary>"). Numbers not on the Photon Users list are skipped and logged. Set `API_URL` in `imessage/.env` if the API isn't on :4000.
-- Site details (hours, what to bring, eligibility): "What to know before you go" in `SitePanel.tsx`.
+- Placeholder (web): site details (hours, what to bring, eligibility) go in "What to know before you go" in `SitePanel.tsx`.
 
 ## How the payment agent is guarded (Ripple story)
 
@@ -232,7 +231,7 @@ The API currently serves **fixture data** (15 sites, all fictional, `is_demo_dat
 - [x] Map with 15 pins colored by risk, from the API
 - [x] Pin popup + side panel with the full money trail and agent decisions
 - [x] Live pin flip over WebSocket (`/demo/happy`)
-- [x] iMessage sign-up + "follow this location" via Photon (tested on a real phone)
+- [x] Text-only alerts: ZIP sign-up, FOLLOW, HELP, STOP, Grok answers (tested on a real phone)
 - [x] Live ledger feed + demo buttons (`POST /demo/:scenario`)
 - [x] Bigger pin click targets
 - [x] Map filters by site type (chips in the legend; client-side over the loaded pins)
@@ -247,7 +246,6 @@ The API currently serves **fixture data** (15 sites, all fictional, `is_demo_dat
 - [x] Simulated escrow demo (placeholder in `api/`, marked for removal)
 - [ ] Real test-token escrow on Testnet (backend, replaces the placeholder)
 - [x] "Why?" iMessage answers with Grok + STOP to unsubscribe (`imessage/src/replies.ts`)
-- [ ] Profile field on the API's `Subscriber` (see sign-up section)
 
 **Nice to have:**
 - [ ] "Near me" (`GET /sites?near=`)
@@ -266,4 +264,4 @@ The API currently serves **fixture data** (15 sites, all fictional, `is_demo_dat
 - **"Does this fix late payments?"** No, the delays are bureaucratic. We make them visible and make the final payment instant and safe once the work is approved.
 - **"What if the agent is wrong or hacked?"** The agent executes payments on its own, with no human in the loop for normal invoices. But its key is only 1 of 3 signature weights, and an independent co-signer re-verifies every payment from the ledger. A tricked or leaked agent gets `tefBAD_QUORUM`. Only payments over the auto-limit need a human officer.
 - **"Is the data real?"** The API serves fixtures today (clearly labeled demo data). Spending, contract, and 990 data are real public records once the backend loads them; events, invoices, and XRPL payments are seeded or Testnet and flagged `is_demo_data`.
-- **"Privacy?"** The map shows organizations and neighborhoods, never individuals. Sign-up eligibility data (age, address) is used only to match alerts and is never shown.
+- **"Privacy?"** The map shows organizations and neighborhoods, never individuals. By text we store only a phone number, ZIP, interests, and followed places; STOP deletes them.
