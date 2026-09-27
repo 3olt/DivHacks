@@ -3,27 +3,27 @@
 import type { Decision, Site } from "@/lib/contracts";
 import { OUTCOME_BADGES, enforcedByLabel, explorerTxUrl, formatEventTime, formatMoney, refusalLabel } from "@/lib/format";
 import { isRealTxHash } from "@/lib/openData";
-import DemoControls from "./DemoControls";
+import Link from "next/link";
 
 // Public, live list of every payment decision the agent made: the transparency view.
 export default function LedgerFeed({
   decisions,
   sites,
   onOpenSite,
-  onReset,
 }: {
   decisions: Decision[];
   sites: Site[];
   onOpenSite: (id: string) => void;
-  onReset: () => Promise<void>;
 }) {
   const siteFor = (d: Decision) => sites.find((s) => s.contract_ids.includes(d.contract_id)) ?? sites.find((s) => s.nonprofit_ein === d.payee_ein);
 
   return (
     <div className="space-y-4">
-      <div>
+      <div className="flex items-baseline justify-between gap-3">
         <h2 className="text-lg font-semibold text-gray-900">Live ledger</h2>
-        <p className="text-sm text-gray-600">Every payment the AI agent tried to make, whether it went through, and what stopped it. Updates live.</p>
+        <Link href="/demo" className="text-sm font-medium text-blue-700 underline">
+          Live demo →
+        </Link>
       </div>
 
       {decisions.length === 0 ? (
@@ -75,15 +75,13 @@ export default function LedgerFeed({
       )}
 
       {decisions.length > 0 && <p className="text-[11px] text-gray-500">Repeated attempts in a row are grouped. Every attempt is listed on the open data page.</p>}
-
-      <DemoControls onReset={onReset} />
     </div>
   );
 }
 
 // Collapses back-to-back decisions with the same site, outcome, reason, and amount (e.g. a demo button pressed
 // several times) into one row with a count. Newest first, so the shown row is the latest attempt.
-function groupRepeats(decisions: Decision[]): { decision: Decision; count: number }[] {
+export function groupRepeats(decisions: Decision[]): { decision: Decision; count: number }[] {
   const key = (d: Decision) => [d.contract_id, d.outcome, d.refusal_reasons[0] ?? "", d.amount].join("|");
   const out: { decision: Decision; count: number }[] = [];
   for (const d of decisions) {

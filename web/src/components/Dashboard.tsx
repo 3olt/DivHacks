@@ -103,17 +103,6 @@ export default function Dashboard({ initialSiteId = null }: { initialSiteId?: st
     };
   }, [selectedId]);
 
-  // POST /dev/reset doesn't "un-broadcast" removed decisions (docs/API.md), so refetch after a reset.
-  async function reloadAfterReset() {
-    try {
-      const [s, d] = await Promise.all([fetchSites(), fetchDecisions(50)]);
-      setSites(s);
-      setDecisions(d);
-    } catch {
-      setApiError(true);
-    }
-  }
-
   function closePanel() {
     setSelectedId(null);
     setTrail(null);
@@ -199,7 +188,7 @@ export default function Dashboard({ initialSiteId = null }: { initialSiteId?: st
         ) : (
           <div className="space-y-4 p-5">
             <TextUs />
-            <LedgerFeed decisions={decisions} sites={sites} onOpenSite={openSite} onReset={reloadAfterReset} />
+            <LedgerFeed decisions={decisions} sites={sites} onOpenSite={openSite} />
           </div>
         )}
       </aside>
