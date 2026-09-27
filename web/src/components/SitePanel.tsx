@@ -71,11 +71,6 @@ export default function SitePanel({
         </>
       )}
 
-      <Section title="What to know before you go">
-        {/* Placeholder: hours, what to bring, eligibility requirements, languages spoken. */}
-        <Placeholder text="Hours, what to bring, and eligibility requirements coming soon." />
-      </Section>
-
       <Section title="iMessage alerts">
         <TextUs siteName={site.name} />
       </Section>
@@ -210,8 +205,4 @@ function SourceLink({ href, label, demo }: { href: string; label: string; demo?:
 
 function DemoBadge() {
   return <span className="ml-1 rounded bg-gray-100 px-1 text-[10px] text-gray-500">demo</span>;
-}
-
-function Placeholder({ text }: { text: string }) {
-  return <div className="rounded-md border border-dashed border-gray-300 p-3 text-xs text-gray-500">{text}</div>;
 }
