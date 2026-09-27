@@ -1,0 +1,32 @@
+{
+  "ein": "133127972",
+  "object_id": "202600649349300635",
+  "tax_period": "202506",
+  "index_year": 2026,
+  "source": "IRS Form 990 e-file XML (IRS TEOS)",
+  "source_url": "https://apps.irs.gov/pub/epostcard/990/xml/2026/2026_TEOS_XML_03A.zip",
+  "member": "202600649349300635_public.xml",
+  "index_url": "https://apps.irs.gov/pub/epostcard/990/xml/2026/index_2026.csv",
+  "values": {
+    "tax_period_begin": "2024-07-01",
+    "tax_period_end": "2025-06-30",
+    "filer_ein": "133127972",
+    "filer_name": "NEW YORK COMMON PANTRY",
+    "return_type": "990",
+    "CYTotalRevenueAmt": "24345029",
+    "CYTotalExpensesAmt": "23760230",
+    "NetAssetsOrFundBalancesEOYAmt": "17540739",
+    "TotalFunctionalExpensesGrp/TotalAmt": "23760230",
+    "CashNonInterestBearingGrp/EOYAmt": "2531671",
+    "SavingsAndTempCashInvstGrp/EOYAmt": "710012",
+    "TotalAssetsGrp/EOYAmt": "27249246",
+    "TotalLiabilitiesGrp/EOYAmt": "9708507",
+    "InvestmentsPubTradedSecGrp/EOYAmt": "1870934",
+    "GovernmentGrantsAmt": "6524245"
+  },
+  "cash": 3241683.0,
+  "expenses": 23760230.0,
+  "cash_months": 1.64,
+  "formula": "(CashNonInterestBearingGrp/EOYAmt + SavingsAndTempCashInvstGrp/EOYAmt) / (TotalFunctionalExpensesGrp/TotalAmt / 12)",
+  "fetched_at": "2026-09-26T21:34:22-0400"
+}

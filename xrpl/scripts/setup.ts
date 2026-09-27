@@ -1,7 +1,8 @@
 // Phase 1 setup (XRPL Testnet only). Idempotent: every step checks the ledger first and skips work that is done,
 // so a second run submits no transactions and makes no faucet calls.
 //
-//   1. load or create + faucet-fund city_issuer, agent_account, np_1..np_4, attacker (city_treasury already exists)
+//   1. load or create + faucet-fund city_issuer, agent_account, np_1..np_5, attacker (city_treasury already exists)
+//      (np_5, Phase 4: the golden real organization's DEMO wallet on Testnet; its contract id comes from Mongo demo_state)
 //   2. RLUSD trust lines (limit 1e9, tfSetNoRipple)
 //   3. treasury RLUSD: buy through the Testnet XRP/RLUSD AMM with throwaway faucet-funded swapper wallets
 //   4. top up agent_account's RLUSD working balance from the treasury (the parent that funds the agent)
@@ -27,6 +28,8 @@ import {
 } from "../src/lib/xrpl";
 import { registryPath, allowlistPath, type Registry, type Allowlist, type NonprofitKey } from "../src/lib/registry";
 import { classifySignerList } from "../src/lib/governance";
+import { openMongo } from "../src/lib/mongo";
+import { GOLDEN_EIN, GOLDEN_FALLBACK_CONTRACT_ID, GOLDEN_NAME, GOLDEN_WALLET_LABEL, pollFor, readDemoState } from "../src/lib/golden";
 
 loadEnv(); // root .env + xrpl/.env.local (setup-only seeds)
 
@@ -43,12 +46,45 @@ const R = rlusd();
 
 // np_1..np_4 map to the API fixture nonprofits EIN 00-0000001..00-0000004 (names and current contract ids copied
 // from api/src/fixtures/nonprofits.ts + contracts.ts; np_1 is the golden fixture site_001).
-const NONPROFITS: Record<NonprofitKey, { ein: string; name: string; contract_id: string }> = {
+// np_5 (Phase 4, Option B): a DEMO WALLET on XRPL Testnet for the golden REAL organization, Food Bank For New York City
+// (EIN 13-3179546). The organization has not onboarded; we hold this key (NP_5_SEED). Its contract_id is builder A's
+// demo_state.golden_contract_id, read from Mongo at runtime (fallback CT106920258801736 if demo_state is not written yet).
+const NONPROFITS: Record<NonprofitKey, { ein: string; name: string; contract_id: string; label?: string }> = {
   np_1: { ein: "00-0000001", name: "Burnside Heights Food Collective (demo)", contract_id: "CT1-069-20261409087" },
   np_2: { ein: "00-0000002", name: "South Bronx Table Fund (demo)", contract_id: "CT1-069-20271522304" },
   np_3: { ein: "00-0000003", name: "Bronx Riverbend Youth Works (demo)", contract_id: "CT1-260-20241298815" },
   np_4: { ein: "00-0000004", name: "El Barrio Mesa Comunitaria (demo)", contract_id: "CT1-069-20261409311" },
+  np_5: { ein: GOLDEN_EIN, name: GOLDEN_NAME, contract_id: GOLDEN_FALLBACK_CONTRACT_ID, label: GOLDEN_WALLET_LABEL },
 };
+
+/** np_5's contract: builder A's demo_state.golden_contract_id (polls up to GOLDEN_WAIT_MIN minutes, default 0 = one read). */
+async function resolveGoldenContract(): Promise<void> {
+  const waitMin = Number(process.env.GOLDEN_WAIT_MIN ?? "0");
+  let m: Awaited<ReturnType<typeof openMongo>> | null = null;
+  try {
+    m = await openMongo("divhacks-setup");
+    const ds = await pollFor("demo_state {_id: golden}", () => readDemoState(m!.db), waitMin * 60000);
+    if (ds) {
+      NONPROFITS.np_5.contract_id = ds.golden_contract_id;
+      console.log(`  np_5 (golden, ${GOLDEN_NAME} ${GOLDEN_EIN}): contract ${ds.golden_contract_id} from Mongo demo_state (builder A)`);
+      return;
+    }
+  } catch (e) {
+    console.warn(`  np_5: could not read demo_state from Mongo (${(e as Error).message.replace(/mongodb(\+srv)?:\/\/\S+/g, "<uri>")})`);
+  } finally {
+    await m?.close().catch(() => undefined);
+  }
+  NONPROFITS.np_5.contract_id = loadRegistryIfPresent()?.nonprofits.np_5?.contract_id ?? GOLDEN_FALLBACK_CONTRACT_ID;
+  console.log(`  np_5: demo_state not written yet; using contract ${NONPROFITS.np_5.contract_id} (NOTE: re-run setup once builder A writes demo_state)`);
+}
+
+function loadRegistryIfPresent(): Registry | null {
+  try {
+    return fs.existsSync(registryPath) ? (JSON.parse(fs.readFileSync(registryPath, "utf8")) as Registry) : null;
+  } catch {
+    return null;
+  }
+}
 
 const stats = { txs: 0, faucet: 0, txLog: [] as string[] };
 
@@ -194,6 +230,7 @@ async function main() {
 
     // ---- 1. accounts --------------------------------------------------------------------------------------
     console.log("\n[1] accounts");
+    await resolveGoldenContract();
     if (!process.env.TREASURY_SEED) throw new Error("TREASURY_SEED missing from xrpl/.env.local (city_treasury must already exist)");
     const treasury = localWallet("TREASURY");
     const cityIssuer = localWallet("CITY_ISSUER");
@@ -327,7 +364,7 @@ async function main() {
     const allowlist: Allowlist = {
       network: "testnet",
       rule_version: "p1-allowlist-1",
-      description: "Phase 1 co-signer allowlist: the registry wallets of the demo nonprofits np_1..np_4. The co-signer reads this file once at startup and pins its SHA-256; restart the co-signer after changing it.",
+      description: "Co-signer allowlist: the registry wallets of the demo nonprofits np_1..np_4 and np_5 (np_5 = the DEMO wallet on XRPL Testnet for the golden real organization, Food Bank For New York City, EIN 13-3179546, which has not onboarded). The co-signer reads this file once at startup and pins its SHA-256; restart the co-signer after changing it.",
       addresses: (Object.keys(NONPROFITS) as NonprofitKey[]).map((k) => nps[k].address),
     };
     console.log(`  ${path.relative(paths.rootDir, registryPath)}: ${writeIfChanged(registryPath, registry) ? "written" : "unchanged"}`);

@@ -17,6 +17,10 @@ nonprofits are demo data (`is_demo_data: true`).
   on-ledger -> `tefBAD_SIGNATURE`), a SIMULATED milestone escrow with a city test token (RLUSD escrow is impossible on
   Testnet) whose release needs the officer's signed approval, `npm run demo all`, the endpoint list of all three services and
   the guardrail table.**
+- **Phase 4 ([below](#phase-4-the-golden-real-organization-np_5-option-b)): `np_5`, a DEMO wallet on XRPL Testnet for the golden
+  REAL organization (Food Bank For New York City, EIN 13-3179546; it has not onboarded), onboarded with the Phase 3 flow and paid
+  through all 8 checks by `npm run demo golden`; its XRPL payments count toward the real contract's "paid" at a DISCLOSED demo
+  scale (Option B).**
 
 ## Architecture
 
@@ -217,6 +221,7 @@ DEMO_AMOUNT=1.00 npm run demo all   # every scenario end to end + final table (o
 npm run demo over-limit   # 30.00 -> pending_approval -> agent presses the officer's button (401) -> consistent rewrite (409) -> officer approves -> 3-signer payment
 npm run demo kill-switch  # officer revokes the agent key -> the agent's payment fails on-ledger (tefBAD_SIGNATURE) -> restore
 npm run demo escrow       # SIMULATED escrow (CTT test token, not RLUSD): create -> wrong report refused -> no officer approval refused -> officer approves -> release
+npm run demo golden       # Phase 4: the golden REAL organization (Food Bank For NYC, EIN 13-3179546) paid 12.50 at np_5, its DEMO wallet on Testnet; risk before/after
 npm run agent:revoke      # officer CLI (signs itself, no officer service needed): SignerListSet {cosigner:2, officer:1} (kill switch)
 npm run agent:restore     # officer CLI: back to {agent:1, cosigner:2, officer:1} (idempotent)
 npm run agent:status      # read-only: CANONICAL / REVOKED + master-key flag
@@ -276,7 +281,7 @@ post-fix `demo all`).
     CredentialAccept use the demo keys in `xrpl/.env.local`; the Nessie customer + account are created by us from the
     organization's public record (Nessie is a sandbox bank), so the name/address match compares Nessie's stored holder with
     our record rather than a bank's independent KYC;
-  - the demo EINs (00-000000N) are fictional, so the ProPublica link inside each credential URI does not resolve;
+  - the demo EINs (00-000000N) are fictional, so the ProPublica link inside each credential URI does not resolve (np_5 carries the REAL EIN 13-3179546 and its link resolves, but np_5 is our demo wallet: the organization has not onboarded, Phase 4);
   - the **officer** in `address-swap` is the officer's click CLI (or, without the officer service, `officer:resolve`) run as a
     separate process (a human would run the same command; `manual-officer` makes the demo wait for that);
   - **Nessie re-confirmation for a wallet CHANGE is not implemented**: `requires.nessie_reconfirmed` exists on a payee change
@@ -304,6 +309,79 @@ post-fix `demo all`).
     restart). Pinning (files + registry snapshot + contract terms + drift refusal), policy-from-file-only, the startup registry
     check, "no other `*_SEED` in my environment" and the officer's click credential narrow this; production puts the co-signer
     and the officer on other hosts/HSMs with their own config, and gives the co-signer a DB user the agent cannot write.
+
+## Phase 4: the golden real organization (np_5, Option B)
+
+**Labels first.** Food Bank For New York City (EIN **13-3179546**, Checkbook NYC vendor `0000822784`) is a **real
+organization**; its contracts, Checkbook payments and 990 figures are **real public records** that builder A (`data/`) loads
+into Mongo with `source` + `source_url` and `is_demo_data: false`. It has **not** onboarded with GlassLedger. The XRPL
+address the agent pays for it, `np_5`, is a **demo wallet on XRPL Testnet; the real organization has not onboarded**: we
+generated it and hold its key (`NP_5_SEED`, `xrpl/.env.local`), exactly like np_1..np_4. Every invoice to it is demo data,
+every payment is Testnet RLUSD (no value). This label is in `accounts.testnet.json` (`nonprofits.np_5.label`), in Mongo
+(`nonprofits.wallet.label` + `wallet.is_demo_data: true`, the onboarding record's `simulated[]`), in the demo output and here.
+
+**Option B (disclosed demo scale).** For the golden contract **only**, released `source: "xrpl"` payments dated at/after
+`demo_state.epoch` count toward the contract's "paid" at `demo_state.scale_usd_per_rlusd` (e.g. 1 RLUSD = $10,000).
+Builder A's `data/risk.py` does the counting and says so in the site's `reasons`; `demo_state` (`is_demo_data: true`) holds the
+scale and its note. Every other site counts only real Checkbook USD. The xrpl side never writes public fields.
+
+| Who writes what (shared Mongo contract) | Builder A (`data/`) | Builder B (`xrpl/`) |
+|---|---|---|
+| `nonprofits {ein "13-3179546"}` | name, address, service_types, financials, source fields, `is_demo_data: false` | **only** `wallet` (`seed-registry`, `onboard`) |
+| golden `contracts` doc | the public terms (`agency_code`, `nonprofit_ein`, `amount`, dates, `spent_to_date`, `purpose`, `source`, `source_url`, `is_demo_data: false`) | **only** `xrpl_budget_rlusd` (100.00, testnet-scale) + `xrpl_budget_note` (`seed-registry`) |
+| `demo_state {_id "golden"}` | `golden_ein, golden_site_id, golden_contract_id, scale_usd_per_rlusd, epoch, note, is_demo_data: true` | reads it (setup, seed-registry, demo) |
+| `payments` | Checkbook rows (`source "checkbook"`, USD) | the agent's rows (`source "xrpl"`) |
+
+`seed-registry` never creates or overwrites a real organization's record or contract: if builder A's document is missing it
+prints `SKIPPED` and moves on. The co-signer is unchanged: the golden contract is pinned at startup like any other (its terms,
+including `is_demo_data: false`, are A's; its budget is B's), and np_5 must pass the same 8 checks.
+
+### Order (first time, or after builder A re-writes demo_state / the golden records)
+
+```bash
+# builder A: nonprofits {ein 13-3179546}, the golden contract, demo_state {_id "golden"} must exist first
+npm run setup:xrpl        # np_5: faucet-fund, RLUSD trust line; accounts.testnet.json np_5 {address, ein, name, contract_id from demo_state, label}; allowlist + np_5
+npm run seed:registry     # np_5: $set wallet only on A's record; golden contract: $set xrpl_budget_rlusd 100.00 + xrpl_budget_note only
+npm run onboard -- np_5   # EIN match against A's record, Nessie (public name/address), micro-deposit, signed challenge, credential (REAL EIN in the URI)
+npm run cosigner          # (re)start AFTER the three above: it pins the new accounts/allowlist files, the registry with np_5 and the golden contract terms
+npm run demo golden       # 12.50 RLUSD (DEMO_AMOUNT overrides); add no-spawn with an external co-signer
+```
+
+The co-signer refuses to start while `accounts.testnet.json` lists np_5 and Mongo has no np_5 wallet (startup registry check),
+so run setup, seed-registry and onboard back to back. A later change to the golden contract's pinned terms (EIN, dates,
+`xrpl_budget_rlusd`, `is_demo_data`) or to the golden record's name/wallet by a re-ingestion -> `registry_drift` until the
+co-signer is restarted (fail closed, as designed). The CTT (simulated escrow) trust line is **not** created for np_5: no
+scenario escrows to it.
+
+### `npm run demo golden`
+
+`xrpl/data/invoices/golden.json` (demo invoice, `is_demo_data: true`; the id is fresh per run, the contract comes from
+`demo_state.golden_contract_id`) -> Grok -> builder (the contract's `nonprofit_ein` must be 13-3179546; destination = the
+registry wallet for that EIN = np_5) -> co-signer (all 8 checks; check 1 reads np_5's `NYC_VERIFIED_NONPROFIT` credential
+on-ledger and its URI must carry `ein:13-3179546`; check 4 needs today inside the REAL contract's start..end and the sum under
+the 100.00 testnet budget) -> agent + co-signer -> tesSUCCESS. **AS EXPECTED** = released, tesSUCCESS, 8/8 checks passed and
+the credential detail names 13-3179546. If `data/risk.py` exists it then runs `data/.venv python data/risk.py --site
+<golden_site_id>` before and after the payment (separate process, minimal environment, no seeds) and prints the site's level,
+score, summary and the Option B reason; that part is informational (it never decides AS EXPECTED), because the level flips at
+most once per demo epoch. `golden` is **not** in `demo all`: it depends on builder A's live data (demo_state, the contract's
+dates, a re-ingestion can cause `registry_drift`), and `demo all` must stay green on its own.
+
+**Done on Testnet, 2026-09-27 (UTC):**
+
+| Step | Result |
+|---|---|
+| np_5 | `rAhvUcYnLmTYuCU52thJdzDsddDbRAoJN` (faucet-funded), RLUSD TrustSet [BD5F7576...](https://testnet.xrpl.org/transactions/BD5F7576D5E163648E1F438246AC58B65BCE8F194D30DB9E41D5B5415BEEF78D); `accounts.testnet.json` np_5.contract_id = `CT106920258801736` (= demo_state.golden_contract_id; also the contract in `invoices/golden.json`) |
+| golden contract | **`CT106920258801736`** (HRA/DSS "Prov of SNAP and emergency food assistance benefits": $2,932,500, real term 2023-07-01..2026-06-30, registered 2024-08-26 = 422 days late, $2,066,705.38 spent to date; source: Checkbook NYC Contracts API, all-years vendor query). The term check 4 uses is 2023-07-01..**2027-06-30**: builder A's disclosed assumption (`end_date_assumed: true`, `end_date_loaded: 2026-06-30`, `end_date_note`; $865,795 of the contract was still unpaid when its term ended). The risk score uses the real end date. `xrpl_budget_rlusd` 100.00 (= $1,000,000 at the demo scale) |
+| earlier golden contract | `CT106920228800360` was golden until builder A loaded the Checkbook terms (it is 99.5% paid, so a payment could not move the score). It keeps B's budget fields and the first 12.50 golden payment [51102AE2...](https://testnet.xrpl.org/transactions/51102AE2F079443BFC147DB4799266CEBC67C42E317BB8F709CA4CED39671B84); that payment does not count toward the current golden contract, and its term (real end 2022-06-30) now gives `contract_not_active` |
+| onboarding | EIN match on A's record; Nessie name + address match ("Food Bank For New York City", 355 Food Center Drive, Bronx, NY 10474) + micro-deposit confirmed; signed challenge verified (replay / expired / other key rejected); credential `6DB24EFB...03E3BC`, URI `ein:13-3179546;https://projects.propublica.org/nonprofits/organizations/133179546`, CredentialCreate [1F3A5AFC...](https://testnet.xrpl.org/transactions/1F3A5AFCCE8DED64540B4DD20D29AE4AB2B71274F207D8C468469B93B27D3080), CredentialAccept [5ED6B01C...](https://testnet.xrpl.org/transactions/5ED6B01CC82DD64A62500E912AB8D2D048213D6E38D1B87FF5D6E88DEF9F7EF1), expires 2026-12-26 |
+| seed-registry + co-signer restart (after the golden switch) | `CT106920258801736` got `xrpl_budget_rlusd` 100.00 + note (only those fields). The co-signer auto-spawned by `demo golden` pinned accounts `6cb0c2356c90`, allowlist `b2c42bdffc86` (5 wallets), registry snapshot `81bfa080a90b` (5 wallets incl. np_5), 57 contracts |
+| `npm run demo golden` (12.50) | released, 8/8 checks, agent + co-signer: [F025742E...](https://testnet.xrpl.org/transactions/F025742EE49D76E0B15085DE6A3FCF799EC19F61F07D88FBC25BC02BC1EBEC2A). Check 1: "URI EIN 13-3179546 = memo EIN". Check 4: "term 2023-07-01..2027-06-30 includes today ... 0.00 + 12.50 = 12.50, within ... 100.00". `npm run verify -w xrpl -- F025742E...` ALL CHECKS PASSED; an independent JSON-RPC read shows Signers = agent + cosigner, memo `{"inv":"INV-GOLDEN-20260927-025348","ctr":"CT106920258801736","ein":"13-3179546",...}`, Destination = np_5, delivered 12.5 RLUSD |
+| risk (A's `data/risk.py --site site_fbnyc`) | **before RED 71, after YELLOW 67 ("PIN FLIP: red -> yellow")**. Option B reason: "RLUSD 12.50 Testnet payment counted as $125,000 at demo scale (1 RLUSD = $10,000)", then "75% paid ($2,191,705 of $2,932,500)". `python data/demo_reset.py` then moved the epoch and the pin went back to RED 71 (repeatable). Yellow is the closest honest outcome for this organization; see data/README.md "Golden result" |
+
+**Budget for repeat golden runs.** Check 4 sums ALL on-ledger RLUSD ever paid under `CT106920258801736`; `demo_reset.py`
+only moves the scoring epoch, it does not give budget back. 12.50 of the 100.00 is used, so **7 more 12.50 runs** fit
+before `contract_amount_exceeded`. For more rehearsals use `DEMO_AMOUNT=1.00` (moves the score 71 -> 70, stays red), or raise
+the golden contract's `xrpl_budget_rlusd` in Mongo (seed-registry keeps an existing value) and restart the co-signer.
 
 ## Phase 3: payee verification, on-ledger credentials and the address-swap hold
 
@@ -689,7 +767,7 @@ hardware key (production). The officer's **key** remains what the ledger and the
 
 | Process | Loads | Seeds it can see |
 |---|---|---|
-| `scripts/setup.ts` (admin, setup only) | root `.env` + `xrpl/.env.local` | `TREASURY_SEED`, `CITY_ISSUER_SEED`, `AGENT_ACCOUNT_SEED` (master key, now disabled), `NP_1..NP_4_SEED`, `ATTACKER_SEED`. No signer seeds |
+| `scripts/setup.ts` (admin, setup only) | root `.env` + `xrpl/.env.local` | `TREASURY_SEED`, `CITY_ISSUER_SEED`, `AGENT_ACCOUNT_SEED` (master key, now disabled), `NP_1..NP_5_SEED` (NP_5 = the golden demo wallet), `ATTACKER_SEED`. No signer seeds |
 | agent (`scripts/demo.ts`, `scripts/redteam.ts`, `src/agent/`, the xrpl service `src/service/server.ts`) | root `.env` + `xrpl/.env.agent` | `AGENT_SEED` only |
 | co-signer (`src/cosigner/server.ts`) | root `.env` + `xrpl/.env.cosigner` | `COSIGNER_SEED` only; refuses to start if any other `*_SEED` is in its environment |
 | officer (`scripts/officer-resolve.ts`, the officer service `src/officer/server.ts`, the kill-switch CLI `scripts/agent-governance.ts`) | root `.env` + `xrpl/.env.officer` | `OFFICER_SEED` only (+ the officer service's click credential `OFFICER_CLICK_TOKEN`); refuses if another seed is present |

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<request>
+  <type_of_data>Contracts</type_of_data>
+  <records_from>1</records_from>
+  <max_records>1000</max_records>
+  <search_criteria>
+    <criteria><name>status</name><type>value</type><value>registered</value></criteria>
+    <criteria><name>category</name><type>value</type><value>expense</value></criteria>
+    <criteria><name>vendor_code</name><type>value</type><value>0000822784</value></criteria>
+  </search_criteria>
+  <response_columns>
+    <column>prime_contract_id</column>
+    <column>prime_vendor</column>
+    <column>prime_contracting_agency</column>
+    <column>prime_contract_purpose</column>
+    <column>prime_contract_original_amount</column>
+    <column>prime_contract_current_amount</column>
+    <column>prime_vendor_spent_to_date</column>
+    <column>prime_contract_start_date</column>
+    <column>prime_contract_end_date</column>
+    <column>prime_contract_registration_date</column>
+    <column>prime_contract_version</column>
+    <column>parent_contract_id</column>
+    <column>prime_contract_type</column>
+    <column>prime_contract_award_method</column>
+    <column>prime_contract_industry</column>
+    <column>prime_contract_pin</column>
+    <column>document_code</column>
+    <column>mocs_registered</column>
+  </response_columns>
+</request>

@@ -3,3 +3,5 @@ python-dotenv>=1.0
 # IRS TEOS 990 XML zips use Deflate64, which the stdlib zipfile cannot decode
 inflate64>=1.0
 openpyxl>=3.1
+# MongoDB (Phase 4 ingest / risk / summaries)
+pymongo>=4.8

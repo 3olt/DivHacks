@@ -10,13 +10,17 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import { paths } from "../env";
 
-export type NonprofitKey = "np_1" | "np_2" | "np_3" | "np_4";
+/** np_1..np_4: fictional demo nonprofits (EIN 00-000000N). np_5 (Phase 4): the DEMO wallet on XRPL Testnet for the golden
+ *  REAL organization (Food Bank For New York City, EIN 13-3179546), which has not onboarded; see src/lib/golden.ts. */
+export type NonprofitKey = "np_1" | "np_2" | "np_3" | "np_4" | "np_5";
 
 export interface RegistryNonprofit {
   address: string;
   ein: string;
   name: string;
   contract_id: string;
+  /** Honest label for a demo wallet held for a REAL organization (np_5), e.g. "demo wallet on XRPL Testnet; ...". */
+  label?: string;
 }
 
 export interface Registry {

@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<response>
+  <status>
+    <result>success</result>
+  </status>
+  <request_criteria>
+    <request>
+      <type_of_data>Contracts</type_of_data>
+      <records_from>1</records_from>
+      <max_records>100</max_records>
+      <search_criteria>
+        <criteria>
+          <name>status</name>
+          <type>value</type>
+          <value>registered</value>
+        </criteria>
+        <criteria>
+          <name>category</name>
+          <type>value</type>
+          <value>expense</value>
+        </criteria>
+        <criteria>
+          <name>fiscal_year</name>
+          <type>value</type>
+          <value>2026</value>
+        </criteria>
+        <criteria>
+          <name>vendor_code</name>
+          <type>value</type>
+          <value>0000822784</value>
+        </criteria>
+      </search_criteria>
+      <response_columns>
+        <column>prime_contract_id</column>
+        <column>prime_vendor</column>
+        <column>prime_contracting_agency</column>
+        <column>prime_contract_purpose</column>
+        <column>prime_contract_original_amount</column>
+        <column>prime_contract_current_amount</column>
+        <column>prime_vendor_spent_to_date</column>
+        <column>prime_contract_start_date</column>
+        <column>prime_contract_end_date</column>
+        <column>prime_contract_registration_date</column>
+        <column>prime_contract_version</column>
+        <column>parent_contract_id</column>
+        <column>prime_contract_type</column>
+        <column>prime_contract_award_method</column>
+        <column>prime_contract_industry</column>
+        <column>prime_contract_pin</column>
+        <column>document_code</column>
+        <column>mocs_registered</column>
+        <column>year</column>
+      </response_columns>
+    </request>
+  </request_criteria>
+  <result_records>
+    <record_count>4</record_count>
+    <contract_transactions>
+      <transaction>
+        <year>2026</year>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT112520278800254</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>OLDER ADULT CENTER</prime_contract_purpose>
+        <prime_contract_current_amount>814246.00</prime_contract_current_amount>
+        <prime_contract_original_amount>814246.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>325698.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2026-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2027-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2026-06-05</prime_contract_registration_date>
+        <prime_contracting_agency>Department for the Aging</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>RENEWAL OF CONTRACT</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>12521P0019099R002</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <year>2026</year>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920268804482</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Provision of SNAP Outreach to low-income households</prime_contract_purpose>
+        <prime_contract_current_amount>668900.00</prime_contract_current_amount>
+        <prime_contract_original_amount>668900.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>0.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2024-10-01</prime_contract_start_date>
+        <prime_contract_end_date>2025-09-30</prime_contract_end_date>
+        <prime_contract_registration_date>2026-05-22</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>DETERMINED BY GOV'T MANDATE</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06925R0004001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <year>2026</year>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920268804453</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Provision of SNAP Outreach to low-income households</prime_contract_purpose>
+        <prime_contract_current_amount>914010.00</prime_contract_current_amount>
+        <prime_contract_original_amount>914010.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>0.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2023-10-01</prime_contract_start_date>
+        <prime_contract_end_date>2024-09-30</prime_contract_end_date>
+        <prime_contract_registration_date>2026-02-02</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>DETERMINED BY GOV'T MANDATE</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06925R0002001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <year>2026</year>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106820261411703</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Food Pantry Services</prime_contract_purpose>
+        <prime_contract_current_amount>100000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>100000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>20716.05</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2026-04-01</prime_contract_start_date>
+        <prime_contract_end_date>2028-03-31</prime_contract_end_date>
+        <prime_contract_registration_date>2026-03-18</prime_contract_registration_date>
+        <prime_contracting_agency>Administration for Children's Services</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCH GOODS SERVICES 100K</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26ACS13200A</prime_contract_pin>
+      </transaction>
+    </contract_transactions>
+  </result_records>
+</response>

@@ -1,0 +1,32 @@
+{
+  "ein": "133170676",
+  "object_id": "202621119349301047",
+  "tax_period": "202506",
+  "index_year": 2026,
+  "source": "IRS Form 990 e-file XML (IRS TEOS)",
+  "source_url": "https://apps.irs.gov/pub/epostcard/990/xml/2026/2026_TEOS_XML_04A.zip",
+  "member": "202621119349301047_public.xml",
+  "index_url": "https://apps.irs.gov/pub/epostcard/990/xml/2026/index_2026.csv",
+  "values": {
+    "tax_period_begin": "2024-07-01",
+    "tax_period_end": "2025-06-30",
+    "filer_ein": "133170676",
+    "filer_name": "CITY HARVEST INC",
+    "return_type": "990",
+    "CYTotalRevenueAmt": "215716670",
+    "CYTotalExpensesAmt": "223277038",
+    "NetAssetsOrFundBalancesEOYAmt": "96862979",
+    "TotalFunctionalExpensesGrp/TotalAmt": "223277038",
+    "CashNonInterestBearingGrp/EOYAmt": "3684293",
+    "SavingsAndTempCashInvstGrp/EOYAmt": "4949231",
+    "TotalAssetsGrp/EOYAmt": "228900917",
+    "TotalLiabilitiesGrp/EOYAmt": "132037938",
+    "InvestmentsPubTradedSecGrp/EOYAmt": "35319481",
+    "GovernmentGrantsAmt": "5076343"
+  },
+  "cash": 8633524.0,
+  "expenses": 223277038.0,
+  "cash_months": 0.46,
+  "formula": "(CashNonInterestBearingGrp/EOYAmt + SavingsAndTempCashInvstGrp/EOYAmt) / (TotalFunctionalExpensesGrp/TotalAmt / 12)",
+  "fetched_at": "2026-09-26T21:33:07-0400"
+}

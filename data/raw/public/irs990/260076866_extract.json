@@ -1,0 +1,32 @@
+{
+  "ein": "260076866",
+  "object_id": "202513149349303816",
+  "tax_period": "202412",
+  "index_year": 2025,
+  "source": "IRS Form 990 e-file XML (IRS TEOS)",
+  "source_url": "https://apps.irs.gov/pub/epostcard/990/xml/2025/2025_TEOS_XML_11D.zip",
+  "member": "202513149349303816_public.xml",
+  "index_url": "https://apps.irs.gov/pub/epostcard/990/xml/2025/index_2025.csv",
+  "values": {
+    "tax_period_begin": "2024-01-01",
+    "tax_period_end": "2024-12-31",
+    "filer_ein": "260076866",
+    "filer_name": "Acacia Network Housing Inc",
+    "return_type": "990",
+    "CYTotalRevenueAmt": "347422708",
+    "CYTotalExpensesAmt": "346965582",
+    "NetAssetsOrFundBalancesEOYAmt": "7311486",
+    "TotalFunctionalExpensesGrp/TotalAmt": "346965582",
+    "CashNonInterestBearingGrp/EOYAmt": "10369",
+    "SavingsAndTempCashInvstGrp/EOYAmt": "12458339",
+    "TotalAssetsGrp/EOYAmt": "482107859",
+    "TotalLiabilitiesGrp/EOYAmt": "474796373",
+    "InvestmentsPubTradedSecGrp/EOYAmt": "0",
+    "GovernmentGrantsAmt": "341845467"
+  },
+  "cash": 12468708.0,
+  "expenses": 346965582.0,
+  "cash_months": 0.43,
+  "formula": "(CashNonInterestBearingGrp/EOYAmt + SavingsAndTempCashInvstGrp/EOYAmt) / (TotalFunctionalExpensesGrp/TotalAmt / 12)",
+  "fetched_at": "2026-09-26T21:34:24-0400"
+}

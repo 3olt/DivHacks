@@ -46,6 +46,13 @@
       "ein": "00-0000004",
       "name": "El Barrio Mesa Comunitaria (demo)",
       "contract_id": "CT1-069-20261409311"
+    },
+    "np_5": {
+      "address": "rAhvUcYnLmTYuCU52thJdzDsddDbRAoJN",
+      "ein": "13-3179546",
+      "name": "Food Bank For New York City",
+      "contract_id": "CT106920258801736",
+      "label": "demo wallet on XRPL Testnet; the real organization has not onboarded"
     }
   },
   "attacker": "rK7duxM9smjdXH7nEUBJfKMjC3Sv9BTM6v",

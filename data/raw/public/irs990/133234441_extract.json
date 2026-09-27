@@ -1,0 +1,32 @@
+{
+  "ein": "133234441",
+  "object_id": "202611329349305716",
+  "tax_period": "202506",
+  "index_year": 2026,
+  "source": "IRS Form 990 e-file XML (IRS TEOS)",
+  "source_url": "https://apps.irs.gov/pub/epostcard/990/xml/2026/2026_TEOS_XML_05A.zip",
+  "member": "202611329349305716_public.xml",
+  "index_url": "https://apps.irs.gov/pub/epostcard/990/xml/2026/index_2026.csv",
+  "values": {
+    "tax_period_begin": "2024-07-01",
+    "tax_period_end": "2025-06-30",
+    "filer_ein": "133234441",
+    "filer_name": "PROJECT HOSPITALITY INC",
+    "return_type": "990",
+    "CYTotalRevenueAmt": "53918533",
+    "CYTotalExpensesAmt": "55810218",
+    "NetAssetsOrFundBalancesEOYAmt": "17022715",
+    "TotalFunctionalExpensesGrp/TotalAmt": "55810218",
+    "CashNonInterestBearingGrp/EOYAmt": "1477055",
+    "SavingsAndTempCashInvstGrp/EOYAmt": null,
+    "TotalAssetsGrp/EOYAmt": "45095122",
+    "TotalLiabilitiesGrp/EOYAmt": "28072407",
+    "InvestmentsPubTradedSecGrp/EOYAmt": "2730791",
+    "GovernmentGrantsAmt": "44654803"
+  },
+  "cash": 1477055.0,
+  "expenses": 55810218.0,
+  "cash_months": 0.32,
+  "formula": "(CashNonInterestBearingGrp/EOYAmt + SavingsAndTempCashInvstGrp/EOYAmt) / (TotalFunctionalExpensesGrp/TotalAmt / 12)",
+  "fetched_at": "2026-09-26T21:33:08-0400"
+}

@@ -1,0 +1,2795 @@
+<?xml version="1.0"?>
+<response>
+  <status>
+    <result>success</result>
+  </status>
+  <request_criteria>
+    <request>
+      <type_of_data>Contracts</type_of_data>
+      <records_from>1</records_from>
+      <max_records>1000</max_records>
+      <search_criteria>
+        <criteria>
+          <name>status</name>
+          <type>value</type>
+          <value>registered</value>
+        </criteria>
+        <criteria>
+          <name>category</name>
+          <type>value</type>
+          <value>expense</value>
+        </criteria>
+        <criteria>
+          <name>vendor_code</name>
+          <type>value</type>
+          <value>0000822784</value>
+        </criteria>
+      </search_criteria>
+      <response_columns>
+        <column>prime_contract_id</column>
+        <column>prime_vendor</column>
+        <column>prime_contracting_agency</column>
+        <column>prime_contract_purpose</column>
+        <column>prime_contract_original_amount</column>
+        <column>prime_contract_current_amount</column>
+        <column>prime_vendor_spent_to_date</column>
+        <column>prime_contract_start_date</column>
+        <column>prime_contract_end_date</column>
+        <column>prime_contract_registration_date</column>
+        <column>prime_contract_version</column>
+        <column>parent_contract_id</column>
+        <column>prime_contract_type</column>
+        <column>prime_contract_award_method</column>
+        <column>prime_contract_industry</column>
+        <column>prime_contract_pin</column>
+        <column>document_code</column>
+        <column>mocs_registered</column>
+      </response_columns>
+    </request>
+  </request_criteria>
+  <result_records>
+    <record_count>137</record_count>
+    <contract_transactions>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT186620171405626</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>NYC ANNUAL TAX SEASON - FOOD BANK FOR NYC</prime_contract_purpose>
+        <prime_contract_current_amount>3900000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>6000000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>3704489.99</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2016-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2019-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2017-03-10</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Consumer Affairs</prime_contracting_agency>
+        <prime_contract_version>15</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>RFP FROM A PQVL</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>86616I0001007</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT186620141419850</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>tax prep services FROM FOOD BANK FOR NEW YORK CITY</prime_contract_purpose>
+        <prime_contract_current_amount>20000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>20000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>20000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2013-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2014-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2014-03-07</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Consumer Affairs</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>REQUIREMENTS-SERVICES</prime_contract_type>
+        <prime_contract_award_method>SMALL PURCHASE - UNDER $5,000</prime_contract_award_method>
+        <prime_contract_industry>Professional Services</prime_contract_industry>
+        <prime_contract_pin>FOOD BANK14</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT185020171406331</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>ACQUISITION OF VEHICLE FOR FOOD BANK OF NYC</prime_contract_purpose>
+        <prime_contract_current_amount>78000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>78000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>78000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2016-10-17</prime_contract_start_date>
+        <prime_contract_end_date>2021-10-18</prime_contract_end_date>
+        <prime_contract_registration_date>2016-10-04</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Design and Construction</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>SUPPLIES/MATERIALS/EQUIPMENT</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Goods</prime_contract_industry>
+        <prime_contract_pin>85016L0031001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT182720201423960</prime_contract_id>
+        <mocs_registered>Yes</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>COVID-19:Emergency Food Provider Funding</prime_contract_purpose>
+        <prime_contract_current_amount>3500000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>3500000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>3500000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2020-05-18</prime_contract_start_date>
+        <prime_contract_end_date>2020-11-18</prime_contract_end_date>
+        <prime_contract_registration_date>2020-05-19</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Sanitation</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>REQUIREMENTS-SERVICES</prime_contract_type>
+        <prime_contract_award_method>EMERGENCY</prime_contract_award_method>
+        <prime_contract_industry>Standardized Services</prime_contract_industry>
+        <prime_contract_pin>82720E0037001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT178120201425429</prime_contract_id>
+        <mocs_registered>Yes</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>COVID19 FOOD PURCHASE FOR NUTRITION KITCHEN</prime_contract_purpose>
+        <prime_contract_current_amount>100000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>100000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>100000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2020-06-01</prime_contract_start_date>
+        <prime_contract_end_date>2020-12-31</prime_contract_end_date>
+        <prime_contract_registration_date>2020-06-10</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Probation</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>SUPPLIES/MATERIALS/EQUIPMENT</prime_contract_type>
+        <prime_contract_award_method>EMERGENCY</prime_contract_award_method>
+        <prime_contract_industry>Goods</prime_contract_industry>
+        <prime_contract_pin>78120E0005001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT178120191425637</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>REQ 21677, PREPAID FOOD PURCHASE</prime_contract_purpose>
+        <prime_contract_current_amount>25000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>25000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>25000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2019-05-09</prime_contract_start_date>
+        <prime_contract_end_date>2019-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2019-05-13</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Probation</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>SUPPLIES/MATERIALS/EQUIPMENT</prime_contract_type>
+        <prime_contract_award_method>SMALL PURCHASE - ORAL SOLICITA</prime_contract_award_method>
+        <prime_contract_industry>Goods</prime_contract_industry>
+        <prime_contract_pin>781-19-0622</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT178120181422414</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>REQ 21655 FBNYC - FOOD PURCHASE - NUTRITIONAL KITCHENS</prime_contract_purpose>
+        <prime_contract_current_amount>25000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>25000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>25000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2018-04-06</prime_contract_start_date>
+        <prime_contract_end_date>2018-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2018-04-09</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Probation</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>SUPPLIES/MATERIALS/EQUIPMENT</prime_contract_type>
+        <prime_contract_award_method>SMALL PURCHASE - ORAL SOLICITA</prime_contract_award_method>
+        <prime_contract_industry>Goods</prime_contract_industry>
+        <prime_contract_pin>781-18-21655</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT178120171427888</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>REQ 06643, FOOD BANK NYC  INVOICE # FB060217</prime_contract_purpose>
+        <prime_contract_current_amount>25000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>25000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>25000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2017-06-12</prime_contract_start_date>
+        <prime_contract_end_date>2017-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2017-06-13</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Probation</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>SUPPLIES/MATERIALS/EQUIPMENT</prime_contract_type>
+        <prime_contract_award_method>SMALL PURCHASE - ORAL SOLICITA</prime_contract_award_method>
+        <prime_contract_industry>Goods</prime_contract_industry>
+        <prime_contract_pin>781-17-0728</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT178120171423821</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>REQ. 06621-17-0577 FOOD BANK FOR NEW YORK CITY</prime_contract_purpose>
+        <prime_contract_current_amount>25000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>25000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>25000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2017-04-21</prime_contract_start_date>
+        <prime_contract_end_date>2017-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2017-04-21</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Probation</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>SUPPLIES/MATERIALS/EQUIPMENT</prime_contract_type>
+        <prime_contract_award_method>SMALL PURCHASE - ORAL SOLICITA</prime_contract_award_method>
+        <prime_contract_industry>Goods</prime_contract_industry>
+        <prime_contract_pin>781-17-0577</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT178120161424714</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>REQ 21525, FOOD BANK FOR NEW YORK CITY- PREPAID FOOD ORDER</prime_contract_purpose>
+        <prime_contract_current_amount>25000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>25000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>25000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2016-04-28</prime_contract_start_date>
+        <prime_contract_end_date>2016-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2016-04-29</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Probation</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>SUPPLIES/MATERIALS/EQUIPMENT</prime_contract_type>
+        <prime_contract_award_method>SMALL PURCHASE - ORAL SOLICITA</prime_contract_award_method>
+        <prime_contract_industry>Goods</prime_contract_industry>
+        <prime_contract_pin>781-16-0606</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT178120151426034</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>REQ 06247, TO PROVIDE FOOD PANTRIES IN DOP NeON/OFFICE SITES</prime_contract_purpose>
+        <prime_contract_current_amount>25000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>25000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>25000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2015-05-15</prime_contract_start_date>
+        <prime_contract_end_date>2015-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2015-05-15</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Probation</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>SUPPLIES/MATERIALS/EQUIPMENT</prime_contract_type>
+        <prime_contract_award_method>SMALL PURCHASE - ORAL SOLICITA</prime_contract_award_method>
+        <prime_contract_industry>Goods</prime_contract_industry>
+        <prime_contract_pin>781-15-0645</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020248806283</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FY24-26 Discretionary Award Multiyear Contract</prime_contract_purpose>
+        <prime_contract_current_amount>11369486.25</prime_contract_current_amount>
+        <prime_contract_original_amount>11369486.25</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>10597535.42</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2023-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2026-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2024-06-20</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>14</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26024L0828001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020248802700</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Funding for food pantries and soup kitchens.</prime_contract_purpose>
+        <prime_contract_current_amount>21263.00</prime_contract_current_amount>
+        <prime_contract_original_amount>21263.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>0.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2022-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2023-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2024-03-12</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26023L1125001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020238807731</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Funding to support the purchase and dist. of food products.</prime_contract_purpose>
+        <prime_contract_current_amount>3026863.00</prime_contract_current_amount>
+        <prime_contract_original_amount>3026863.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>3023456.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2022-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2023-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2023-05-24</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>5</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26023L0657001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020238807486</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Funding for food pantries and soup kitchens.</prime_contract_purpose>
+        <prime_contract_current_amount>210678.00</prime_contract_current_amount>
+        <prime_contract_original_amount>210678.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>210678.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2021-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2022-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2023-06-07</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>6</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26022L1537001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020238801553</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FY22 Disc funding to support Food Bank For NYC Food Pantry.</prime_contract_purpose>
+        <prime_contract_current_amount>2426823.00</prime_contract_current_amount>
+        <prime_contract_original_amount>2426823.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>2423789.55</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2021-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2022-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2022-10-17</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26022L0902001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020238801087</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FY22 Disc funding to support Food Bank For NYC Food Pantry.</prime_contract_purpose>
+        <prime_contract_current_amount>1187695.00</prime_contract_current_amount>
+        <prime_contract_original_amount>1187695.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>1092428.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2021-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2022-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2022-10-17</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26022L1059001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020228803183</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Funding will support food pantries and food banks.</prime_contract_purpose>
+        <prime_contract_current_amount>2864642.00</prime_contract_current_amount>
+        <prime_contract_original_amount>2864642.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>2833297.77</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2020-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2021-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2022-02-01</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>8</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26021L0971001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020228802132</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>To support Food Bank For New York City Food Pantry programs.</prime_contract_purpose>
+        <prime_contract_current_amount>1000000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>1000000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>746925.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2020-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2021-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2022-01-21</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>3</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26021L1569001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020228800456</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>This funding supports food and hygiene product purchases and</prime_contract_purpose>
+        <prime_contract_current_amount>185792.00</prime_contract_current_amount>
+        <prime_contract_original_amount>185792.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>171336.18</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2020-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2021-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2022-01-21</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26021L1266001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020211407909</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Fund public assistance and help low-income families</prime_contract_purpose>
+        <prime_contract_current_amount>142719.00</prime_contract_current_amount>
+        <prime_contract_original_amount>142719.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>120899.09</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2019-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2020-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2020-10-26</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>3</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26021L0149001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020201417708</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FUND IMPLEMENTATION OF FOOD BANK FOR NYC's PANTRY PROGRAM.</prime_contract_purpose>
+        <prime_contract_current_amount>1902134.00</prime_contract_current_amount>
+        <prime_contract_original_amount>1902134.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>1494653.41</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2019-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2020-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2020-04-09</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>3</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26020L0402001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020201410441</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>TO SUPPORT 25 FOOD &amp; HYGIENE PANTRIES IN PUBLIC SCHOOLS.</prime_contract_purpose>
+        <prime_contract_current_amount>1000000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>1000000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>800713.50</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2019-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2020-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2019-12-17</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26020068433R</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020200003067</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Purchase food supplies for food pantries and soup kitchens.</prime_contract_purpose>
+        <prime_contract_current_amount>163550.00</prime_contract_current_amount>
+        <prime_contract_original_amount>163550.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>126583.27</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2018-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2019-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2019-07-12</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>3</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26019068204Q</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020191416397</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Food supplies &amp; pantries and soup kitchens citywide</prime_contract_purpose>
+        <prime_contract_current_amount>1422527.00</prime_contract_current_amount>
+        <prime_contract_original_amount>1422527.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>1205795.99</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2018-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2019-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2019-02-21</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>3</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26019068362Q</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020191407622</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Food pantries and soup kitchens in in high-need schools.</prime_contract_purpose>
+        <prime_contract_current_amount>1000000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>1000000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>801988.24</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2018-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2019-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2018-11-23</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26019068190Q</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020181418273</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>To support food pantries and soup kitchens citywide.</prime_contract_purpose>
+        <prime_contract_current_amount>1045950.00</prime_contract_current_amount>
+        <prime_contract_original_amount>1000000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>850210.94</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2017-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2018-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2018-04-02</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>5</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26018068190P</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020181418271</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Purchase food supplies, pantries and soup kitchens citywide.</prime_contract_purpose>
+        <prime_contract_current_amount>1511915.00</prime_contract_current_amount>
+        <prime_contract_original_amount>1511915.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>1211781.09</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2017-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2018-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2018-04-17</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26018068204P</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020171420633</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Funds will support food pantries and soup kitchens.</prime_contract_purpose>
+        <prime_contract_current_amount>1050443.00</prime_contract_current_amount>
+        <prime_contract_original_amount>1050443.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>1050442.99</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2016-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2017-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2017-03-31</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26017068204O</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020171420631</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Funds will support health education programming &amp; food pantr</prime_contract_purpose>
+        <prime_contract_current_amount>15000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>15000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>15000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2016-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2017-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2017-03-21</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26017019015O</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020171420342</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Funding will support 180 New York City food pantries.</prime_contract_purpose>
+        <prime_contract_current_amount>300357.00</prime_contract_current_amount>
+        <prime_contract_original_amount>278015.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>278015.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2016-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2017-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2017-03-31</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>6</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26017068191O</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020171418586</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Funds will support food banks for New York City.</prime_contract_purpose>
+        <prime_contract_current_amount>595000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>595000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>533803.15</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2016-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2017-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2017-04-07</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26017068190O</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020171406049</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>This allocation represents a restoration of $1.32.</prime_contract_purpose>
+        <prime_contract_current_amount>86201.00</prime_contract_current_amount>
+        <prime_contract_original_amount>86201.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>86201.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2015-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2016-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2016-10-24</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26016L0944001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020131417748</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>To increase access to fresh,nutritious food for 5 emergency</prime_contract_purpose>
+        <prime_contract_current_amount>12000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>12000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>12000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2012-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2013-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2013-04-08</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26013019015K</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020131404341</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FOOD SERVICES: To support efforts to increase access to</prime_contract_purpose>
+        <prime_contract_current_amount>17000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>17000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>17000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2011-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2012-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2012-08-28</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>5</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26012019015J</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT126020111442154</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY FOOD FOR SURVIVAL</prime_vendor>
+        <prime_contract_purpose>Food Distribution Services</prime_contract_purpose>
+        <prime_contract_current_amount>33687.00</prime_contract_current_amount>
+        <prime_contract_original_amount>33687.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>33687.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2010-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2011-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2011-06-30</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Youth and Community Development</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26011019015I</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT112520278800254</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>OLDER ADULT CENTER</prime_contract_purpose>
+        <prime_contract_current_amount>814246.00</prime_contract_current_amount>
+        <prime_contract_original_amount>814246.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>325698.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2026-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2027-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2026-06-05</prime_contract_registration_date>
+        <prime_contracting_agency>Department for the Aging</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>RENEWAL OF CONTRACT</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>12521P0019099R002</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT112520258803932</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>OLDER ADULT CENTER</prime_contract_purpose>
+        <prime_contract_current_amount>1168878.00</prime_contract_current_amount>
+        <prime_contract_original_amount>1168878.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>812497.70</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2024-12-16</prime_contract_start_date>
+        <prime_contract_end_date>2026-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2024-12-20</prime_contract_registration_date>
+        <prime_contracting_agency>Department for the Aging</prime_contracting_agency>
+        <prime_contract_version>10</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>RENEWAL OF CONTRACT</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>12521P0019099R001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT112520238802006</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>1YV - expenses related to COVID-19 and returning to work</prime_contract_purpose>
+        <prime_contract_current_amount>2283.00</prime_contract_current_amount>
+        <prime_contract_original_amount>2283.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>0.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2021-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2022-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2022-07-19</prime_contract_registration_date>
+        <prime_contracting_agency>Department for the Aging</prime_contracting_agency>
+        <prime_contract_version>3</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>12522L0281001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT112520228804655</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>PROVIDE OLDER ADULT CENTER SERVICES</prime_contract_purpose>
+        <prime_contract_current_amount>2203793.00</prime_contract_current_amount>
+        <prime_contract_original_amount>1763034.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>1533408.75</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2021-12-16</prime_contract_start_date>
+        <prime_contract_end_date>2024-12-15</prime_contract_end_date>
+        <prime_contract_registration_date>2022-01-14</prime_contract_registration_date>
+        <prime_contracting_agency>Department for the Aging</prime_contracting_agency>
+        <prime_contract_version>21</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>RFP FROM A PQVL</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>12521P0019099A002</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT112520228804655</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>PROVIDE OLDER ADULT CENTER SERVICES</prime_contract_purpose>
+        <prime_contract_current_amount>0.00</prime_contract_current_amount>
+        <prime_contract_original_amount>0.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>0.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2021-12-16</prime_contract_start_date>
+        <prime_contract_end_date>2024-12-15</prime_contract_end_date>
+        <prime_contract_registration_date>2022-01-14</prime_contract_registration_date>
+        <prime_contracting_agency>Department for the Aging</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>RFP FROM A PQVL</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>12521P0019099A002</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT112520220000830</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>PROVIDE SENIOR CENTER PROGRAMS FOR OLDER ADULTS</prime_contract_purpose>
+        <prime_contract_current_amount>587678.00</prime_contract_current_amount>
+        <prime_contract_original_amount>587678.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>284197.65</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2021-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2021-12-15</prime_contract_end_date>
+        <prime_contract_registration_date>2021-06-21</prime_contract_registration_date>
+        <prime_contracting_agency>Department for the Aging</prime_contracting_agency>
+        <prime_contract_version>5</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>NEG ACQUISITSION  EXTN AND DOE NEGOTIATED SERVICES EXTN</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>12511N0003166N002</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT112520201406950</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>PROVIDE SENIOR CENTER SERVICES TO OLDER ADULTS</prime_contract_purpose>
+        <prime_contract_current_amount>979952.00</prime_contract_current_amount>
+        <prime_contract_original_amount>735175.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>564275.26</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2019-11-01</prime_contract_start_date>
+        <prime_contract_end_date>2021-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2019-10-16</prime_contract_registration_date>
+        <prime_contracting_agency>Department for the Aging</prime_contracting_agency>
+        <prime_contract_version>13</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>NEG ACQUISITSION  EXTN AND DOE NEGOTIATED SERVICES EXTN</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>12511N0003166A008</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT112520201406950</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>PROVIDE SENIOR CENTER SERVICES TO OLDER ADULTS</prime_contract_purpose>
+        <prime_contract_current_amount>0.00</prime_contract_current_amount>
+        <prime_contract_original_amount>0.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>0.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2019-11-01</prime_contract_start_date>
+        <prime_contract_end_date>2021-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2019-10-16</prime_contract_registration_date>
+        <prime_contracting_agency>Department for the Aging</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>NEG ACQUISITSION  EXTN AND DOE NEGOTIATED SERVICES EXTN</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>12511N0003166A008</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT112520201406950</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>PROVIDE SENIOR CENTER SERVICES TO OLDER ADULTS</prime_contract_purpose>
+        <prime_contract_current_amount>0.00</prime_contract_current_amount>
+        <prime_contract_original_amount>0.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>0.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2019-11-01</prime_contract_start_date>
+        <prime_contract_end_date>2021-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2019-10-16</prime_contract_registration_date>
+        <prime_contracting_agency>Department for the Aging</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>NEG ACQUISITSION  EXTN AND DOE NEGOTIATED SERVICES EXTN</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>12511N0003166A008</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT112520201406950</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>PROVIDE SENIOR CENTER SERVICES TO OLDER ADULTS</prime_contract_purpose>
+        <prime_contract_current_amount>0.00</prime_contract_current_amount>
+        <prime_contract_original_amount>0.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>0.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2019-11-01</prime_contract_start_date>
+        <prime_contract_end_date>2021-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2019-10-16</prime_contract_registration_date>
+        <prime_contracting_agency>Department for the Aging</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>NEG ACQUISITSION  EXTN AND DOE NEGOTIATED SERVICES EXTN</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>12511N0003166A008</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT112520201406950</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>PROVIDE SENIOR CENTER SERVICES TO OLDER ADULTS</prime_contract_purpose>
+        <prime_contract_current_amount>0.00</prime_contract_current_amount>
+        <prime_contract_original_amount>0.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>0.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2019-11-01</prime_contract_start_date>
+        <prime_contract_end_date>2021-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2019-10-16</prime_contract_registration_date>
+        <prime_contracting_agency>Department for the Aging</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>NEG ACQUISITSION  EXTN AND DOE NEGOTIATED SERVICES EXTN</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>12511N0003166A008</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT112520170000243</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>PROVIDE CONGREGATE LUNCHES &amp; SOCIAL SERVICES TO OLDER ADULTS</prime_contract_purpose>
+        <prime_contract_current_amount>1419411.00</prime_contract_current_amount>
+        <prime_contract_original_amount>857505.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>1301232.80</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2016-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2019-10-31</prime_contract_end_date>
+        <prime_contract_registration_date>2016-06-04</prime_contract_registration_date>
+        <prime_contracting_agency>Department for the Aging</prime_contracting_agency>
+        <prime_contract_version>28</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>RENEWAL OF CONTRACT</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>12511N0003166A007</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT112520131411498</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>NEIGHBORHOOD SENIOR CENTER TO PROVIDE CONGREGATE MEALS</prime_contract_purpose>
+        <prime_contract_current_amount>1382836.00</prime_contract_current_amount>
+        <prime_contract_original_amount>1324085.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>1327847.62</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2012-11-01</prime_contract_start_date>
+        <prime_contract_end_date>2016-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2012-11-30</prime_contract_registration_date>
+        <prime_contracting_agency>Department for the Aging</prime_contracting_agency>
+        <prime_contract_version>21</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>INNOVATIVE PROCUREMENT</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>12511N0003166A003</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920268804482</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Provision of SNAP Outreach to low-income households</prime_contract_purpose>
+        <prime_contract_current_amount>668900.00</prime_contract_current_amount>
+        <prime_contract_original_amount>668900.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>0.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2024-10-01</prime_contract_start_date>
+        <prime_contract_end_date>2025-09-30</prime_contract_end_date>
+        <prime_contract_registration_date>2026-05-22</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>DETERMINED BY GOV'T MANDATE</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06925R0004001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920268804453</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Provision of SNAP Outreach to low-income households</prime_contract_purpose>
+        <prime_contract_current_amount>914010.00</prime_contract_current_amount>
+        <prime_contract_original_amount>914010.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>0.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2023-10-01</prime_contract_start_date>
+        <prime_contract_end_date>2024-09-30</prime_contract_end_date>
+        <prime_contract_registration_date>2026-02-02</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>3</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>DETERMINED BY GOV'T MANDATE</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06925R0002001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920258802539</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>SNAP Outreach  services to low-income households</prime_contract_purpose>
+        <prime_contract_current_amount>973700.00</prime_contract_current_amount>
+        <prime_contract_original_amount>973700.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>375610.01</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2022-10-01</prime_contract_start_date>
+        <prime_contract_end_date>2023-09-30</prime_contract_end_date>
+        <prime_contract_registration_date>2024-12-26</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>5</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>DETERMINED BY GOV'T MANDATE</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06924R0002001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920258801736</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Prov of SNAP and emergency food assistance benefits</prime_contract_purpose>
+        <prime_contract_current_amount>2932500.00</prime_contract_current_amount>
+        <prime_contract_original_amount>2932500.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>2066705.38</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2023-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2026-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2024-08-26</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>5</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06924L0105001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920238804915</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Prov of SNAP and emergency food assistance benefits</prime_contract_purpose>
+        <prime_contract_current_amount>782000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>782000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>782000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2022-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2023-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2023-05-12</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06923L0101001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920238803786</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>NAE(3 Months)-Warehouse &amp; Delivery of non-perishable food</prime_contract_purpose>
+        <prime_contract_current_amount>448103.00</prime_contract_current_amount>
+        <prime_contract_original_amount>448103.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>0.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2022-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2022-09-30</prime_contract_end_date>
+        <prime_contract_registration_date>2022-11-16</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>5</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>NEG ACQUISITSION  EXTN AND DOE NEGOTIATED SERVICES EXTN</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06923N0006001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920228807233</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Prov. of health edu. programming and related services</prime_contract_purpose>
+        <prime_contract_current_amount>784000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>784000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>759260.02</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2021-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2022-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2022-05-20</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06922L0098001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920228801175</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>To support nutrition and health education programming.</prime_contract_purpose>
+        <prime_contract_current_amount>627000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>627000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>620884.77</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2020-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2021-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2021-09-01</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06921L0355001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920228800360</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Prov. of warehouse and delivery of non-perishable food</prime_contract_purpose>
+        <prime_contract_current_amount>4393582.00</prime_contract_current_amount>
+        <prime_contract_original_amount>4393582.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>4373617.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2021-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2022-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2021-08-12</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>10</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>NEG ACQUISITSION  EXTN AND DOE NEGOTIATED SERVICES EXTN</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06921N0385001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920211423222</prime_contract_id>
+        <mocs_registered>Yes</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Food Bank services during COVID Emergency.</prime_contract_purpose>
+        <prime_contract_current_amount>900000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>900000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>882957.05</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2021-02-01</prime_contract_start_date>
+        <prime_contract_end_date>2021-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2021-05-11</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>EMERGENCY</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09621E0003001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920210003770</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>provide warehouse and delivery of non-perishable food</prime_contract_purpose>
+        <prime_contract_current_amount>4393582.00</prime_contract_current_amount>
+        <prime_contract_original_amount>4393582.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>2756607.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2020-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2021-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2020-08-07</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>7</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>NEG ACQUISITSION  EXTN AND DOE NEGOTIATED SERVICES EXTN</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06906S0003CNVN007</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920201419491</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Supplemental Nutrition Assistance Program(SNAP) outreach svc</prime_contract_purpose>
+        <prime_contract_current_amount>187500.00</prime_contract_current_amount>
+        <prime_contract_original_amount>187500.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>132127.04</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2019-10-01</prime_contract_start_date>
+        <prime_contract_end_date>2020-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2020-03-19</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>DETERMINED BY GOV'T MANDATE</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09620R0002001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920201417298</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Provide nutrition, health education and related services.</prime_contract_purpose>
+        <prime_contract_current_amount>7000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>7000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>7000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2019-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2020-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2020-01-31</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09620L0122001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920201416967</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Prov. of fund to support EITC program, food pantries expans.</prime_contract_purpose>
+        <prime_contract_current_amount>625000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>625000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>290099.94</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2019-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2020-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2020-02-11</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09620L0123001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920201406469</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>TO PROVIDE WAREHOUSE AND DELIVERY OF NON-PERISHABLE FOOD</prime_contract_purpose>
+        <prime_contract_current_amount>4393582.00</prime_contract_current_amount>
+        <prime_contract_original_amount>4393582.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>2848174.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2019-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2020-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2019-10-16</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>12</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>NEG ACQUISITSION  EXTN AND DOE NEGOTIATED SERVICES EXTN</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06906S0003CNVN006</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920191420465</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Supplemental Nutrition Assist. Program (SNAP) outreach svcs.</prime_contract_purpose>
+        <prime_contract_current_amount>187500.00</prime_contract_current_amount>
+        <prime_contract_original_amount>187500.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>130848.51</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2018-10-01</prime_contract_start_date>
+        <prime_contract_end_date>2019-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2019-04-02</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>DETERMINED BY GOV'T MANDATE</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09619R0002001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920191415887</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Technical Assistance for EITC, food pantries expansion, SNAP</prime_contract_purpose>
+        <prime_contract_current_amount>625000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>625000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>478145.17</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2018-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2019-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2019-02-06</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>3</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09619L0112001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920191415411</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Nutrition &amp; Health Education Prog.  FY'19 1734, FY'19 1737</prime_contract_purpose>
+        <prime_contract_current_amount>7000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>7000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>7000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2018-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2019-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2019-01-08</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09619L0111001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920191406526</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Provide Warehouse Delivery-Non-Perishable Food-Soup Kitchen</prime_contract_purpose>
+        <prime_contract_current_amount>2285762.20</prime_contract_current_amount>
+        <prime_contract_original_amount>1753008.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>2184232.33</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2018-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2019-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2018-10-18</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>15</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>NEG ACQUISITSION  EXTN AND DOE NEGOTIATED SERVICES EXTN</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06906S0003CNVA007</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920191404667</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Provision of Supplemental Nutrition Assistance Program (SNAP</prime_contract_purpose>
+        <prime_contract_current_amount>187500.00</prime_contract_current_amount>
+        <prime_contract_original_amount>187500.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>156236.66</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2017-10-01</prime_contract_start_date>
+        <prime_contract_end_date>2018-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2018-09-19</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>3</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>DETERMINED BY GOV'T MANDATE</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09618R0002001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920181420268</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>To fund low income New Yorkers' access to food</prime_contract_purpose>
+        <prime_contract_current_amount>7000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>7000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>0.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2017-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2018-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2018-03-14</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09618L0121001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920181420179</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Nutrition and health education programming</prime_contract_purpose>
+        <prime_contract_current_amount>10500.00</prime_contract_current_amount>
+        <prime_contract_original_amount>10500.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>0.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2017-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2018-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2018-03-13</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09618L0122001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920181419654</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Support enrollment &amp; access to emergency food assistance</prime_contract_purpose>
+        <prime_contract_current_amount>625000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>625000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>466113.58</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2017-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2018-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2018-03-22</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09618L0120001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920181406658</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Provide Warehouse Delivery-Non-Perishable Food-Soup Kitchen</prime_contract_purpose>
+        <prime_contract_current_amount>2365038.20</prime_contract_current_amount>
+        <prime_contract_original_amount>1753008.20</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>2364320.20</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2017-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2018-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2017-10-18</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>8</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>NEG ACQUISITSION  EXTN AND DOE NEGOTIATED SERVICES EXTN</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06906S0003CNVA005</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920181403174</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Supplemental Nutrition Assistance Program Outreach Plan - Fo</prime_contract_purpose>
+        <prime_contract_current_amount>187500.00</prime_contract_current_amount>
+        <prime_contract_original_amount>187500.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>172535.71</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2016-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2017-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2017-09-08</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>DETERMINED BY GOV'T MANDATE</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09617R0002001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920171423945</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Emergency food pantry programs &amp; EITC assistance program</prime_contract_purpose>
+        <prime_contract_current_amount>625000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>625000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>596377.87</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2016-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2017-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2017-06-21</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09617L0186001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920171422338</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FY17 1485 SCHOOL BASED "COOKSHOP FOR FAMILIES" NUTRITION</prime_contract_purpose>
+        <prime_contract_current_amount>3500.00</prime_contract_current_amount>
+        <prime_contract_original_amount>3500.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>0.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2016-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2017-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2017-04-18</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>5</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09617L0184001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920171421869</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Nutrition, health programming and other related</prime_contract_purpose>
+        <prime_contract_current_amount>2000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>2000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>0.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2016-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2017-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2017-04-10</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>5</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09617L0183001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920171421868</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Nutrition, Health Programming and other related S</prime_contract_purpose>
+        <prime_contract_current_amount>5000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>5000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>0.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2016-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2017-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2017-04-10</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>5</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09617L0185001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920171416921</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>TO PROVIDE WAREHOUSE AND DELIVERY OF NON-PERISHABLE FOOD</prime_contract_purpose>
+        <prime_contract_current_amount>1834110.20</prime_contract_current_amount>
+        <prime_contract_original_amount>1753008.20</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>1834107.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2016-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2017-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2017-02-02</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>NEG ACQUISITSION  EXTN AND DOE NEGOTIATED SERVICES EXTN</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06906S0003CNVA003</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920171401999</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>SUPPLEMENTAL  NUTRITION  ASSISTANCE PROGRAM</prime_contract_purpose>
+        <prime_contract_current_amount>187500.00</prime_contract_current_amount>
+        <prime_contract_original_amount>187500.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>109254.71</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2015-10-01</prime_contract_start_date>
+        <prime_contract_end_date>2016-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2016-08-24</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>DETERMINED BY GOV'T MANDATE</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09616R0003001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920161427063</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>TO SUPPORT THE PANTY EFFORTS IN TWO LOCATIONS AT DISTRICT 17</prime_contract_purpose>
+        <prime_contract_current_amount>3271.00</prime_contract_current_amount>
+        <prime_contract_original_amount>3271.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>3271.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2015-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2016-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2016-06-27</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09616L0107001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920161424077</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>PROVIDE FUNDING TO SUPPORT EMERGENCY FOOD PANTRY PROG &amp; SVCS</prime_contract_purpose>
+        <prime_contract_current_amount>375000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>375000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>261262.66</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2015-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2016-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2016-06-13</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>5</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09616L0010001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920161417557</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>NUTRITION, HEALTH PROGRAMMING AND OTHER RELATED SERVICES</prime_contract_purpose>
+        <prime_contract_current_amount>3500.00</prime_contract_current_amount>
+        <prime_contract_original_amount>3500.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>3500.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2015-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2016-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2016-02-05</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09616L0007001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920161417417</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FUNDING FOR SCHOOL BASED "COOK SHOP FAMILIES" NUTRITION ED</prime_contract_purpose>
+        <prime_contract_current_amount>5000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>5000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>4999.88</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2015-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2016-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2016-02-03</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09616L0008001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920161417313</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>To provide funding for the Earned Income Tax Credit</prime_contract_purpose>
+        <prime_contract_current_amount>250000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>250000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>249999.99</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2015-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2016-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2016-02-16</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09616L0009001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920161416939</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FUNDING FOR SCHOOL BASED "COOKSHIP FOR FAMILIES"</prime_contract_purpose>
+        <prime_contract_current_amount>3500.00</prime_contract_current_amount>
+        <prime_contract_original_amount>3500.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>3500.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2015-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2016-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2016-02-02</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09616L0006001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920161411971</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>EMERGENCY &amp; COMMUNITY FOOD PROGRAMS FOR LOW INCOME</prime_contract_purpose>
+        <prime_contract_current_amount>2000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>2000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>2000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2015-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2016-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2016-01-29</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09616L0034001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920161411431</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Funding for Emergency &amp; Community food programs CD 17</prime_contract_purpose>
+        <prime_contract_current_amount>10000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>10000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>10000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2015-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2016-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2015-11-18</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09616L0033001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920161410741</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FUNDING FOR SCHOOL BASED FOOD PANTRY SVCS - FLUSHING NY</prime_contract_purpose>
+        <prime_contract_current_amount>5000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>5000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>5000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2015-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2016-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2015-11-12</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09616L0035001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920151418841</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FOOD STAMP OUTREACH PROGRAM (BASELINED)</prime_contract_purpose>
+        <prime_contract_current_amount>100000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>100000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>99916.78</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2014-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2015-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2015-04-02</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>3</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>NEG ACQUISITSION  EXTN AND DOE NEGOTIATED SERVICES EXTN</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09614N0005002</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920151417388</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FUNDING FOR THE EMERGENCY FOOD ASSISTANCE PROGRAM (EFAP)</prime_contract_purpose>
+        <prime_contract_current_amount>250000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>250000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>249999.96</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2014-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2015-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2015-03-02</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09615L0027001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920151417192</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FUNDING FOR EMERGENCY &amp; COMMUNITY FOOD PROGRAMS</prime_contract_purpose>
+        <prime_contract_current_amount>10000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>10000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>10000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2014-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2015-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2015-01-29</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09615L0025001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920151417019</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FUNDING FOR SCHOOL BASED "COOKSHOP FOR FAMILIES"</prime_contract_purpose>
+        <prime_contract_current_amount>2000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>2000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>1050.27</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2014-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2015-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2015-01-28</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09615L0022001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920151416865</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FUNDING FOR THE "COOKSHOP FOR FAMILIES"</prime_contract_purpose>
+        <prime_contract_current_amount>5000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>5000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>4538.30</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2014-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2015-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2015-01-28</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>3</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09615L0018001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920151416630</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FUNDING FOR SCHOOL BASED FOOD PANTRY SERVICES</prime_contract_purpose>
+        <prime_contract_current_amount>5000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>5000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>4653.74</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2014-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2015-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2015-01-22</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09615L0016001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920151416629</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>NUTRITION EDUCATION TO LOW INCOME PARENTS/GUARDIANS</prime_contract_purpose>
+        <prime_contract_current_amount>3000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>3000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>2684.31</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2014-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2015-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2015-01-23</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09615L0017001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920151416628</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>EMERGENCY &amp; COMMUNITY FOOD PROGRAMS</prime_contract_purpose>
+        <prime_contract_current_amount>2000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>2000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>2000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2014-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2015-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2015-01-22</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09615L00021001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920151415828</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>NUTRITION EDUCATION TO LOW INCOME PARENTS/GUARDIANS</prime_contract_purpose>
+        <prime_contract_current_amount>3500.00</prime_contract_current_amount>
+        <prime_contract_original_amount>3500.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>3107.83</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2014-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2015-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2015-01-12</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09615L0023001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920151415827</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>NUTRITION EDUCATION PROGRAM IN COUNCIL DISCTRICT 7</prime_contract_purpose>
+        <prime_contract_current_amount>3500.00</prime_contract_current_amount>
+        <prime_contract_original_amount>3500.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>2434.38</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2014-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2015-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2015-01-12</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09615L0024001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920151415663</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>EARNED INCOME TAX CREDIT ASSISTANCE PROGRAM</prime_contract_purpose>
+        <prime_contract_current_amount>250000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>250000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>250000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2014-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2015-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2015-01-29</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09615L0026001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920151415309</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>CCDF: FREE, SAFE TAX (VITA) IN 12TH COUNCIL DISTRICT.</prime_contract_purpose>
+        <prime_contract_current_amount>7500.00</prime_contract_current_amount>
+        <prime_contract_original_amount>7500.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>7500.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2014-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2015-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2015-01-28</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09615L0020001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920151415274</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FUNDING FOR SCHOOL BASED "COOKSHOP FOR FAMILIES"</prime_contract_purpose>
+        <prime_contract_current_amount>3750.00</prime_contract_current_amount>
+        <prime_contract_original_amount>3750.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>2921.56</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2014-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2015-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2015-01-28</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCHASE COUNCIL &amp; BP NEEDS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09615L0019001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920151409228</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FUNDS TO SUPPORT FOOD PANTRIES FOR HUNGRY NEW YORKERS</prime_contract_purpose>
+        <prime_contract_current_amount>1300000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>1300000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>1299957.77</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2014-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2015-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2014-11-21</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>6</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>NEG ACQUISITSION  EXTN AND DOE NEGOTIATED SERVICES EXTN</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09614N0005001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920141426465</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>PROVISION OF SNAP-EASE</prime_contract_purpose>
+        <prime_contract_current_amount>248835.00</prime_contract_current_amount>
+        <prime_contract_original_amount>248835.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>248834.67</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2014-01-01</prime_contract_start_date>
+        <prime_contract_end_date>2016-08-31</prime_contract_end_date>
+        <prime_contract_registration_date>2014-06-19</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>13</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>DETERMINED BY GOV'T MANDATE</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09614R0003001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920141418002</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>SUPPLEMENTAL NUTRITION ASSISTANCE PROGRAM</prime_contract_purpose>
+        <prime_contract_current_amount>5729868.00</prime_contract_current_amount>
+        <prime_contract_original_amount>3874427.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>5729867.88</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2013-10-01</prime_contract_start_date>
+        <prime_contract_end_date>2014-09-30</prime_contract_end_date>
+        <prime_contract_registration_date>2014-03-07</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>8</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>DETERMINED BY GOV'T MANDATE</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09614R0001001A001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920141413848</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>To provide Earned Income Tax Assistance</prime_contract_purpose>
+        <prime_contract_current_amount>150000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>150000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>150000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2013-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2014-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2014-01-30</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09614L0010001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920141413700</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>PURCHASING,WAREHOUSING &amp; DISTRIBUTION OF FROZEN FOODS</prime_contract_purpose>
+        <prime_contract_current_amount>500000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>500000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>499997.71</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2013-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2014-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2014-01-17</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09614L0011001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920141412559</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>TO PROVIDE FUNDING TO CONDUCT FOOD STAMP OUTREACH ACTIVITIES</prime_contract_purpose>
+        <prime_contract_current_amount>100000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>100000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>100000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2013-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2014-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2014-02-06</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09614L0009001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920141412216</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>PURCHASING, WAREHOUSING, AND DISTRIBUTION OF NON-PERISHABLE</prime_contract_purpose>
+        <prime_contract_current_amount>800000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>800000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>799985.36</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2013-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2014-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2013-12-27</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09614L0012001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920131424047</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>TO PROVIDE THE SUPPLEMENTAL NUTRITION ASSISTANCE PROGRAM (SN</prime_contract_purpose>
+        <prime_contract_current_amount>3903614.74</prime_contract_current_amount>
+        <prime_contract_original_amount>3874427.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>3903614.74</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2012-10-01</prime_contract_start_date>
+        <prime_contract_end_date>2013-09-30</prime_contract_end_date>
+        <prime_contract_registration_date>2013-04-29</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>5</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>DETERMINED BY GOV'T MANDATE</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09613R0001001A001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920131415106</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>PURCHASING, WAREHOUSING, AND DISTRIBUTION OF NON-PERISHABLE</prime_contract_purpose>
+        <prime_contract_current_amount>800000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>800000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>800000.17</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2012-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2013-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2013-01-18</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09613L0012001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920131412009</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>WAREHOUSING AND DISTRIBUTION OF FROZEN FOODS THROUGHOUT NYC</prime_contract_purpose>
+        <prime_contract_current_amount>500000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>500000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>499778.32</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2012-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2013-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2012-11-30</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09613L0011001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920131411811</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>PROVIDE EITC ASSISTANCE TO LOW-INCOME NEW YORKERS THROUGHOUT</prime_contract_purpose>
+        <prime_contract_current_amount>150000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>150000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>150000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2012-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2013-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2012-11-28</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09613L0010001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920131411810</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>CONDUCT FOOD STAMP OUTREACH ACTIVITIES THROUGHOUT THE FIVE B</prime_contract_purpose>
+        <prime_contract_current_amount>100000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>100000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>100000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2012-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2013-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2012-11-28</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09613L0009001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920130000287</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>WAREHOUSING/DELIVERY OF NON-PERISHABLE FOOD TO SOUP KITCHENS</prime_contract_purpose>
+        <prime_contract_current_amount>6186864.20</prime_contract_current_amount>
+        <prime_contract_original_amount>4433856.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>5655222.53</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2012-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2016-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2012-05-30</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>35</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>WORK/LABOR</prime_contract_type>
+        <prime_contract_award_method>RENEWAL OF CONTRACT</prime_contract_award_method>
+        <prime_contract_industry>Standardized Services</prime_contract_industry>
+        <prime_contract_pin>06906S0003CNVA002</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920121437003</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY FOOD FOR SURVIVAL</prime_vendor>
+        <prime_contract_purpose>PURCHASE, WAREHOUSING, &amp; DISTRIBUTION OF FROZEN FOOD</prime_contract_purpose>
+        <prime_contract_current_amount>500000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>500000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>499899.74</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2011-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2012-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2012-04-09</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09612L0002001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920121437002</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY FOOD FOR SURVIVAL</prime_vendor>
+        <prime_contract_purpose>PURCHASE, WAREHOUSING, &amp; DISTRIBUTION OF NON-PERISHABLE FOOD</prime_contract_purpose>
+        <prime_contract_current_amount>800000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>800000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>799980.44</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2011-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2012-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2012-04-04</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09612L0001001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920121429312</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY FOOD FOR SURVIVAL</prime_vendor>
+        <prime_contract_purpose>CONDUCT EITC TAX ASSISTANCE PROGRAM FOR LOW INCOME NEW YORKE</prime_contract_purpose>
+        <prime_contract_current_amount>150000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>150000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>150000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2011-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2012-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2012-01-31</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09612L0003001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920121425443</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY FOOD FOR SURVIVAL</prime_vendor>
+        <prime_contract_purpose>CONDUCT FOOD STAMP OUTREACH ACTIVITIES AT EFAP CENTERS</prime_contract_purpose>
+        <prime_contract_current_amount>100000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>100000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>100000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2011-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2012-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2012-01-23</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09612L0004001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920121422722</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>NUTRITION EDUCATION SERVICES-COOKSHOP PROGRAM</prime_contract_purpose>
+        <prime_contract_current_amount>5309929.00</prime_contract_current_amount>
+        <prime_contract_original_amount>5226308.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>5280770.52</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2011-10-01</prime_contract_start_date>
+        <prime_contract_end_date>2012-09-30</prime_contract_end_date>
+        <prime_contract_registration_date>2011-12-21</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>7</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>RENEWAL OF CONTRACT</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06910R0004CNVA001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920111447702</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY FOOD FOR SURVIVAL</prime_vendor>
+        <prime_contract_purpose>FOOD STAMP NUTRITION EDUCATION PROGRAM</prime_contract_purpose>
+        <prime_contract_current_amount>5226307.90</prime_contract_current_amount>
+        <prime_contract_original_amount>5226307.90</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>5226307.90</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2010-10-01</prime_contract_start_date>
+        <prime_contract_end_date>2011-09-30</prime_contract_end_date>
+        <prime_contract_registration_date>2011-05-27</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>9</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>RENEWAL OF CONTRACT</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06910R0004CNVR001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920111441932</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY FOOD FOR SURVIVAL</prime_vendor>
+        <prime_contract_purpose>FOOD STAMP OUTREACH ACTIVITIES  TO VARIOUS EFAP CENTERS</prime_contract_purpose>
+        <prime_contract_current_amount>100000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>100000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>92308.94</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2010-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2011-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2011-05-05</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09611L0014001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920111440833</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY FOOD FOR SURVIVAL</prime_vendor>
+        <prime_contract_purpose>ETIC TAX ASSISTANCE PROGRAM VARIOUS CENTERS CITYWIDE</prime_contract_purpose>
+        <prime_contract_current_amount>150000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>150000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>146735.73</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2010-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2011-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2011-04-15</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09611L0013001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920111440802</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY FOOD FOR SURVIVAL</prime_vendor>
+        <prime_contract_purpose>WAREHOUSING &amp; DISTRIBUTION OF FROZEN FOOD TO EFAP CENTERS</prime_contract_purpose>
+        <prime_contract_current_amount>500000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>500000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>499872.04</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2010-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2011-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2011-04-28</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09611L0012001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920111440801</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY FOOD FOR SURVIVAL</prime_vendor>
+        <prime_contract_purpose>WAREHOUSING &amp; DISTRIBUTION OF FOOD TO EFAP FOOD CENTERS</prime_contract_purpose>
+        <prime_contract_current_amount>800000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>800000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>800000.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2010-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2011-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2011-04-14</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>1</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>BORO NEEDS/DISCRETIONARY FUND</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>09611L0010001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920101412586</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>SUPPLEMENTAL NUTRITION ASSISTANCE PROGRAM (SNAP)</prime_contract_purpose>
+        <prime_contract_current_amount>229177.00</prime_contract_current_amount>
+        <prime_contract_original_amount>229177.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>229176.81</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2010-01-03</prime_contract_start_date>
+        <prime_contract_end_date>2012-08-31</prime_contract_end_date>
+        <prime_contract_registration_date>2010-04-28</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>13</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>GRANTS</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06910H073301</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920101408237</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY FOOD FOR SURVIVAL</prime_vendor>
+        <prime_contract_purpose>NUTRITION EDUCATION SERVICES THROUGH THE COOKSOP PROGRAM</prime_contract_purpose>
+        <prime_contract_current_amount>6323301.00</prime_contract_current_amount>
+        <prime_contract_original_amount>6323301.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>5444109.00</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2009-10-01</prime_contract_start_date>
+        <prime_contract_end_date>2010-09-30</prime_contract_end_date>
+        <prime_contract_registration_date>2010-03-19</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>8</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>DETERMINED BY GOV'T MANDATE</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06910H073101</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920101405302</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY FOOD FOR SURVIVAL</prime_vendor>
+        <prime_contract_purpose>ELECTRONIC SYSTEM TO SERVE (SCRIE) RECIPIENTS</prime_contract_purpose>
+        <prime_contract_current_amount>136358.00</prime_contract_current_amount>
+        <prime_contract_original_amount>136358.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>136357.96</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2009-04-01</prime_contract_start_date>
+        <prime_contract_end_date>2011-08-31</prime_contract_end_date>
+        <prime_contract_registration_date>2010-03-11</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>7</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>DETERMINED BY GOV'T MANDATE</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>069091103084</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106920100000152</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>WAREHOUSING &amp; DELIVERY OF NON-PERSHABLE FOOD TO SOUP KITCHEN</prime_contract_purpose>
+        <prime_contract_current_amount>4433856.00</prime_contract_current_amount>
+        <prime_contract_original_amount>4433856.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>4089708.63</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2009-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2012-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2009-07-01</prime_contract_registration_date>
+        <prime_contracting_agency>Department of Social Services</prime_contracting_agency>
+        <prime_contract_version>15</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>WORK/LABOR</prime_contract_type>
+        <prime_contract_award_method>RENEWAL OF CONTRACT</prime_contract_award_method>
+        <prime_contract_industry>Standardized Services</prime_contract_industry>
+        <prime_contract_pin>069073100006</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106820261411703</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Food Pantry Services</prime_contract_purpose>
+        <prime_contract_current_amount>100000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>100000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>20716.05</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2026-04-01</prime_contract_start_date>
+        <prime_contract_end_date>2028-03-31</prime_contract_end_date>
+        <prime_contract_registration_date>2026-03-18</prime_contract_registration_date>
+        <prime_contracting_agency>Administration for Children's Services</prime_contracting_agency>
+        <prime_contract_version>2</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCH GOODS SERVICES 100K</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>26ACS13200A</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106820251414479</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>Food Pantry Svcs for the BX Borough Office</prime_contract_purpose>
+        <prime_contract_current_amount>20000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>20000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>19929.51</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2025-03-31</prime_contract_start_date>
+        <prime_contract_end_date>2025-12-31</prime_contract_end_date>
+        <prime_contract_registration_date>2025-04-14</prime_contract_registration_date>
+        <prime_contracting_agency>Administration for Children's Services</prime_contracting_agency>
+        <prime_contract_version>3</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SMALL PURCHASE - UNDER $5,000</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>25ACS12513</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106820241416336</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FOOD PANTRY SVCS FOR MANHATTAN</prime_contract_purpose>
+        <prime_contract_current_amount>20000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>20000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>19712.82</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2024-03-15</prime_contract_start_date>
+        <prime_contract_end_date>2025-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2024-06-04</prime_contract_registration_date>
+        <prime_contracting_agency>Administration for Children's Services</prime_contracting_agency>
+        <prime_contract_version>5</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SMALL PURCHASE - UNDER $5,000</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>24ACS11647</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106820241401173</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FOOD PANTRY SERVICES FOR THE BROOKLYN WEST</prime_contract_purpose>
+        <prime_contract_current_amount>20000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>20000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>12709.97</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2023-07-01</prime_contract_start_date>
+        <prime_contract_end_date>2024-06-30</prime_contract_end_date>
+        <prime_contract_registration_date>2023-09-20</prime_contract_registration_date>
+        <prime_contracting_agency>Administration for Children's Services</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SMALL PURCHASE - UNDER $5,000</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>24ACS11070</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106820231413307</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FOOD PANTRY SERVICES</prime_contract_purpose>
+        <prime_contract_current_amount>80000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>80000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>78621.61</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2023-04-01</prime_contract_start_date>
+        <prime_contract_end_date>2025-03-31</prime_contract_end_date>
+        <prime_contract_registration_date>2023-03-13</prime_contract_registration_date>
+        <prime_contracting_agency>Administration for Children's Services</prime_contracting_agency>
+        <prime_contract_version>7</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCH GOODS SERVICES 100K</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>23ACS10040A</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106820231409309</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FOOD PANTRY DISTRIBUTION SERVICES</prime_contract_purpose>
+        <prime_contract_current_amount>20000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>20000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>12336.93</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2022-08-01</prime_contract_start_date>
+        <prime_contract_end_date>2023-03-31</prime_contract_end_date>
+        <prime_contract_registration_date>2022-11-23</prime_contract_registration_date>
+        <prime_contracting_agency>Administration for Children's Services</prime_contracting_agency>
+        <prime_contract_version>4</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SMALL PURCHASE - UNDER $5,000</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>23ACS10224</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106820211401952</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FOOD PANTRY</prime_contract_purpose>
+        <prime_contract_current_amount>90000.00</prime_contract_current_amount>
+        <prime_contract_original_amount>90000.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>31157.73</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2020-07-27</prime_contract_start_date>
+        <prime_contract_end_date>2022-07-26</prime_contract_end_date>
+        <prime_contract_registration_date>2020-07-27</prime_contract_registration_date>
+        <prime_contracting_agency>Administration for Children's Services</prime_contracting_agency>
+        <prime_contract_version>10</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>PROGRAMS</prime_contract_type>
+        <prime_contract_award_method>SM PURCH GOODS SERVICES 100K</prime_contract_award_method>
+        <prime_contract_industry>Human Services</prime_contract_industry>
+        <prime_contract_pin>06821B0001001</prime_contract_pin>
+      </transaction>
+      <transaction>
+        <document_code>CT1</document_code>
+        <prime_contract_id>CT106820181402286</prime_contract_id>
+        <mocs_registered>No</mocs_registered>
+        <prime_vendor>FOOD BANK FOR NEW YORK CITY</prime_vendor>
+        <prime_contract_purpose>FOOD PANTRY SERVICES</prime_contract_purpose>
+        <prime_contract_current_amount>99028.00</prime_contract_current_amount>
+        <prime_contract_original_amount>99028.00</prime_contract_original_amount>
+        <prime_vendor_spent_to_date>58603.69</prime_vendor_spent_to_date>
+        <prime_contract_start_date>2017-08-16</prime_contract_start_date>
+        <prime_contract_end_date>2019-08-15</prime_contract_end_date>
+        <prime_contract_registration_date>2017-08-16</prime_contract_registration_date>
+        <prime_contracting_agency>Administration for Children's Services</prime_contracting_agency>
+        <prime_contract_version>7</prime_contract_version>
+        <parent_contract_id>-</parent_contract_id>
+        <prime_contract_type>WORK/LABOR</prime_contract_type>
+        <prime_contract_award_method>SM PURCH GOODS SERVICES 100K</prime_contract_award_method>
+        <prime_contract_industry>Standardized Services</prime_contract_industry>
+        <prime_contract_pin>18ACS381</prime_contract_pin>
+      </transaction>
+    </contract_transactions>
+  </result_records>
+</response>

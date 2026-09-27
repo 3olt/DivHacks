@@ -1,0 +1,32 @@
+{
+  "ein": "133072967",
+  "object_id": "202640669349300704",
+  "tax_period": "202506",
+  "index_year": 2026,
+  "source": "IRS Form 990 e-file XML (IRS TEOS)",
+  "source_url": "https://apps.irs.gov/pub/epostcard/990/xml/2026/2026_TEOS_XML_03A.zip",
+  "member": "202640669349300704_public.xml",
+  "index_url": "https://apps.irs.gov/pub/epostcard/990/xml/2026/index_2026.csv",
+  "values": {
+    "tax_period_begin": "2024-07-01",
+    "tax_period_end": "2025-06-30",
+    "filer_ein": "133072967",
+    "filer_name": "COALITION FOR THE HOMELESS INC",
+    "return_type": "990",
+    "CYTotalRevenueAmt": "21534885",
+    "CYTotalExpensesAmt": "21561787",
+    "NetAssetsOrFundBalancesEOYAmt": "44434881",
+    "TotalFunctionalExpensesGrp/TotalAmt": "21561787",
+    "CashNonInterestBearingGrp/EOYAmt": "1914192",
+    "SavingsAndTempCashInvstGrp/EOYAmt": "4245718",
+    "TotalAssetsGrp/EOYAmt": "45562812",
+    "TotalLiabilitiesGrp/EOYAmt": "1127931",
+    "InvestmentsPubTradedSecGrp/EOYAmt": "18901787",
+    "GovernmentGrantsAmt": "4938757"
+  },
+  "cash": 6159910.0,
+  "expenses": 21561787.0,
+  "cash_months": 3.43,
+  "formula": "(CashNonInterestBearingGrp/EOYAmt + SavingsAndTempCashInvstGrp/EOYAmt) / (TotalFunctionalExpensesGrp/TotalAmt / 12)",
+  "fetched_at": "2026-09-26T21:34:21-0400"
+}

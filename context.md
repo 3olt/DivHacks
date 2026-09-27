@@ -223,7 +223,7 @@ Deterministic, 0–100, computed by the backend: today `api/src/risk.ts` (fixtur
 
 `reasons` show the numbers behind the score; `summary` (≤25 words) only restates the reasons: templated today, Grok-written from Phase 4. Only demo sites count XRPL payments toward "paid."
 
-Example (fixture golden site; rewrite from real `reasons` once Phase 4 loads Food Bank For NYC): "🟡 59: 41% of contract term elapsed, 15% paid; HRA registered 89% of FY2025 contracts late (avg 118 days); 3.6 months of cash on hand."
+Real golden (Phase 4, Food Bank For NYC): "🔴 71: 100% of contract term elapsed (term ended 2026-06-30), 70% paid ($2,066,705 of $2,932,500); 0.35 months of cash on hand; registered 422 days late." After the live 12.50 RLUSD Testnet payment, counted at the disclosed demo scale (Option B: 1 RLUSD = $10,000): 🟡 67. It **cannot reach 🟢 honestly** (floor 47 before the payment factor), so the "funded ✅" alert (which fires on green) will not fire for the golden unless its trigger changes. Old fixture example: "🟡 59: 41% of contract term elapsed, 15% paid; HRA registered 89% of FY2025 contracts late (avg 118 days); 3.6 months of cash on hand."
 
 ## Data sources
 
@@ -255,7 +255,8 @@ The API currently serves **fixture data** (15 sites, all fictional, `is_demo_dat
 - [x] Grok invoice verifier + 8-check co-signer + decisions in MongoDB (backend Phase 2)
 - [x] `/data` open-data page (backend)
 - [x] Raw public datasets committed (`data/raw/public/`: Comptroller, Checkbook, ProPublica, NYC Open Data incl. supply gap, Community Food Connection, sites with capacity)
-- [ ] Real data (Checkbook, Comptroller, 990) in Mongo and served by the API (backend Phases 4–5)
+- [x] Real data in Mongo (backend Phase 4): 15 real nonprofits, their sites, 42 contracts, agency lateness, real 990 cash; golden Food Bank For NYC with its 19 real Checkbook payments; `data/risk.py` + Grok summaries
+- [ ] Served by the API + live loop (backend Phase 5)
 - [x] Simulated escrow demo (placeholder in `api/`, marked for removal)
 - [x] Real CTT test-token escrow on Testnet in `xrpl/` (officer-approved release)
 - [ ] Wire it to `/demo/escrow` and accept `CTT` in the API (Phase 5)

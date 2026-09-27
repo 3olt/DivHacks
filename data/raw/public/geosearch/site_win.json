@@ -1,0 +1,53 @@
+{
+  "query": "1 STATE STREET 18TH FLOOR, New York, NY 10004",
+  "request_url": "https://geosearch.planninglabs.nyc/v2/search?text=1+STATE+STREET+18TH+FLOOR%2C+New+York%2C+NY+10004&size=1",
+  "fetched_at": "2026-09-26T21:32:14-0400",
+  "feature": {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -74.013351,
+        40.702773
+      ]
+    },
+    "properties": {
+      "id": "791",
+      "gid": "nycpad:venue:791",
+      "layer": "venue",
+      "source": "nycpad",
+      "source_id": "791",
+      "country_code": "US",
+      "name": "1 STATE STREET",
+      "housenumber": "1",
+      "street": "STATE STREET",
+      "postalcode": "10004",
+      "confidence": 0.8,
+      "match_type": "fallback",
+      "accuracy": "point",
+      "country": "United States",
+      "country_gid": "whosonfirst:country:85633793",
+      "country_a": "USA",
+      "region": "New York",
+      "region_gid": "whosonfirst:region:85688543",
+      "region_a": "NY",
+      "county": "New York County",
+      "county_gid": "whosonfirst:county:102081863",
+      "locality": "New York",
+      "locality_gid": "whosonfirst:locality:85977539",
+      "locality_a": "NYC",
+      "borough": "Manhattan",
+      "borough_gid": "whosonfirst:borough:421205771",
+      "neighbourhood": "Financial District",
+      "neighbourhood_gid": "whosonfirst:neighbourhood:85865711",
+      "label": "1 STATE STREET, New York, NY, USA",
+      "addendum": {
+        "pad": {
+          "bbl": "1000090001",
+          "bin": "1000018",
+          "version": "26c"
+        }
+      }
+    }
+  }
+}

@@ -9,6 +9,10 @@
 //   contracts   the 4 demo contracts (Contract shape, values copied from api/src/fixtures/contracts.ts) plus
 //               xrpl_budget_rlusd: a TESTNET-SCALE STAND-IN for the contract's remaining balance (the real amount is USD).
 //   indexes     decisions.decision_id unique, decisions.invoice_id, payments.payment_id unique, ...
+//   Phase 4     np_5 = the golden REAL organization (Food Bank For New York City, EIN 13-3179546): its public record is
+//               builder A's; this script only $sets `wallet` on it (demo wallet, labelled) and never creates it. On the golden
+//               contract (Mongo demo_state.golden_contract_id, builder A's public terms) it $sets ONLY xrpl_budget_rlusd
+//               (GOLDEN_BUDGET_RLUSD, default 100.00; an existing value is kept) + xrpl_budget_note.
 //
 // Run: npm run seed:registry   (repo root)   or   npm run seed-registry   (xrpl/)
 import path from "node:path";
@@ -17,6 +21,7 @@ import { paths } from "../src/env";
 import { loadRegistry, type NonprofitKey } from "../src/lib/registry";
 import { COLL, ensureIndexes, openMongo, type ContractDoc, type NonprofitDoc } from "../src/lib/mongo";
 import { readRegistrySnapshot } from "../src/lib/registrySnapshot";
+import { GOLDEN_BUDGET_RLUSD, GOLDEN_EIN, goldenBudgetNote, readDemoState } from "../src/lib/golden";
 
 config({ path: path.join(paths.rootDir, ".env"), quiet: true });
 
@@ -29,7 +34,7 @@ const DEFAULT_BUDGET = process.env.SEED_CONTRACT_BUDGET_RLUSD ?? "250.00";
 
 // Street addresses and service types copied from api/src/fixtures/nonprofits.ts (fictional organizations placed at real
 // NYC street addresses only so their pins look plausible).
-const NP_DETAILS: Record<NonprofitKey, { address: string; service_types: string[] }> = {
+const NP_DETAILS: Partial<Record<NonprofitKey, { address: string; service_types: string[] }>> = {
   np_1: { address: "30 W Burnside Ave, Bronx, NY 10453", service_types: ["food_pantry"] },
   np_2: { address: "412 E 138th St, Bronx, NY 10454", service_types: ["grocery_giveaway", "food_pantry"] },
   np_3: { address: "2530 Webster Ave, Bronx, NY 10458", service_types: ["youth_program"] },
@@ -60,11 +65,25 @@ async function main(): Promise<number> {
       // Onboarded (same wallet): keep what onboarding wrote. Otherwise: no credential claimed here.
       const wallet: NonprofitDoc["wallet"] =
         onboarded && ex?.address === np.address ? ex : { address: np.address, credential_status: "none", bank_verified: false };
+      const details = NP_DETAILS[key];
+      if (!details) {
+        // A REAL organization (np_5, the golden Food Bank For New York City): its public record belongs to builder A
+        // (data/, is_demo_data false). Never create or overwrite it here: only $set `wallet` on the existing document.
+        if (!existing) {
+          console.log(`nonprofits  ${np.ein}  ${key}  SKIPPED: no public record yet (builder A writes it); seed-registry never creates a real organization's record`);
+          continue;
+        }
+        const labelled = { ...wallet, label: np.label ?? "demo wallet on XRPL Testnet", is_demo_data: true } as NonprofitDoc["wallet"];
+        const r = await db.collection<NonprofitDoc>(COLL.nonprofits).updateOne({ ein: np.ein }, { $set: { wallet: labelled } });
+        changed += r.modifiedCount;
+        console.log(`nonprofits  ${np.ein}  ${key}  ${np.address}  REAL organization "${existing.name}" (public fields untouched); wallet only: ${np.label ?? "demo wallet"}; ${onboarded ? `onboarded: credential ${wallet!.credential_status} until ${wallet!.credential_expires ?? "?"}` : "not onboarded: credential_status none"}  ${r.modifiedCount ? "updated" : "unchanged"}`);
+        continue;
+      }
       const doc: NonprofitDoc = {
         ein: np.ein,
         name: np.name,
-        address: NP_DETAILS[key].address,
-        service_types: NP_DETAILS[key].service_types,
+        address: details.address,
+        service_types: details.service_types,
         wallet,
         is_demo_data: true,
       };
@@ -90,6 +109,25 @@ async function main(): Promise<number> {
       const r = await db.collection<ContractDoc>(COLL.contracts).updateOne({ contract_id: c.contract_id }, { $set: doc }, { upsert: true });
       changed += r.upsertedCount + r.modifiedCount;
       console.log(`contracts   ${c.contract_id}  EIN ${c.nonprofit_ein}  xrpl_budget_rlusd ${doc.xrpl_budget_rlusd} (testnet stand-in)  ${r.upsertedCount ? "inserted" : r.modifiedCount ? "updated" : "unchanged"}`);
+    }
+
+    // Phase 4 (Option B): the golden REAL contract (builder A's public terms). Only xrpl_budget_rlusd + xrpl_budget_note
+    // are $set here, on an existing document for the golden EIN; the contract is never created or otherwise changed.
+    const ds = await readDemoState(db);
+    const goldenId = ds?.golden_contract_id ?? reg.nonprofits.np_5?.contract_id ?? null;
+    if (!ds) console.log(`contracts   golden: demo_state {_id "golden"} not written yet (builder A); ${goldenId ? `trying the registry's np_5 contract ${goldenId}` : "skipped"}`);
+    if (goldenId) {
+      const gc = await db.collection<ContractDoc>(COLL.contracts).findOne({ contract_id: goldenId });
+      if (!gc) console.log(`contracts   ${goldenId}  golden: SKIPPED, no public contract record yet (builder A writes it; seed-registry never creates it)`);
+      else if (gc.nonprofit_ein !== GOLDEN_EIN) console.log(`contracts   ${goldenId}  golden: SKIPPED, its nonprofit_ein is ${gc.nonprofit_ein}, not ${GOLDEN_EIN}`);
+      else {
+        const budget = gc.xrpl_budget_rlusd ?? GOLDEN_BUDGET_RLUSD;
+        const note = goldenBudgetNote(ds?.scale_usd_per_rlusd ?? null, budget, gc.amount ?? null);
+        const r = await db.collection<ContractDoc>(COLL.contracts).updateOne({ contract_id: goldenId }, { $set: { xrpl_budget_rlusd: budget, xrpl_budget_note: note } });
+        changed += r.modifiedCount;
+        console.log(`contracts   ${goldenId}  EIN ${GOLDEN_EIN} (REAL contract, ${gc.start_date}..${gc.end_date}, $${gc.amount})  xrpl_budget_rlusd ${budget} (testnet-scale; only this field + the note set)  ${r.modifiedCount ? "updated" : "unchanged"}`);
+        if (reg.nonprofits.np_5 && reg.nonprofits.np_5.contract_id !== goldenId) console.log(`  NOTE: accounts.testnet.json np_5.contract_id is ${reg.nonprofits.np_5.contract_id}; run "npm run setup:xrpl" to point it at ${goldenId}, then restart the co-signer`);
+      }
     }
 
     const idx = await ensureIndexes(db);

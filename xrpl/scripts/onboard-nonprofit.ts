@@ -113,7 +113,7 @@ async function main(): Promise<number> {
     const key = m.np_key;
     const regNp = key ? reg.nonprofits[key as NonprofitKey] : null;
     if (!key || !regNp) {
-      console.log(`[a] EIN match: REFUSED: EIN ${m.ein} has no demo wallet in accounts.testnet.json (only np_1..np_4 can be onboarded here)`);
+      console.log(`[a] EIN match: REFUSED: EIN ${m.ein} has no demo wallet in accounts.testnet.json (only np_1..np_5 can be onboarded here)`);
       return 1;
     }
     const wallet = regNp.address;
@@ -122,6 +122,10 @@ async function main(): Promise<number> {
       return 1;
     }
     console.log(`[a] EIN match: ${m.ein} -> "${np.name}" (${key}, wallet ${wallet}); matched on EIN only` + (m.lookalikes_ignored.length ? `; ignored look-alike names with other EINs: ${m.lookalikes_ignored.map((r) => `"${r.name}" (${r.ein})`).join(", ")}` : "; no look-alike names in the registry"));
+    if (regNp.label) {
+      console.log(`[a] NOTE: ${m.ein} is a REAL organization (public record from builder A's ingestion; public fields are never changed here). ` +
+        `Its wallet ${wallet} is a ${regNp.label}. Only the "wallet" field of its nonprofits record is written.`);
+    }
 
     const coll = db.collection<OnboardingDoc>(COLL.onboarding);
     const now0 = iso();
@@ -131,6 +135,9 @@ async function main(): Promise<number> {
       simulated: [
         "the nonprofit side (reading its Nessie deposits, signing the wallet challenge, CredentialAccept) is simulated with the demo keys in xrpl/.env.local",
         "the Nessie customer + account are created by us from the organization's public record (Nessie is a sandbox bank)",
+        ...(regNp.label
+          ? [`REAL organization, DEMO wallet: ${np.name} (EIN ${m.ein}) has not onboarded with GlassLedger; ${wallet} is a ${regNp.label} (its key is ours, ${key.toUpperCase()}_SEED). The EIN, name and address are its public record`]
+          : []),
       ],
       steps: [], is_demo_data: true,
     };
@@ -290,7 +297,11 @@ async function main(): Promise<number> {
 
     // e. Registry record (Nonprofit shape)
     if (!isValidClassicAddress(wallet)) throw new Error("bad wallet");
-    const w = { address: wallet, credential_status: "valid" as const, credential_expires: expires, bank_verified: true };
+    const w = {
+      address: wallet, credential_status: "valid" as const, credential_expires: expires, bank_verified: true,
+      // np_5: a REAL organization's DEMO wallet: say so wherever the wallet is shown (extra fields; not in the pinned hash).
+      ...(regNp.label ? { label: regNp.label, is_demo_data: true } : {}),
+    };
     const r = await db.collection<NonprofitDoc>(COLL.nonprofits).updateOne({ ein: m.ein }, { $set: { wallet: w } });
     console.log(`[e] nonprofits ${m.ein}.wallet = {address ${wallet}, credential_status "valid", credential_expires ${expires}, bank_verified true} (${r.modifiedCount ? "updated" : "unchanged"})`);
     doc.status = "complete";

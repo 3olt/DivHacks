@@ -1,0 +1,54 @@
+{
+  "query": "565 BUSHWICK AVE, Brooklyn, NY 11206",
+  "request_url": "https://geosearch.planninglabs.nyc/v2/search?text=565+BUSHWICK+AVE%2C+Brooklyn%2C+NY+11206&size=1",
+  "fetched_at": "2026-09-26T21:32:15-0400",
+  "feature": {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -73.935449,
+        40.699503
+      ]
+    },
+    "properties": {
+      "id": "1069894",
+      "gid": "nycpad:venue:1069894",
+      "layer": "venue",
+      "source": "nycpad",
+      "source_id": "1069894",
+      "country_code": "US",
+      "name": "565 BUSHWICK AVENUE",
+      "housenumber": "565",
+      "street": "BUSHWICK AVENUE",
+      "postalcode": "11206",
+      "confidence": 0.8,
+      "match_type": "fallback",
+      "accuracy": "point",
+      "country": "United States",
+      "country_gid": "whosonfirst:country:85633793",
+      "country_a": "USA",
+      "region": "New York",
+      "region_gid": "whosonfirst:region:85688543",
+      "region_a": "NY",
+      "county": "Kings County",
+      "county_gid": "whosonfirst:county:102082361",
+      "county_a": "BK",
+      "locality": "New York",
+      "locality_gid": "whosonfirst:locality:85977539",
+      "locality_a": "NYC",
+      "borough": "Brooklyn",
+      "borough_gid": "whosonfirst:borough:421205765",
+      "neighbourhood": "Bushwick",
+      "neighbourhood_gid": "whosonfirst:neighbourhood:85808635",
+      "label": "565 BUSHWICK AVENUE, Brooklyn, NY, USA",
+      "addendum": {
+        "pad": {
+          "bbl": "3031510012",
+          "bin": "3071908",
+          "version": "26c"
+        }
+      }
+    }
+  }
+}

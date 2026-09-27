@@ -1,0 +1,32 @@
+{
+  "ein": "135596811",
+  "object_id": "202543159349304434",
+  "tax_period": "202412",
+  "index_year": 2025,
+  "source": "IRS Form 990 e-file XML (IRS TEOS)",
+  "source_url": "https://apps.irs.gov/pub/epostcard/990/xml/2025/2025_TEOS_XML_11B.zip",
+  "member": "202543159349304434_public.xml",
+  "index_url": "https://apps.irs.gov/pub/epostcard/990/xml/2025/index_2025.csv",
+  "values": {
+    "tax_period_begin": "2024-01-01",
+    "tax_period_end": "2024-12-31",
+    "filer_ein": "135596811",
+    "filer_name": "POLICE ATHLETIC LEAGUE INC",
+    "return_type": "990",
+    "CYTotalRevenueAmt": "32865221",
+    "CYTotalExpensesAmt": "34256223",
+    "NetAssetsOrFundBalancesEOYAmt": "16384203",
+    "TotalFunctionalExpensesGrp/TotalAmt": "34256223",
+    "CashNonInterestBearingGrp/EOYAmt": "2072881",
+    "SavingsAndTempCashInvstGrp/EOYAmt": "1286868",
+    "TotalAssetsGrp/EOYAmt": "38306118",
+    "TotalLiabilitiesGrp/EOYAmt": "21921915",
+    "InvestmentsPubTradedSecGrp/EOYAmt": "6290249",
+    "GovernmentGrantsAmt": "30208511"
+  },
+  "cash": 3359749.0,
+  "expenses": 34256223.0,
+  "cash_months": 1.18,
+  "formula": "(CashNonInterestBearingGrp/EOYAmt + SavingsAndTempCashInvstGrp/EOYAmt) / (TotalFunctionalExpensesGrp/TotalAmt / 12)",
+  "fetched_at": "2026-09-26T21:33:09-0400"
+}

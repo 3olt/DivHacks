@@ -1,11 +1,12 @@
 {
   "network": "testnet",
   "rule_version": "p1-allowlist-1",
-  "description": "Phase 1 co-signer allowlist: the registry wallets of the demo nonprofits np_1..np_4. The co-signer reads this file once at startup and pins its SHA-256; restart the co-signer after changing it.",
+  "description": "Co-signer allowlist: the registry wallets of the demo nonprofits np_1..np_4 and np_5 (np_5 = the DEMO wallet on XRPL Testnet for the golden real organization, Food Bank For New York City, EIN 13-3179546, which has not onboarded). The co-signer reads this file once at startup and pins its SHA-256; restart the co-signer after changing it.",
   "addresses": [
     "rnJzKAteJoTtWssbPnqoLnFAfCHqqwtN9F",
     "r9sx8kBmQ9jZ5iP1zrw4kJkfnfyNx4Q8Wy",
     "rMAqFFvVEiKjZNyYVpssn5SUc5KweQYfAb",
-    "rDH94utmTS5rK3HrysxsK97hBTx7ra11FN"
+    "rDH94utmTS5rK3HrysxsK97hBTx7ra11FN",
+    "rAhvUcYnLmTYuCU52thJdzDsddDbRAoJN"
   ]
 }

@@ -31,6 +31,12 @@
 //                  the co-signer reveals the fulfillment inside the EscrowFinish it co-signs -> released
 //   all            happy, injection, duplicate, over-contract, uncredentialed, address-swap, over-limit, kill-switch, escrow;
 //                  prints a final table and exits 0 only if every step is AS EXPECTED
+// Phase 4 (Option B, builder B):
+//   golden         the golden REAL organization, Food Bank For New York City (EIN 13-3179546), bills 12.50 RLUSD (demo invoice)
+//                  under its REAL contract (Mongo demo_state.golden_contract_id) -> Grok -> builder -> co-signer (all 8 checks,
+//                  incl. the on-ledger credential carrying the REAL EIN) -> released to np_5, its DEMO WALLET on Testnet (the
+//                  organization has not onboarded). Then, if data/risk.py exists, the golden site's risk before/after (the
+//                  XRPL payment counts at the disclosed demo scale). Not in `all`: it depends on builder A's live data.
 // Officer clicks: the officer service requires the officer's click credential (OFFICER_CLICK_TOKEN, only in
 // xrpl/.env.officer). This process never has it; it runs the officer's click CLI (scripts/officer-click.ts) as a separate
 // process to stand in for the human (labelled in the output). manual-officer waits for a real human instead.
@@ -79,9 +85,10 @@ import { accountState, hasTrustLine, tokenBalance } from "../src/lib/xrpl";
 import { classifySignerList, CTT_CURRENCY } from "../src/lib/governance";
 import { agentCttBalance, createMilestoneEscrow, ensureAgentCttLine, releaseMilestoneEscrow, LABEL as ESCROW_LABEL } from "../src/agent/escrow";
 import type { GovOutcome } from "../src/officer/governance";
+import { readDemoState } from "../src/lib/golden";
 
 const ALL = ["happy", "injection", "duplicate", "over-contract", "uncredentialed", "address-swap", "over-limit", "kill-switch", "escrow"];
-const SCENARIOS = ["happy", "injection", "duplicate", "over-contract", "phase2", "address-swap", "uncredentialed", "phase3a", "over-limit", "kill-switch", "escrow", "all"];
+const SCENARIOS = ["happy", "injection", "duplicate", "over-contract", "phase2", "address-swap", "uncredentialed", "phase3a", "over-limit", "kill-switch", "escrow", "golden", "all"];
 const FORMATS = ["json", "txt", "pdf", "png", "scan"] as const;
 type Format = (typeof FORMATS)[number];
 const MODIFIERS = new Set(["keep", "no-spawn", "manual-officer", ...FORMATS]);
@@ -654,6 +661,73 @@ function installSignalHandlers(): void {
   }
 }
 
+// ---------------------------------------------------------------------------------------------------------------
+// Phase 4, Option B: the golden REAL organization (Food Bank For New York City, EIN 13-3179546) paid on Testnet at its
+// DEMO wallet np_5 through the full guardrails; then (if data/risk.py exists) its site's risk before/after.
+
+type SiteRisk = { level: string; score: number; reasons: string[]; summary: string; computed_at: string };
+
+function riskPy(): { py: string; script: string } | null {
+  const script = path.join(paths.rootDir, "data", "risk.py");
+  if (!fs.existsSync(script)) return null;
+  const venv = path.join(paths.rootDir, "data", ".venv", process.platform === "win32" ? "Scripts/python.exe" : "bin/python");
+  return { py: fs.existsSync(venv) ? venv : process.env.PYTHON ?? (process.platform === "win32" ? "python" : "python3"), script };
+}
+
+/** Runs builder A's data/risk.py for one site (a separate process with a minimal environment: no seeds; it loads the root
+ *  .env itself), then reads that site's risk from Mongo. Informational only: never decides AS EXPECTED. */
+async function recomputeSiteRisk(db: import("mongodb").Db, siteId: string, label: string): Promise<SiteRisk | null> {
+  const rp = riskPy();
+  if (!rp) return null;
+  console.log(`  [${label}] ${path.relative(paths.rootDir, rp.script)} --site ${siteId} (builder A's deterministic risk score; separate process, no seeds)`);
+  const r = spawnSync(rp.py, [rp.script, "--site", siteId], { cwd: paths.rootDir, env: minimalEnv({ PYTHONIOENCODING: "utf-8" }), encoding: "utf8", timeout: 180000, windowsHide: true });
+  const out = `${r.stdout ?? ""}${r.stderr ?? ""}`.trim().split(/\r?\n/).filter(Boolean);
+  for (const l of out.slice(-6)) console.log(`    risk.py| ${l.replace(/mongodb(\+srv)?:\/\/\S+/g, "<uri>").slice(0, 300)}`);
+  if (r.status !== 0) console.log(`    risk.py exited ${r.status ?? r.signal ?? r.error?.message}`);
+  const site = (await db.collection("sites").findOne({ $or: [{ id: siteId }, { _id: siteId as never }] }, { projection: { risk: 1 } })) as { risk?: SiteRisk } | null;
+  return site?.risk ?? null;
+}
+
+const printRisk = (tag: string, r: SiteRisk | null) =>
+  console.log(r ? `  ${tag}: ${r.level.toUpperCase()} ${r.score} (computed ${r.computed_at}) "${r.summary}"` : `  ${tag}: (no risk on the site document)`);
+
+async function golden(ctx: AgentCtx, db: import("mongodb").Db): Promise<void> {
+  const np = ctx.reg.nonprofits.np_5;
+  if (!np) throw new Error('accounts.testnet.json has no np_5 (the golden demo wallet); run "npm run setup:xrpl", "npm run seed:registry", "npm run onboard -- np_5", then restart the co-signer');
+  const ds = await readDemoState(db);
+  const contractId = ds?.golden_contract_id ?? np.contract_id;
+  if (!ds) console.log(`NOTE: Mongo demo_state {_id "golden"} is not written yet (builder A); using np_5's contract ${contractId} and skipping the risk recompute`);
+  else if (np.contract_id !== contractId) console.log(`NOTE: demo_state names contract ${contractId}, accounts.testnet.json np_5 says ${np.contract_id} (re-run npm run setup:xrpl + restart the co-signer)`);
+  const id = `INV-GOLDEN-${stamp()}`;
+  const amt = amount("12.50");
+  const scale = ds?.scale_usd_per_rlusd ?? null;
+  console.log(`\n=== golden: ${np.name} (EIN ${np.ein}, a REAL organization with real public contract data) bills ${amt} RLUSD under its REAL contract ${contractId} ===`);
+  console.log(`  payee wallet: ${np.address} = np_5, a ${np.label ?? "demo wallet on XRPL Testnet"}. The invoice is DEMO DATA (is_demo_data true).`);
+  if (scale) console.log(`  Option B (DISCLOSED demo scale): for this golden contract only, released XRPL Testnet payments dated at/after ${ds!.epoch} count toward "paid" at 1 RLUSD = $${scale.toLocaleString("en-US")} (${amt} RLUSD = $${(Number(amt) * scale).toLocaleString("en-US")}).`);
+
+  const site = ds?.golden_site_id ?? null;
+  let before: SiteRisk | null = null;
+  if (site && riskPy()) before = await recomputeSiteRisk(db, site, "before");
+  else if (site) console.log("  data/risk.py does not exist yet: printing the payment decision only");
+
+  const input = jsonInput("golden.json", { invoice_id: id, amount: amt, contract_id: contractId, payee_ein: np.ein }, `golden-${id}.json`);
+  const r = await processSubmission({ input, contract_id: contractId, expected_invoice_id: id, submitted_via: "seed" }, ctx);
+  const cred = r.decision.checks.find((c) => c.name === "credential_valid");
+  const credOk = !!cred?.passed && cred.detail.includes(np.ein);
+  show(`golden: ${np.name} (np_5 demo wallet)`, r, `released (agent + co-signer, all 8 checks incl. the on-ledger credential for the REAL EIN ${np.ein})`,
+    r.decision.outcome === "released" && r.decision.ledger_result === "tesSUCCESS" && r.decision.checks.length === 8 && r.decision.checks.every((c) => c.passed) && credOk);
+
+  if (!site || !riskPy()) return;
+  const after = await recomputeSiteRisk(db, site, "after");
+  console.log(`\n--- golden: site ${site} risk (builder A's data/risk.py; informational, not part of AS EXPECTED) ---`);
+  printRisk("before", before);
+  printRisk("after ", after);
+  const optionB = (after?.reasons ?? []).filter((x) => /xrpl|rlusd|demo scale|testnet/i.test(x));
+  for (const x of optionB.length ? optionB : ["(no reason mentions the XRPL demo payments / demo scale)"]) console.log(`  Option B reason: ${x}`);
+  if (before && after && before.level !== after.level) console.log(`  PIN FLIP: ${before.level} -> ${after.level}`);
+  else if (before && after) console.log(`  level unchanged (${after.level}); score ${before.score} -> ${after.score}. The level flips at most once per demo epoch.`);
+}
+
 /** Before any payment: the kill switch must not be engaged and no payee change hold may be in force for a demo EIN.
  *  Returns the problems (empty = ready). It never lifts either by itself: both are the officer's decision. */
 async function preflight(client: Awaited<ReturnType<typeof connect>>, reg: Registry, cosignerUrl: string): Promise<string[]> {
@@ -775,6 +849,7 @@ async function main(): Promise<number> {
         else if (s === "over-limit") await overLimit(ctx, mongo.db);
         else if (s === "kill-switch") await killSwitch(ctx);
         else if (s === "escrow") await escrowScenario(ctx);
+        else if (s === "golden") await golden(ctx, mongo.db);
       } catch (e) {
         const msg = (e as Error).message.replace(/mongodb(\+srv)?:\/\/\S+/g, "<uri>");
         console.error(`\nscenario ${s} FAILED: ${msg}`);

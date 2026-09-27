@@ -1,0 +1,32 @@
+{
+  "ein": "112453853",
+  "object_id": "202621349349310997",
+  "tax_period": "202506",
+  "index_year": 2026,
+  "source": "IRS Form 990 e-file XML (IRS TEOS)",
+  "source_url": "https://apps.irs.gov/pub/epostcard/990/xml/2026/2026_TEOS_XML_05B.zip",
+  "member": "202621349349310997_public.xml",
+  "index_url": "https://apps.irs.gov/pub/epostcard/990/xml/2026/index_2026.csv",
+  "values": {
+    "tax_period_begin": "2024-07-01",
+    "tax_period_end": "2025-06-30",
+    "filer_ein": "112453853",
+    "filer_name": "RISEBORO COMMUNITY PARTNERSHIP INC",
+    "return_type": "990",
+    "CYTotalRevenueAmt": "80729696",
+    "CYTotalExpensesAmt": "71709625",
+    "NetAssetsOrFundBalancesEOYAmt": "58389236",
+    "TotalFunctionalExpensesGrp/TotalAmt": "71709625",
+    "CashNonInterestBearingGrp/EOYAmt": "2646132",
+    "SavingsAndTempCashInvstGrp/EOYAmt": "800844",
+    "TotalAssetsGrp/EOYAmt": "151754878",
+    "TotalLiabilitiesGrp/EOYAmt": "93365642",
+    "InvestmentsPubTradedSecGrp/EOYAmt": null,
+    "GovernmentGrantsAmt": "50436416"
+  },
+  "cash": 3446976.0,
+  "expenses": 71709625.0,
+  "cash_months": 0.58,
+  "formula": "(CashNonInterestBearingGrp/EOYAmt + SavingsAndTempCashInvstGrp/EOYAmt) / (TotalFunctionalExpensesGrp/TotalAmt / 12)",
+  "fetched_at": "2026-09-26T21:33:03-0400"
+}

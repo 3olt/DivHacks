@@ -62,3 +62,15 @@ e59a90ff6939aacc  propublica/org_133170676.json  28623 bytes
 237fa1bf98af9954  propublica/org_133530299.json  26065 bytes
 0a282c0340393068  propublica/org_260076866.json  27660 bytes
 ```
+
+## Phase 4 additions (2026-09-26, 21:30-22:30 EDT)
+
+Fetched by the scripts in `data/` for the 15-organization seed list (`data/seed/nonprofits.csv`). Organizations only.
+
+| Files | What | Fetched by |
+|---|---|---|
+| `propublica/org_{200934854,133127972,133234441,133164477,135596811,135598710}.json` | ProPublica records for the 6 added orgs (Campaign Against Hunger, NY Common Pantry, Project Hospitality, Women In Need, Police Athletic League, Good Shepherd Services); `careofname` blanked | `data/fetch_public_extras.py` |
+| `geosearch/<site_id>.json` | NYC Planning Labs GeoSearch result for each org's IRS address (request URL + top feature) | `data/fetch_public_extras.py` (site_pal: query uses the corrected "34 1/2 EAST 12TH STREET", see `gl_common.IRS_ADDRESS_FIXES`) |
+| `irs990/<ein>_extract.json` | Form 990 e-file XML values (revenue, expenses, net assets, Part X cash + savings) and `cash_months` for all 15 orgs, with the IRS TEOS zip URL + object id | `data/fetch_irs_cash.py` |
+| `checkbook/contracts_vendor_0000822784_FY2026.xml` (+ `.request.xml`) | Checkbook NYC Contracts API, vendor 0000822784, `fiscal_year=2026`: returned the **4 contracts registered in FY2026** (two HRA SNAP Outreach contracts registered 855 and 598 days after their start with $0 spent to date, an ACS pantry contract, a DFTA older-adult center), not every contract active in FY2026. 1414 s latency | `data/fetch_checkbook_contracts.py` |
+| `checkbook/contracts_vendor_0000822784_FYnone.xml` (+ `.request.xml`) | Checkbook NYC Contracts API, vendor 0000822784, **no fiscal_year** ("Registered Contracts (expense) All Years" domain): all 137 registered expense contracts of Food Bank For NYC with current amount, start/end, registration date and `prime_vendor_spent_to_date`. 1428 s latency. Quirk: that domain rejects the response column `year` (error 1106, found after a 24-minute wait) | `data/fetch_checkbook_contracts.py --fy none --max-records 1000` |
